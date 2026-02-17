@@ -17,7 +17,7 @@
     border-right: 1px solid $gray-200;
   }
 
-  .toggle-button {
+  .toggle-btn {
     position: absolute;
     right: 15px;
     top: 20px;
@@ -119,7 +119,7 @@
     opacity: 1;
   }
 
-  .sign-out-button {
+  .sign-out-btn {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -152,7 +152,7 @@
     }
   }
 
-  &.expanded .sign-out-button .label {
+  &.expanded .sign-out-btn .label {
     opacity: 1;
   }
 }
