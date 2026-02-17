@@ -1,12 +1,23 @@
+@use '../../../styles/variables' as *;
+
 .layout {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  background: $bg-primary;
   overflow: hidden;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .content {
   flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  transition: all 0.3s ease;
+  padding: 30px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }

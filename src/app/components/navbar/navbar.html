@@ -1,0 +1,39 @@
+<nav class="navbar">
+    <div class="navbar-content">
+        <!-- Logo -->
+        <a class="logo" routerLink="/home">
+            <img src="assets/images/logo/PartialLogo_NoBuffer_Transparent.png" alt="NutriChef Logo" class="logo-img">
+            <span class="logo-text">NutriChef</span>
+        </a>
+
+        <!-- Dropdown Menu Items -->
+        <div class="nav-menu">
+            @for (menu of menuItems; track menu.label) {
+                <div class="menu-dropdown" (mouseleave)="closeDropdown()">
+                    <button
+                        class="menu-btn"
+                        [class.active]="activeDropdown() === menu.label"
+                        (mouseenter)="openDropdown(menu.label)">
+                        {{ menu.label }}
+                    </button>
+                    
+                    @if (activeDropdown() === menu.label) {
+                        <div class="dropdown-content">
+                            @for (item of menu.items; track item.label) {
+                                <a class="dropdown-item" [routerLink]="item.route" (click)="selectMenuItem(item)">
+                                    {{ item.label }}
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Favorites Section -->
+        <button class="favorites-btn" (click)="navigateToFavourites()">
+            <img src="assets/images/icons/favorites.png" alt="Favorites" class="heart-icon">
+        </button>
+
+    </div>
+</nav>

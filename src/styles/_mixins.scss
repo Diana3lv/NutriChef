@@ -2,7 +2,7 @@
 // NutriChef Design System - Mixins
 // ============================================
 
-@import 'variables';
+@use 'variables' as *;
 
 // Flexbox Utilities
 @mixin flex-center {
