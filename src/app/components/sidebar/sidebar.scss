@@ -1,0 +1,158 @@
+@import '../../../styles/variables';
+@import '../../../styles/mixins';
+
+.sidebar {
+  position: relative;
+  height: 100vh;
+  width: 60px;
+  background: transparent;
+  border-right: 1px solid transparent;
+  transition: all 0.3s ease;
+  overflow: visible;
+  flex-shrink: 0;
+
+  &.expanded {
+    width: 260px;
+    background: white;
+    border-right: 1px solid $gray-200;
+  }
+
+  .toggle-button {
+    position: absolute;
+    right: 15px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: $primary-green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: $primary-green-dark;
+      transform: scale(1.1);
+    }
+
+    .arrow {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+      filter: brightness(0) invert(1);
+      
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .sidebar-content {
+    padding: 60px 0 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: $text-primary;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    cursor: pointer;
+
+    .icon-img {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      object-fit: contain;
+      filter: grayscale(50%);
+      transition: filter 0.3s ease;
+    }
+
+    .label {
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease 0.1s;
+    }
+
+    &:hover {
+      background: $gray-100;
+      color: $primary-green;
+      
+      .icon-img {
+        filter: none;
+      }
+    }
+
+    &.active {
+      background: rgba($primary-green, 0.1);
+      color: $primary-green;
+      font-weight: 600;
+      
+      .icon-img {
+        filter: none;
+      }
+    }
+  }
+
+  &.expanded .menu-item .label {
+    opacity: 1;
+  }
+
+  .sign-out-button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #fee;
+    color: #d32f2f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+
+    .icon-img {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      object-fit: contain;
+    }
+
+    .label {
+      opacity: 0;
+      transition: opacity 0.3s ease 0.1s;
+    }
+
+    &:hover {
+      background: #fdd;
+      transform: translateX(-2px);
+    }
+  }
+
+  &.expanded .sign-out-button .label {
+    opacity: 1;
+  }
+}
