@@ -1,1 +1,72 @@
-/* You can add global styles to this file, and also import other style files */
+// ============================================
+// NutriChef - Global Styles
+// ============================================
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+// Import Design System
+@import 'styles/variables';
+@import 'styles/mixins';
+
+// ============================================
+// Global Resets
+// ============================================
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: $font-family-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  color: $text-primary;
+  background-color: $bg-secondary;
+  overflow-x: hidden;
+}
+
+// ============================================
+// Typography
+// ============================================
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-heading;
+  font-weight: $font-weight-semibold;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: $primary-green;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $primary-green-dark;
+  }
+}
+
+// ============================================
+// Utility Classes
+// ============================================
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+}
+
+.card {
+  @include card;
+}
+

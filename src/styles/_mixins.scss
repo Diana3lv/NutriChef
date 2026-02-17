@@ -1,0 +1,79 @@
+// ============================================
+// NutriChef Design System - Mixins
+// ============================================
+
+@import 'variables';
+
+// Flexbox Utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Button Base
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-lg;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-base;
+  border-radius: $border-radius-md;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $primary-green;
+  color: $white;
+
+  &:hover:not(:disabled) {
+    background: $primary-green-dark;
+  }
+}
+
+// Card
+@mixin card {
+  background: $white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+}
+
+// Input Base
+@mixin input-base {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background: $white;
+  border: 1px solid $gray-300;
+  border-radius: $border-radius-md;
+  transition: all $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-green;
+    box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+  }
+}
