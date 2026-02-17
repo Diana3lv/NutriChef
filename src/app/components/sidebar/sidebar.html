@@ -1,6 +1,6 @@
 <aside class="sidebar" [class.expanded]="isExpanded()">
     <!-- Toggle button -->
-    <button class="toggle-button" (click)="toggleSidebar()">
+    <button class="toggle-btn" (click)="toggleSidebar()">
         <img [src]="toggleIcon" alt="Toggle Menu" class="arrow" [class.rotated]="isExpanded()">
     </button>
 
@@ -18,7 +18,7 @@
             </nav>
 
             <!-- Sign out button -->
-            <button class="sign-out-button" (click)="signOut()">
+            <button class="sign-out-btn" (click)="signOut()">
                 <img [src]="signOutIcon" alt="Sign Out" class="icon-img">
                 <span class="label">Sign Out</span>
             </button>
