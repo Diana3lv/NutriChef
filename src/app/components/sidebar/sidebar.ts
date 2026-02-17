@@ -21,7 +21,7 @@ export class Sidebar {
     { label: 'Settings', route: '/settings', icon: 'assets/images/icons/settings.png' },
     { label: 'Ask NutriAI', route: '/nutri-ai', icon: 'assets/images/icons/nutri-ai.png' },
     { label: 'Favorites', route: '/favorites', icon: 'assets/images/icons/favorites.png' },
-    { label: 'Shopping Cart', route: '/cart', icon: 'assets/images/icons/shopping_cart.png' }
+    { label: 'Shopping List', route: '/shopping-list', icon: 'assets/images/icons/shopping_list.png' }
   ];
 
   toggleSidebar() {
