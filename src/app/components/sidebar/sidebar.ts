@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Auth } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,6 +15,8 @@ export class Sidebar {
   
   toggleIcon = 'assets/images/icons/arrow.png';
   signOutIcon = 'assets/images/icons/sign_out.png';
+
+  constructor(private authService: Auth) {}
 
   menuItems = [
     { label: 'Profile', route: '/profile', icon: 'assets/images/icons/profile.png' },
@@ -33,6 +36,6 @@ export class Sidebar {
   }
 
   signOut() {
-    // TODO: Implement sign-out logic here
+    this.authService.logout();
   }
 }
