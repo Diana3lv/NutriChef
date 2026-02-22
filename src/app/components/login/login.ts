@@ -27,13 +27,22 @@ export class Login {
     });
   }
 
-  async onSubmit() {
+  onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
     const { email, password, rememberMe } = this.loginForm.value;
-    await this.authService.login({email, password}, rememberMe);
+    
+    this.authService.login({ email, password }, rememberMe).subscribe({
+      next: () => {
+        // Success - navigation handled in auth service
+      },
+      error: (error) => {
+        // Error message already set in auth service
+        console.error('Login failed:', error);
+      }
+    });
   }
 }

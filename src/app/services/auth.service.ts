@@ -1,5 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, tap, catchError, throwError } from 'rxjs';
+
 
 export interface User {
   id: number;
@@ -21,154 +24,128 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
-  currentUser = signal<User | null>(null);
+  private readonly API_URL = 'http://localhost:8080/api/auth';
+  
+  private readonly TOKEN_KEY = 'authToken';
+  private readonly USER_KEY = 'currentUser';
+  private readonly EXPIRY_KEY = 'authExpiry';
+
+  currentUser = signal<User | null>(this.getUserFromStorage());
   isLoading = signal(false);
   error = signal<string | null>(null);
-  
-  constructor(private router: Router) {
+
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.checkAuthStatus();
   }
-  
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
 
-  private isValidPassword(password: string): boolean {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
-  }
-  
-  login(credentials: LoginCredentials, rememberMe: boolean): Promise<boolean> {
+  login(credentials: LoginCredentials, rememberMe: boolean): Observable<AuthResponse> {
     this.isLoading.set(true);
     this.error.set(null);
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Validations
-        if (!credentials.email || !credentials.password) {
-          this.error.set('Email and password are required');
-          this.isLoading.set(false);
-          resolve(false);
-          return;
-        }
-        
-        if (!this.isValidEmail(credentials.email)) {
-          this.error.set('Invalid email format');
-          this.isLoading.set(false);
-          resolve(false);
-          return;
-        }
-        
-        // Mock login success
-        const mockUser: User = {
-          id: Math.floor(Math.random() * 1000),
-          email: credentials.email,
-          firstName: credentials.email.split('@')[0],
-          lastName: 'MockUser',
-          role: 'USER'
-        };
-        
-        localStorage.setItem('currentUser', JSON.stringify(mockUser));
-        this.currentUser.set(mockUser);
 
-        if (rememberMe) {
-          const expiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
-          localStorage.setItem('authExpiry', expiry.toString());
-        } else {
-          const expiry = Date.now() + (24 * 60 * 60 * 1000); // 1 day
-          localStorage.setItem('authExpiry', expiry.toString());
-        }
-
+    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
+      tap(response => {
+        this.handleAuthSuccess(response);
+        this.setAuthExpiry(rememberMe);
         this.router.navigate(['/home']);
-        this.isLoading.set(false);
-        resolve(true);
-      }, 1000);
-    });
+      }),
+      catchError(error => this.handleError(error))
+    );
   }
-  
-  register(data: RegisterData): Promise<boolean> {
+
+  register(data: RegisterData): Observable<AuthResponse> {
     this.isLoading.set(true);
     this.error.set(null);
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Validations
-        if (!data.email || !data.password || !data.firstName || !data.lastName) {
-          this.error.set('All fields are required');
-          this.isLoading.set(false);
-          resolve(false);
-          return;
-        }
-        
-        if (!this.isValidEmail(data.email)) {
-          this.error.set('Invalid email format');
-          this.isLoading.set(false);
-          resolve(false);
-          return;
-        }
-        
-        if (!this.isValidPassword(data.password)) {
-          this.error.set('Password must be at least 8 characters and include uppercase, lowercase, number, and special character');
-          this.isLoading.set(false);
-          resolve(false);
-          return;
-        }
-        
-        // Mock register success
-        const mockUser: User = {
-          id: Math.floor(Math.random() * 1000),
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          role: 'USER'
-        };
 
-        localStorage.setItem('currentUser', JSON.stringify(mockUser));
-        this.currentUser.set(mockUser);
-        
-        // Set auth expiry (default to 30 days for new registrations)
-        const expiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
-        localStorage.setItem('authExpiry', expiry.toString());
-        
+    return this.http.post<AuthResponse>(`${this.API_URL}/register`, data).pipe(
+      tap(response => {
+        this.handleAuthSuccess(response);
+        this.setAuthExpiry(true); // Default 30 days for new users
         this.router.navigate(['/home']);
-        this.isLoading.set(false);
-        resolve(true);
-      }, 1000);
-    });
+      }),
+      catchError(error => this.handleError(error))
+    );
   }
-  
-  logout() {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('authExpiry');
+
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.EXPIRY_KEY);
     this.currentUser.set(null);
     this.error.set(null);
     this.router.navigate(['/login']);
   }
-  
+
   isAuthenticated(): boolean {
-    return this.currentUser() !== null;
+    return this.currentUser() !== null && !!this.getToken();
   }
-  
-  private checkAuthStatus() {
-    const userStr = localStorage.getItem('currentUser');
+
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  private handleAuthSuccess(response: AuthResponse): void {
+    localStorage.setItem(this.TOKEN_KEY, response.token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+    this.currentUser.set(response.user);
+    this.isLoading.set(false);
+  }
+
+  private setAuthExpiry(rememberMe: boolean): void {
+    const days = rememberMe ? 30 : 1;
+    const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+    localStorage.setItem(this.EXPIRY_KEY, expiry.toString());
+  }
+
+  private getUserFromStorage(): User | null {
+    const userStr = localStorage.getItem(this.USER_KEY);
     if (userStr) {
       try {
-        const user = JSON.parse(userStr) as User;
-        this.currentUser.set(user);
+        return JSON.parse(userStr) as User;
       } catch (error) {
         console.error('Failed to parse user from localStorage', error);
-        localStorage.removeItem('currentUser');
+        localStorage.removeItem(this.USER_KEY);
       }
     }
+    return null;
+  }
 
-    const expiry = localStorage.getItem('authExpiry');
+  private checkAuthStatus(): void {
+    const expiry = localStorage.getItem(this.EXPIRY_KEY);
     if (expiry && Date.now() > parseInt(expiry)) {
       this.logout();
     }
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    this.isLoading.set(false);
+    
+    let errorMessage = 'An error occurred';
+    
+    if (error.error?.error) {
+      // Backend error message
+      errorMessage = error.error.error;
+    } else if (error.status === 0) {
+      errorMessage = 'Cannot connect to server. Please check if backend is running.';
+    } else if (error.status === 401) {
+      errorMessage = 'Invalid credentials';
+    } else if (error.status === 400) {
+      errorMessage = error.error?.error || 'Invalid request';
+    }
+    
+    this.error.set(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }

@@ -42,14 +42,22 @@ export class Register {
     return null;
   }
 
-  async onSubmit() {
+  onSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
     const { firstName, lastName, email, password } = this.registerForm.value;
-    await this.authService.register({ firstName, lastName, email, password });
+    
+    this.authService.register({ firstName, lastName, email, password }).subscribe({
+      next: () => {
+        // Navigation handled in auth service
+      },
+      error: (error) => {
+        console.error('Registration failed:', error);
+      }
+    });
   }
 
   get password() {
