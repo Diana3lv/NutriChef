@@ -60,7 +60,7 @@ export class Register {
     const pwd = this.password;
     return [
       { text: 'Use 8 or more characters', met: pwd.length >= 8 },
-      { text: 'Include at least one symbol (!@#$%^&*)', met: /[@$!%*?&]/.test(pwd) },
+      { text: 'Include at least one symbol (!@#$%^&*)', met: /[@$#!%*?&]/.test(pwd) },
       { text: 'Include at least one number', met: /\d/.test(pwd) },
       { text: 'Include uppercase and lowercase letters', met: /[a-z]/.test(pwd) && /[A-Z]/.test(pwd) }
     ];
