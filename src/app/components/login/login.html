@@ -1,1 +1,84 @@
-<p>login works!</p>
+<div class="login-container">
+    <!-- Left Section -->
+    <div class="left-section">
+        <!-- Welcome Message -->
+        <div class="welcome-card">
+            <h1>What are we cooking today?</h1>
+            <p>Cooking made simple, just for you.</p>
+        </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right-section">
+        <!-- Login Card -->
+        <div class="form-card">
+            <h2>Sign in</h2>
+            
+            <!-- Auth service error message -->
+            @if (authService.error()) {
+                <div class="error-message">{{ authService.error() }}</div>
+            }
+            
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <!-- Email input -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        formControlName="email"
+                        placeholder="Enter your email"
+                        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                
+                    <!-- Email validation -->
+                    @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                        <span class="error-text">Please enter a valid email address</span>
+                    }
+                </div>
+
+                <!-- Password input -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        formControlName="password"
+                        placeholder="Enter your password"
+                        [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                
+                    <!-- Password validation -->
+                    @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                        <span class="error-text">Please enter the password</span>
+                    }
+                </div>
+
+                <!-- Remember Me checkbox -->
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" formControlName="rememberMe"> Remember Me
+                    </label>
+                </div>
+
+                <!-- Submit button -->
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    [disabled]="loginForm.invalid || authService.isLoading()">
+                
+                    @if (authService.isLoading()) {
+                        <span>Signing in...</span>
+                    } @else {
+                        <span>Sign in</span>
+                    }
+                </button>
+
+                <!-- Sign up link -->
+                <p class="footer-text">
+                    Don't have an account? <a routerLink="/register">Sign up</a>
+                </p>
+            </form>    
+
+        </div>
+    </div>
+
+</div>

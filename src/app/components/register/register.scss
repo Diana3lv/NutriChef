@@ -1,0 +1,212 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.register-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.left-section {
+    position: relative;
+    background-image: url('/assets/images/backgrounds/bg.jpg');
+    background-size: cover;
+    background-position: center;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .welcome-card {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: $spacing-3xl;
+        color: white;
+        text-align: center;
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: $spacing-md;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        p {
+            font-size: 20px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+    }
+}
+
+.right-section {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-3xl;
+    overflow-y: auto;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 450px;
+
+    h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: $text-primary;
+        margin-bottom: $spacing-2xl;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-lg;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+        font-weight: 600;
+        color: $text-primary;
+        font-size: $font-size-sm;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        @include input-base;
+        width: 100%;
+
+        &.error {
+            border-color: $error;
+        }
+    }
+
+    .error-text {
+        color: $error;
+        font-size: $font-size-xs;
+        margin-top: 4px;
+    }
+}
+
+.password-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    margin-top: $spacing-xs;
+
+    .requirement-item {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        font-size: $font-size-xs;
+        transition: color $transition-fast;
+
+        .icon {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .text {
+            line-height: 1.4;
+        }
+
+        &.unmet {
+            color: $error;
+
+            .icon {
+                color: $error;
+            }
+        }
+
+        &.met {
+            color: $primary-color;
+
+            .icon {
+                color: $primary-color;
+            }
+        }
+    }
+}
+
+.error-message {
+    background: rgba($error, 0.1);
+    color: $error;
+    padding: $spacing-sm $spacing-md;
+    border-radius: 8px;
+    font-size: $font-size-sm;
+    border: 1px solid $error;
+}
+
+.submit-btn {
+    @include button-primary;
+    width: 100%;
+    padding: 14px;
+    font-size: $font-size-base;
+    font-weight: 600;
+    margin-top: $spacing-md;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.footer-text {
+    text-align: center;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin-top: $spacing-md;
+
+    a {
+        color: $primary-color;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .left-section {
+        min-height: 200px;
+
+        .welcome-card h1 {
+            font-size: 32px;
+        }
+
+        .welcome-card p {
+            font-size: 16px;
+        }
+    }
+
+    .right-section {
+        padding: $spacing-xl;
+    }
+}
