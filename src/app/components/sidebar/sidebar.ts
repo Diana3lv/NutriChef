@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth.service';
 
 @Component({
@@ -16,7 +16,10 @@ export class Sidebar {
   toggleIcon = 'assets/images/icons/arrow.png';
   signOutIcon = 'assets/images/icons/sign_out.png';
 
-  constructor(private authService: Auth) {}
+  constructor(
+    private authService: Auth,
+    private router: Router
+  ) {}
 
   menuItems = [
     { label: 'Profile', route: '/profile', icon: 'assets/images/icons/profile.png' },
@@ -37,5 +40,6 @@ export class Sidebar {
 
   signOut() {
     this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

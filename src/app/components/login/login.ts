@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -18,7 +18,10 @@ export class Login {
 
   constructor(
     public authService: Auth,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute
+
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -37,10 +40,10 @@ export class Login {
     
     this.authService.login({ email, password }, rememberMe).subscribe({
       next: () => {
-        // Success - navigation handled in auth service
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+        this.router.navigate([returnUrl]);
       },
       error: (error) => {
-        // Error message already set in auth service
         console.error('Login failed:', error);
       }
     });

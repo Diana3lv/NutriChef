@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 
@@ -46,7 +45,6 @@ export class Auth {
 
   constructor(
     private http: HttpClient,
-    private router: Router
   ) {
     this.checkAuthStatus();
   }
@@ -59,7 +57,6 @@ export class Auth {
       tap(response => {
         this.handleAuthSuccess(response);
         this.setAuthExpiry(rememberMe);
-        this.router.navigate(['/home']);
       }),
       catchError(error => this.handleError(error))
     );
@@ -73,7 +70,6 @@ export class Auth {
       tap(response => {
         this.handleAuthSuccess(response);
         this.setAuthExpiry(true); // Default 30 days for new users
-        this.router.navigate(['/home']);
       }),
       catchError(error => this.handleError(error))
     );
@@ -85,7 +81,6 @@ export class Auth {
     localStorage.removeItem(this.EXPIRY_KEY);
     this.currentUser.set(null);
     this.error.set(null);
-    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
