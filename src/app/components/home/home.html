@@ -1,1 +1,26 @@
-<p>home works!</p>
+<div class="home-container">
+    <!-- Hero Section with Background Image -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <!-- Home title -->
+            <h1 class="hero-title">
+                Find your next delicious recipe
+                to make today
+            </h1>
+
+            <!-- Search bar -->
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input"
+                    placeholder="Search by recipe title or by filters..."
+                    (keyup.enter)="onSearch()"
+                    [(ngModel)]="searchQuery"
+                />
+                <button class="search-btn" (click)="onSearch()">Search</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- TODO: Recipe sections displayed here -->
+</div>
