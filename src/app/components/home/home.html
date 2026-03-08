@@ -1,4 +1,4 @@
-<div class="home-container">
+<div class="home-container" [class.sidebar-expanded]="isSidebarExpanded()">
     <!-- Hero Section with Background Image -->
     <section class="hero-section">
         <div class="hero-content">
@@ -22,5 +22,61 @@
         </div>
     </section>
     
-    <!-- TODO: Recipe sections displayed here -->
+    <!-- Popular Recipes Section -->
+    <section class="recipes-section">
+        <h2 class="section-title">Popular Recipes</h2>
+        <div class="recipe-grid">
+            <div class="recipe-card" *ngFor="let recipe of popularRecipes" (click)="viewRecipe(recipe.id)">
+                <div class="recipe-image">
+                    <img [src]="recipe.imageUrl" [alt]="recipe.name" />
+                </div>
+                <div class="recipe-info">
+                    <div class="recipe-difficulty" [class]="'difficulty-' + recipe.difficulty.toLowerCase()">
+                        {{ recipe.difficulty }}
+                    </div>
+                    <h3 class="recipe-title">{{ recipe.name }}</h3>
+                    <div class="recipe-divider"></div>
+                    <div class="recipe-meta">
+                        <span class="prep-time">
+                            <img src="assets/images/icons/timer.png" alt="Prep Time" class="clock-icon">
+                            {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} min
+                        </span>
+                        <span class="servings">
+                            <img src="assets/images/icons/people.png" alt="Servings" class="servings-icon">
+                            {{ recipe.servings }} servings
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommended Recipes Section -->
+    <section class="recipes-section">
+        <h2 class="section-title">Recommended Recipes</h2>
+        <div class="recipe-grid">
+            <div class="recipe-card" *ngFor="let recipe of recommendedRecipes" (click)="viewRecipe(recipe.id)">
+                <div class="recipe-image">
+                    <img [src]="recipe.imageUrl" [alt]="recipe.name" />
+                </div>
+                <div class="recipe-info">
+                    <div class="recipe-difficulty" [class]="'difficulty-' + recipe.difficulty.toLowerCase()">
+                        {{ recipe.difficulty }}
+                    </div>
+                    <h3 class="recipe-title">{{ recipe.name }}</h3>
+                    <div class="recipe-divider"></div>
+                    <div class="recipe-meta">
+                        <span class="prep-time">
+                            <img src="assets/images/icons/timer.png" alt="Prep Time" class="clock-icon">
+                            {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} min
+                        </span>
+                        <span class="servings">
+                            <img src="assets/images/icons/people.png" alt="Servings" class="servings-icon">
+                            {{ recipe.servings }} servings
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
