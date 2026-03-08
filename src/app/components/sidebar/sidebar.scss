@@ -2,13 +2,16 @@
 @use '../../../styles/mixins' as *;
 
 .sidebar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   height: 100vh;
   width: 0;
   background: transparent;
   transition: all 0.3s ease;
   overflow: visible;
   flex-shrink: 0;
+  z-index: 101;
 
   &.expanded {
     width: 260px;
@@ -61,6 +64,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .menu-items {
