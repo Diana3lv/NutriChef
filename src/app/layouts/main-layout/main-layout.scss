@@ -1,8 +1,14 @@
 @use '../../../styles/variables' as *;
 
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   background: $bg-primary;
   overflow: hidden;
 }
@@ -11,6 +17,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   overflow-y: auto;
 }
 
