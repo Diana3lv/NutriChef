@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth.service';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,15 +12,14 @@ import { Auth } from '../../services/auth.service';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
-  isExpanded = signal(false);
+  private sidebarService = inject(SidebarService);
+  private authService = inject(Auth);
+  private router = inject(Router);
+
+  isExpanded = this.sidebarService.isExpanded;
   
   toggleIcon = 'assets/images/icons/arrow.png';
   signOutIcon = 'assets/images/icons/sign_out.png';
-
-  constructor(
-    private authService: Auth,
-    private router: Router
-  ) {}
 
   menuItems = [
     { label: 'Profile', route: '/profile', icon: 'assets/images/icons/profile.png' },
@@ -31,11 +31,11 @@ export class Sidebar {
   ];
 
   toggleSidebar() {
-    this.isExpanded.update(expanded => !expanded);
+    this.sidebarService.toggle();
   }
 
   closeSidebar() {
-    this.isExpanded.set(false);
+    this.sidebarService.close();
   }
 
   signOut() {
