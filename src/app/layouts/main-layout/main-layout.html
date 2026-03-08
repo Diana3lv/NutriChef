@@ -3,7 +3,7 @@
 <div class="layout">
   <app-sidebar></app-sidebar>
 
-  <div class="content-wrapper">
+  <div class="content-wrapper" (scroll)="onContentScroll()">
     <app-navbar></app-navbar>
 
     <div class="content">
