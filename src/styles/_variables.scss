@@ -3,15 +3,11 @@
 // ============================================
 
 // Primary Colors
-$primary-green: #4CAF50;
-$primary-green-light: #81C784;
-$primary-green-dark: #388E3C;
+$primary-green: #C4956A; //4CAF50;
+$primary-green-light: #D4A97E; //7BA05B;
+$primary-green-dark: #A67845; //388E3C;
 $primary-color: $primary-green;
 $primary-dark: $primary-green-dark;
-
-$secondary-orange: #FF9800;
-$secondary-orange-light: #FFB74D;
-$secondary-orange-dark: #F57C00;
 
 // Accent Colors
 $accent-color: #E91E63;
@@ -31,8 +27,8 @@ $gray-900: #212121;
 $black: #000000;
 
 // Semantic Colors
-$success: $primary-green;
-$warning: $secondary-orange;
+$success: #4CAF50;
+$warning: #FF9800;
 $error: #EF5350;
 $info: #26A69A;
 
@@ -104,3 +100,19 @@ $z-dropdown: 1000;
 $z-sticky: 1020;
 $z-fixed: 1030;
 $z-modal: 1050;
+
+// ============================================
+// Vintage Cookbook Style - Home
+// ============================================
+
+// Background
+$bg-vintage: #FAF9F7;
+
+// Typography
+$font-family-serif: 'Lora', serif;
+$font-family-serif-display: 'DM Serif Display', serif;
+
+// Difficulty Colors
+$difficulty-easy: #6A9E6F;
+$difficulty-medium: #C4873A;
+$difficulty-hard: #B85450;
