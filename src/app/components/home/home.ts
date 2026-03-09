@@ -1,13 +1,14 @@
 import { Component, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Recipe } from '../../interfaces/recipe';
 import { SidebarService } from '../../services/sidebar.service';
+import { SearchBar } from '../shared/search-bar/search-bar';
+import { RecipeCard } from '../shared/recipe-card/recipe-card';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, SearchBar, RecipeCard],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -17,8 +18,6 @@ export class Home implements AfterViewInit, OnDestroy {
   showScrollIndicator = signal(true);
 
   private scrollListener?: () => void;
-
-  searchQuery: string = '';
 
   popularRecipes: Recipe[] = [
     {
@@ -154,8 +153,9 @@ export class Home implements AfterViewInit, OnDestroy {
     // TODO: implement filtering functionality
   }
 
-  onSearch(){
+  onSearch(query: string): void {
     // TODO: Implement search functionality
+    console.log('Searching for:', query);
   }
 
   viewRecipe(recipeId: number) {

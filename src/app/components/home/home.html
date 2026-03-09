@@ -9,23 +9,10 @@
             </h1>
 
             <!-- Search bar -->
-            <div class="search-container">
-                <input 
-                    type="text" 
-                    class="search-input"
-                    placeholder="Search by recipe title or by filters..."
-                    (keyup.enter)="onSearch()"
-                    [(ngModel)]="searchQuery"
-                />
-                <button class="search-filter-btn" (click)="onFilterOpen()">
-                    <img src="assets/images/icons/filter.png" alt="" class="filter-icon">
-                    Filters
-                </button>
-                <button class="search-btn" (click)="onSearch()">
-                    <img src="assets/images/icons/search.png" alt="" class="search-icon">
-                    Search
-                </button>
-            </div>
+            <app-search-bar 
+                (search)="onSearch($event)" 
+                (filterOpen)="onFilterOpen()">
+            </app-search-bar>
         </div>
     </section>
 
@@ -37,28 +24,11 @@
     <section class="recipes-section">
         <h2 class="section-title">Popular Recipes</h2>
         <div class="recipe-grid">
-            <div class="recipe-card" *ngFor="let recipe of popularRecipes" (click)="viewRecipe(recipe.id)">
-                <div class="recipe-image">
-                    <img [src]="recipe.imageUrl" [alt]="recipe.name" />
-                </div>
-                <div class="recipe-info">
-                    <div class="recipe-difficulty" [class]="'difficulty-' + recipe.difficulty.toLowerCase()">
-                        {{ recipe.difficulty }}
-                    </div>
-                    <h3 class="recipe-title">{{ recipe.name }}</h3>
-                    <div class="recipe-divider"></div>
-                    <div class="recipe-meta">
-                        <span class="prep-time">
-                            <img src="assets/images/icons/timer.png" alt="Prep Time" class="clock-icon">
-                            {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} min
-                        </span>
-                        <span class="servings">
-                            <img src="assets/images/icons/people.png" alt="Servings" class="servings-icon">
-                            {{ recipe.servings }} servings
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <app-recipe-card 
+                *ngFor="let recipe of popularRecipes"
+                [recipe]="recipe"
+                (cardClick)="viewRecipe($event)">
+            </app-recipe-card>
         </div>
     </section>
 
@@ -66,28 +36,11 @@
     <section class="recipes-section">
         <h2 class="section-title">Recommended Recipes</h2>
         <div class="recipe-grid">
-            <div class="recipe-card" *ngFor="let recipe of recommendedRecipes" (click)="viewRecipe(recipe.id)">
-                <div class="recipe-image">
-                    <img [src]="recipe.imageUrl" [alt]="recipe.name" />
-                </div>
-                <div class="recipe-info">
-                    <div class="recipe-difficulty" [class]="'difficulty-' + recipe.difficulty.toLowerCase()">
-                        {{ recipe.difficulty }}
-                    </div>
-                    <h3 class="recipe-title">{{ recipe.name }}</h3>
-                    <div class="recipe-divider"></div>
-                    <div class="recipe-meta">
-                        <span class="prep-time">
-                            <img src="assets/images/icons/timer.png" alt="Prep Time" class="clock-icon">
-                            {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} min
-                        </span>
-                        <span class="servings">
-                            <img src="assets/images/icons/people.png" alt="Servings" class="servings-icon">
-                            {{ recipe.servings }} servings
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <app-recipe-card 
+                *ngFor="let recipe of recommendedRecipes"
+                [recipe]="recipe"
+                (cardClick)="viewRecipe($event)">
+            </app-recipe-card>
         </div>
     </section>
 </div>
