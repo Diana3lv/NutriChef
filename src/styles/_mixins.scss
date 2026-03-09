@@ -44,11 +44,11 @@
 
 @mixin button-primary {
   @include button-base;
-  background: $primary-green;
+  background: $primary-vintage;
   color: $white;
 
   &:hover:not(:disabled) {
-    background: $primary-green-dark;
+    background: $primary-vintage-dark;
   }
 }
 
@@ -73,7 +73,7 @@
 
   &:focus {
     outline: none;
-    border-color: $primary-green;
-    box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+    border-color: $primary-vintage;
+    box-shadow: 0 0 0 3px rgba($primary-vintage, 0.1);
   }
 }
