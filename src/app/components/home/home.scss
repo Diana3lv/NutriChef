@@ -1,5 +1,4 @@
 @use '../../../styles/variables' as *;
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
 
 :host {
     display: block;
@@ -108,19 +107,22 @@
   &:hover {
     color: $text-primary;
 
-    svg {
+    .filter-icon {
       opacity: 1;
     }
   }
 
-  svg {
-    opacity: 0.6;
+  .filter-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+    opacity: 0.7;
     transition: opacity 0.3s ease;
   }
 }
 
 .search-btn {
-  background-color: $primary-green-light;
+  background-color: $primary-vintage-light;
   border: none;
   cursor: pointer;
   color: white;
@@ -134,17 +136,46 @@
   white-space: nowrap;
 
   &:hover {
-    background: $primary-green-dark;
+    background-color: $primary-vintage-dark;
   }
 
   &:active {
-    background: $primary-green-dark;
+    background-color: $primary-vintage-dark;
   }
+
+  .search-icon {
+    width: 12px;
+    height: 12px;
+    filter: invert(1);
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.scroll-icon {
+  width: 55px;
+  height: 30px;
+  opacity: 0.7;
 }
 
 .recipes-section {
   padding: 60px 80px;
-  background: $bg-primary;
+  background: $bg-vintage;
 }
 
 .section-title {
@@ -152,7 +183,7 @@
   font-size: 32px;
   font-weight: 400;
   font-style: italic;
-  color: $primary-green-light;
+  color: $primary-vintage-light;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
   margin-bottom: 32px;
 }

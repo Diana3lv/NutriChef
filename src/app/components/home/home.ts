@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Recipe } from '../../interfaces/recipe';
@@ -11,9 +11,12 @@ import { SidebarService } from '../../services/sidebar.service';
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
+export class Home implements AfterViewInit, OnDestroy {
   private sidebarService = inject(SidebarService);
   isSidebarExpanded = this.sidebarService.isExpanded;
+  showScrollIndicator = signal(true);
+
+  private scrollListener?: () => void;
 
   searchQuery: string = '';
 
@@ -127,6 +130,29 @@ export class Home {
       sourceApi: 'MOCK'
     }
   ];
+
+  ngAfterViewInit() {
+    const contentWrapper = document.querySelector('.content-wrapper');
+    if (contentWrapper) {
+      this.scrollListener = () => {
+        this.showScrollIndicator.set(contentWrapper.scrollTop === 0);
+      };
+      contentWrapper.addEventListener('scroll', this.scrollListener);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.scrollListener) {
+      const contentWrapper = document.querySelector('.content-wrapper');
+      if (contentWrapper) {
+        contentWrapper.removeEventListener('scroll', this.scrollListener);
+      }
+    }
+  }
+
+  onFilterOpen(): void {
+    // TODO: implement filtering functionality
+  }
 
   onSearch(){
     // TODO: Implement search functionality

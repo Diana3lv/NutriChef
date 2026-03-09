@@ -17,10 +17,21 @@
                     (keyup.enter)="onSearch()"
                     [(ngModel)]="searchQuery"
                 />
-                <button class="search-btn" (click)="onSearch()">Search</button>
+                <button class="search-filter-btn" (click)="onFilterOpen()">
+                    <img src="assets/images/icons/filter.png" alt="" class="filter-icon">
+                    Filters
+                </button>
+                <button class="search-btn" (click)="onSearch()">
+                    <img src="assets/images/icons/search.png" alt="" class="search-icon">
+                    Search
+                </button>
             </div>
         </div>
     </section>
+
+    <div class="scroll-indicator" [class.hidden]="!showScrollIndicator()">
+        <img src="assets/images/icons/scroll_down.svg" alt="Scroll Down" class="scroll-icon">
+    </div>
     
     <!-- Popular Recipes Section -->
     <section class="recipes-section">
