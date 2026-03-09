@@ -26,7 +26,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: $primary-green;
+    background: $primary-vintage;
     color: white;
     border: none;
     cursor: pointer;
@@ -38,7 +38,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background: $primary-green-dark;
+      background: $primary-vintage-dark;
       transform: scale(1.1);
     }
 
@@ -104,7 +104,7 @@
 
     &:hover {
       background: $gray-100;
-      color: $primary-green;
+      color: $primary-vintage;
       
       .icon-img {
         filter: none;
@@ -112,8 +112,8 @@
     }
 
     &.active {
-      background: rgba($primary-green, 0.1);
-      color: $primary-green;
+      background: rgba($primary-vintage, 0.1);
+      color: $primary-vintage;
       font-weight: 600;
       
       .icon-img {
