@@ -1,32 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
-
-
-export interface User {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'USER' | 'ADMIN';
-}
-
-export interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
+import { User, RegisterData, LoginCredentials, AuthResponse } from '../interfaces/user';
 
 
 @Injectable({
