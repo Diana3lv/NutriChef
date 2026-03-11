@@ -4,6 +4,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: 'USER' | 'ADMIN';
+  createdAt?: string;
 }
 
 export interface RegisterData {
