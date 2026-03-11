@@ -1,0 +1,186 @@
+<div class="profile-container">
+
+    <div class="profile-header">
+        <h1 class="profile-title">Profile</h1>
+    </div>
+
+    @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    <!-- Account Information section -->
+    <section class="profile-section">
+        <div class="section-label">Account Information</div>
+
+        <form [formGroup]="profileForm">
+
+            <div class="profile-field">
+                <div class="field-label">First Name</div>
+                @if (!isEditMode()) {
+                <div class="field-value">{{ profileForm.get('firstName')?.value }}</div>
+                <button class="btn-edit" type="button" (click)="enableEditMode()">Edit</button>
+                } @else {
+                <div class="field-input-wrap">
+                    <input type="text" formControlName="firstName">
+                    @if (profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched) {
+                    <span class="error-text">Min. 2 characters</span>
+                    }
+                </div>
+                <span></span>
+                }
+            </div>
+
+            <div class="profile-field">
+                <div class="field-label">Last Name</div>
+                @if (!isEditMode()) {
+                <div class="field-value">{{ profileForm.get('lastName')?.value }}</div>
+                <button class="btn-edit" type="button" (click)="enableEditMode()">Edit</button>
+                } @else {
+                <div class="field-input-wrap">
+                    <input type="text" formControlName="lastName">
+                    @if (profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched) {
+                    <span class="error-text">Min. 2 characters</span>
+                    }
+                </div>
+                <span></span>
+                }
+            </div>
+
+            <div class="profile-field">
+                <div class="field-label">Email</div>
+                <div class="field-value muted">{{ user()?.email }}</div>
+                <span class="badge" [ngClass]="getRoleBadgeClass()">{{ user()?.role }}</span>
+            </div>
+
+            <div class="profile-field">
+                <div class="field-label">Member Since</div>
+                <div class="field-value muted">{{ getMemberSince() }}</div>
+                <span></span>
+            </div>
+
+            @if (isEditMode()) {
+            <div class="form-actions">
+                <button class="btn btn-secondary" type="button" (click)="cancelEdit()" [disabled]="isSaving()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" type="button" (click)="saveProfile()"
+                    [disabled]="profileForm.invalid || isSaving()">
+                    {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+            }
+
+        </form>
+    </section>
+
+    <!-- Health Profile section -->
+    <section class="profile-section">
+        <div class="section-label">Health Profile & Restrictions</div>
+
+        <form [formGroup]="healthProfileForm">
+
+            <!-- Allergies -->
+            <div class="health-subsection">
+                <div class="subsection-title">Allergies</div>
+                <div class="checkbox-grid" formGroupName="allergies">
+                    @for (allergy of allergies; track allergy.key) {
+                    <label class="checkbox-item">
+                        <input type="checkbox" [formControlName]="allergy.key">
+                        <span>{{ allergy.label }}</span>
+                    </label>
+                    }
+                </div>
+            </div>
+
+            <!-- Dietary Preferences -->
+            <div class="health-subsection">
+                <div class="subsection-title">Dietary Preferences</div>
+                <div class="checkbox-grid" formGroupName="dietaryPreferences">
+                    @for (preference of dietaryPreferences; track preference.key) {
+                    <label class="checkbox-item">
+                        <input type="checkbox" [formControlName]="preference.key">
+                        <span>{{ preference.label }}</span>
+                    </label>
+                    }
+                </div>
+            </div>
+
+            <!-- Medical Conditions -->
+            <div class="health-subsection">
+                <div class="subsection-title">Medical Conditions & Food Intolerances</div>
+                <textarea formControlName="medicalConditions" class="health-textarea" rows="4"
+                    placeholder="e.g., diabetes, celiac disease, lactose intolerance, histamine sensitivity, high blood pressure..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="button" (click)="saveHealthProfile()"
+                    [disabled]="isSavingHealthProfile()">
+                    {{ isSavingHealthProfile() ? 'Saving...' : 'Save Health Profile' }}
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <!-- Security section -->
+    <section class="profile-section">
+        <div class="section-label">Security</div>
+        <button class="btn btn-secondary" type="button" (click)="togglePasswordForm()">
+            Change Password
+        </button>
+    </section>
+
+</div>
+
+<!-- Change Password Modal -->
+@if (isChangingPassword()) {
+<div class="modal-backdrop" (click)="togglePasswordForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2 class="modal-title">Change password</h2>
+        </div>
+
+        <form [formGroup]="passwordForm" class="password-form">
+
+            <div class="modal-field">
+                <label>Current Password</label>
+                <input type="password" formControlName="currentPassword" placeholder="Enter current password">
+                @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+                <span class="error-text">Required</span>
+                }
+            </div>
+
+            <div class="modal-field">
+                <label>New Password</label>
+                <input type="password" formControlName="newPassword" placeholder="Enter new password">
+                @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+                <span class="error-text">Min. 6 characters</span>
+                }
+            </div>
+
+            <div class="modal-field">
+                <label>Confirm New Password</label>
+                <input type="password" formControlName="confirmPassword" placeholder="Repeat new password">
+                @if (passwordForm.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched) {
+                <span class="error-text">Passwords do not match</span>
+                }
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" type="button" (click)="togglePasswordForm()" [disabled]="isSaving()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" type="button" (click)="changePassword()"
+                    [disabled]="passwordForm.invalid || isSaving()">
+                    {{ isSaving() ? 'Changing...' : 'Update Password' }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+}
