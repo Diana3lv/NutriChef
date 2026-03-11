@@ -39,7 +39,6 @@ export class Sidebar {
   menuItems = [
     { label: 'Profile', route: '/profile', icon: 'assets/images/icons/profile.png' },
     { label: 'Inventory', route: '/inventory', icon: 'assets/images/icons/inventory.png' },
-    { label: 'Settings', route: '/settings', icon: 'assets/images/icons/settings.png' },
     { label: 'Ask NutriAI', route: '/nutri-ai', icon: 'assets/images/icons/nutri-ai.png' },
     { label: 'Favorites', route: '/favorites', icon: 'assets/images/icons/favorites.png' },
     { label: 'Shopping List', route: '/shopping-list', icon: 'assets/images/icons/shopping_list.png' }
