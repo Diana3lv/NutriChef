@@ -1,4 +1,5 @@
 @use '../../../styles/variables' as *;
+@use '../../../styles/forms'; 
 
 :host {
   display: block;
@@ -117,12 +118,14 @@
   flex-direction: column;
   gap: 4px;
 
-  input {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     width: 100%;
     background: transparent;
     border: none;
     border-bottom: 1px solid rgba(180, 150, 120, 0.4);
-    padding: 6px 0;
+    padding: 8px 0;
     font-family: $font-family-serif;
     font-style: italic;
     font-size: 15px;
@@ -135,10 +138,12 @@
     }
 
     &::placeholder {
-      font-style: normal;
-      font-family: $font-family-primary;
-      font-size: 13px;
       color: rgba(100, 80, 60, 0.35);
+      font-style: italic;
+    }
+
+    &.error {
+      border-color: $difficulty-hard;
     }
   }
 }
@@ -146,6 +151,7 @@
 .error-text {
   font-size: 11px;
   color: $difficulty-hard;
+  margin-top: 5px;
 }
 
 .badge {
@@ -175,62 +181,21 @@
   gap: 10px;
 }
 
-.btn {
-  font-family: $font-family-primary;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition: all 0.2s ease;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
 .btn-edit {
-  @extend .btn;
   background: transparent;
+  border: none;
   font-size: 10px;
+  font-weight: 500;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: $primary-vintage;
   padding: 4px 0;
   border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
 
   &:hover {
     border-color: $primary-vintage;
-  }
-}
-
-.btn-primary {
-  @extend .btn;
-  background: $primary-vintage;
-  color: white;
-  border-radius: 2px;
-  padding: 10px 24px;
-  font-size: 11px;
-
-  &:hover:not(:disabled) {
-    background: $primary-vintage-dark;
-  }
-}
-
-.btn-secondary {
-  @extend .btn;
-  background: transparent;
-  border: 1px solid rgba(180, 150, 120, 0.4);
-  border-radius: 2px;
-  padding: 10px 24px;
-  font-size: 11px;
-  color: rgba(100, 80, 60, 0.7);
-
-  &:hover:not(:disabled) {
-    border-color: $primary-vintage;
-    color: $primary-vintage;
-    background: rgba(196, 149, 106, 0.05);
   }
 }
 
@@ -381,7 +346,9 @@
     margin-bottom: 8px;
   }
 
-  input {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     width: 100%;
     background: transparent;
     border: none;
@@ -399,10 +366,12 @@
     }
 
     &::placeholder {
+      color: rgba(100, 80, 60, 0.35);
       font-style: italic;
-      font-family: $font-family-serif;
-      font-size: 15px;
-      color: rgba(100, 80, 60, 0.3);
+    }
+
+    &.error {
+      border-color: $difficulty-hard;
     }
   }
 }

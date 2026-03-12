@@ -1,0 +1,201 @@
+@use './variables' as *;
+@use './forms' as *;
+
+.left-section {
+  position: relative;
+  background-image: url('/assets/images/backgrounds/bg.jpg');
+  background-size: cover;
+  background-position: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .welcome-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+    padding: $spacing-3xl;
+    text-align: center;
+
+    h1 {
+      font-family: $font-family-serif-display;
+      font-style: italic;
+      font-size: 48px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    p {
+      font-size: 20px;
+      color: rgba(255, 250, 250, 0.9);
+      font-weight: 300;
+    }
+  }
+}
+
+.right-section {
+  background: $bg-vintage;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3xl;
+  overflow-y: auto;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+
+  h2 {
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 32px;
+    color: $text-primary;
+    font-family: $font-family-serif-display;
+    font-style: italic;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+
+  label {
+    @extend .form-field-label;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    @extend .form-field-input;
+  }
+}
+
+.error-text {
+  @extend .form-error-text;
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 32px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: rgba(100, 80, 60, 0.7);
+    cursor: pointer;
+    margin-bottom: 0;
+
+    input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: $primary-vintage;
+      cursor: pointer;
+    }
+  }
+}
+
+.error-message {
+  background: rgba(184, 84, 80, 0.08);
+  border: 1px solid rgba(184, 84, 80, 0.3);
+  border-radius: 2px;
+  color: $difficulty-hard;
+  padding: 10px 14px;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+
+.password-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+
+  .requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    transition: color 0.2s ease;
+
+    &.met {
+      color: $difficulty-easy;
+    }
+
+    &.unmet {
+      color: $difficulty-hard;
+    }
+
+    .icon {
+      font-weight: 700;
+      font-size: 12px;
+    }
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+}
+
+.footer-text {
+  text-align: center;
+  font-size: 12px;
+  color: $text-secondary;
+  margin-top: 20px;
+
+  a {
+    color: $primary-vintage;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: $primary-vintage;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 220px 1fr;
+  }
+
+  .left-section {
+    .welcome-card {
+      justify-content: flex-end;
+      padding: 28px;
+    }
+
+    h1 {
+      font-size: 25px;
+    }
+  }
+
+  .right-section {
+    padding: 40px 28px;
+  }
+}
