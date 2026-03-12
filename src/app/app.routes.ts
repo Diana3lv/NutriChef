@@ -4,6 +4,7 @@ import { MainLayout } from './layouts/main-layout/main-layout';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
 import { authGuard } from './guards/auth-guard';
+import { guestGuard } from './guards/guest-guard';
 import { Inventory } from './components/inventory/inventory';
 import { Profile } from './components/profile/profile';
 
@@ -45,10 +46,12 @@ export const routes: Routes = [
   { 
     path: 'login',
     component: Login,
+    canActivate: [guestGuard]
   },
   { 
     path: 'register',
     component: Register,
+    canActivate: [guestGuard]
   },
   { path: '**', redirectTo: 'home' }
 ];
