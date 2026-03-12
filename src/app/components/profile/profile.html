@@ -19,9 +19,9 @@
 
             <div class="profile-field">
                 <div class="field-label">First Name</div>
-                @if (!isEditMode()) {
+                @if (editingField() !== 'firstName') {
                 <div class="field-value">{{ profileForm.get('firstName')?.value }}</div>
-                <button class="btn-edit" type="button" (click)="enableEditMode()">Edit</button>
+                <button class="btn-edit" type="button" (click)="enableFieldEdit('firstName')">Edit</button>
                 } @else {
                 <div class="field-input-wrap">
                     <input type="text" formControlName="firstName">
@@ -35,9 +35,9 @@
 
             <div class="profile-field">
                 <div class="field-label">Last Name</div>
-                @if (!isEditMode()) {
+                @if (editingField() !== 'lastName') {
                 <div class="field-value">{{ profileForm.get('lastName')?.value }}</div>
-                <button class="btn-edit" type="button" (click)="enableEditMode()">Edit</button>
+                <button class="btn-edit" type="button" (click)="enableFieldEdit('lastName')">Edit</button>
                 } @else {
                 <div class="field-input-wrap">
                     <input type="text" formControlName="lastName">
@@ -61,9 +61,9 @@
                 <span></span>
             </div>
 
-            @if (isEditMode()) {
+            @if (editingField()) {
             <div class="form-actions">
-                <button class="btn btn-secondary" type="button" (click)="cancelEdit()" [disabled]="isSaving()">
+                <button class="btn btn-secondary" type="button" (click)="cancelFieldEdit()" [disabled]="isSaving()">
                     Cancel
                 </button>
                 <button class="btn btn-primary" type="button" (click)="saveProfile()"

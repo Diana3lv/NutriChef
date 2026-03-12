@@ -18,7 +18,7 @@ export class Profile implements OnInit {
   private fb = inject(FormBuilder);
   
   user = this.authService.currentUser;
-  isEditMode = signal(false);
+  editingField = signal<string | null>(null);
   isChangingPassword = signal(false);
   isSaving = signal(false);
   isSavingHealthProfile = signal(false);
@@ -98,15 +98,19 @@ export class Profile implements OnInit {
     return newPassword === confirmPassword ? null : { passwordMismatch: true };
   }
 
-  enableEditMode() {
-    this.isEditMode.set(true);
+  enableFieldEdit(fieldName: string) {
+    this.editingField.set(fieldName);
     this.clearMessages();
   }
 
-  cancelEdit() {
-    this.isEditMode.set(false);
+  cancelFieldEdit() {
+    this.editingField.set(null);
     this.initializeForms();
     this.clearMessages();
+  }
+
+  isFieldEditing(fieldName: string): boolean {
+    return this.editingField() === fieldName;
   }
   
   saveProfile() {
@@ -124,7 +128,7 @@ export class Profile implements OnInit {
         .subscribe({
           next: (user) => {
             this.authService.currentUser.set(user);
-            this.isEditMode.set(false);
+            this.editingField.set(null);
             this.isSaving.set(false);
             this.successMessage.set('Profile updated successfully!');
             this.clearMessageAfterDelay();
