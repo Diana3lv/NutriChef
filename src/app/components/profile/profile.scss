@@ -121,37 +121,12 @@
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
-    padding: 8px 0;
-    font-family: $font-family-serif;
-    font-style: italic;
-    font-size: 15px;
-    color: $text-primary;
-    outline: none;
-    transition: border-color 0.2s ease;
-
-    &:focus {
-      border-color: $primary-vintage;
-    }
-
-    &::placeholder {
-      color: rgba(100, 80, 60, 0.35);
-      font-style: italic;
-    }
-
-    &.error {
-      border-color: $difficulty-hard;
-    }
+    @extend .form-field-input;
   }
 }
 
 .error-text {
-  font-size: 11px;
-  color: $difficulty-hard;
-  margin-top: 5px;
+  @extend .form-error-text;
 }
 
 .badge {
@@ -338,42 +313,13 @@
   margin-bottom: 24px;
 
   label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(100, 80, 60, 0.7);
-    margin-bottom: 8px;
+    @extend .form-field-label;
   }
 
   input[type="text"],
   input[type="email"],
   input[type="password"] {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
-    padding: 8px 0;
-    font-family: $font-family-serif;
-    font-style: italic;
-    font-size: 15px;
-    color: $text-primary;
-    outline: none;
-    transition: border-color 0.2s ease;
-
-    &:focus {
-      border-color: $primary-vintage;
-    }
-
-    &::placeholder {
-      color: rgba(100, 80, 60, 0.35);
-      font-style: italic;
-    }
-
-    &.error {
-      border-color: $difficulty-hard;
-    }
+    @extend .form-field-input;
   }
 }
 
