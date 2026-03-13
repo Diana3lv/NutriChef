@@ -1,0 +1,79 @@
+<div class="onboarding-container">
+  <div class="onboarding-card">
+
+    <!-- Sidebar -->
+    <div class="onboarding-sidebar">
+      @for (step of [1, 2, 3]; track step) {
+        <div class="sidebar-step"
+          [class.done]="step < currentStep()"
+          [class.active]="step === currentStep()">
+          <div class="step-num">
+            @if (step < currentStep()) { ✓ } @else { {{ step }} }
+          </div>
+          <div class="step-text">
+            <div class="step-label">Step {{ step }}</div>
+            <div class="step-title">{{ stepTitles[step - 1] }}</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Content -->
+    <div class="onboarding-content">
+      <div class="card-header">
+        <h2 class="card-title">{{ stepTitles[currentStep() - 1] }}</h2>
+        <p class="card-description">{{ stepDescriptions[currentStep() - 1] }}</p>
+      </div>
+
+      <form [formGroup]="form">
+        @if (currentStep() === 1) {
+          <div class="checkbox-grid" formGroupName="allergies">
+            @for (allergy of allergies; track allergy.key) {
+              <label class="checkbox-item">
+                <input type="checkbox" [formControlName]="allergy.key">
+                <span>{{ allergy.label }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        @if (currentStep() === 2) {
+          <div class="checkbox-grid" formGroupName="dietaryPreferences">
+            @for (preference of dietaryPreferences; track preference.key) {
+              <label class="checkbox-item">
+                <input type="checkbox" [formControlName]="preference.key">
+                <span>{{ preference.label }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        @if (currentStep() === 3) {
+          <textarea
+            formControlName="medicalConditions"
+            class="health-textarea"
+            rows="5"
+            placeholder="e.g., diabetes, celiac disease, lactose intolerance...">
+          </textarea>
+        }
+      </form>
+
+      <div class="card-actions">
+        <button class="btn btn-skip" type="button" (click)="skip()">Skip all</button>
+        <div class="nav-buttons">
+          @if (currentStep() > 1) {
+            <button class="btn btn-secondary" type="button" (click)="previous()">Back</button>
+          }
+          @if (currentStep() < totalSteps) {
+            <button class="btn btn-primary" type="button" (click)="next()">Next</button>
+          } @else {
+            <button class="btn btn-primary" type="button" (click)="finish()" [disabled]="isSaving()">
+              {{ isSaving() ? 'Saving...' : 'Finish' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
