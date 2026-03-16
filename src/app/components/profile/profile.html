@@ -76,11 +76,11 @@
         </form>
     </section>
 
-    <!-- Health Profile section -->
+    <!-- Nutrition Profile section -->
     <section class="profile-section">
-        <div class="section-label">Health Profile & Restrictions</div>
+        <div class="section-label">Nutrition Profile & Restrictions</div>
 
-        <form [formGroup]="healthProfileForm">
+        <form [formGroup]="nutritionProfileForm">
 
             <!-- Allergies -->
             <div class="health-subsection">
@@ -116,9 +116,9 @@
             </div>
 
             <div class="form-actions">
-                <button class="btn btn-primary" type="button" (click)="saveHealthProfile()"
-                    [disabled]="isSavingHealthProfile()">
-                    {{ isSavingHealthProfile() ? 'Saving...' : 'Save Health Profile' }}
+                <button class="btn btn-primary" type="button" (click)="saveNutritionProfile()"
+                    [disabled]="isSavingNutritionProfile()">
+                    {{ isSavingNutritionProfile() ? 'Saving...' : 'Save Nutrition Profile' }}
                 </button>
             </div>
 

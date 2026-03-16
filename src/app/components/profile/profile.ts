@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Auth } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
+import { ALLERGY_OPTIONS, DIETARY_PREFERENCE_OPTIONS } from '../../constants/nutrition-profile-options';
 
 @Component({
   selector: 'app-profile',
@@ -16,44 +17,27 @@ export class Profile implements OnInit {
   private authService = inject(Auth);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   
   user = this.authService.currentUser;
   editingField = signal<string | null>(null);
   isChangingPassword = signal(false);
   isSaving = signal(false);
-  isSavingHealthProfile = signal(false);
+  isSavingNutritionProfile = signal(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
 
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
-  healthProfileForm!: FormGroup;
+  nutritionProfileForm!: FormGroup;
 
-  // Health profile options
-  allergies = [
-    { key: 'nuts', label: 'Nuts' },
-    { key: 'peanuts', label: 'Peanuts' },
-    { key: 'shellfish', label: 'Shellfish' },
-    { key: 'fish', label: 'Fish' },
-    { key: 'dairy', label: 'Dairy' },
-    { key: 'eggs', label: 'Eggs' },
-    { key: 'soy', label: 'Soy' },
-    { key: 'wheat', label: 'Wheat' }
-  ];
+  allergies = ALLERGY_OPTIONS;
 
-  dietaryPreferences = [
-    { key: 'vegetarian', label: 'Vegetarian' },
-    { key: 'vegan', label: 'Vegan' },
-    { key: 'pescatarian', label: 'Pescatarian' },
-    { key: 'keto', label: 'Keto' },
-    { key: 'paleo', label: 'Paleo' },
-    { key: 'glutenFree', label: 'Gluten-Free' },
-    { key: 'dairyFree', label: 'Dairy-Free' },
-    { key: 'lowCarb', label: 'Low-Carb' }
-  ];
+  dietaryPreferences = DIETARY_PREFERENCE_OPTIONS;
 
   ngOnInit() {
     this.initializeForms();
+    this.loadNutritionProfile();
   }
 
   private initializeForms() {
@@ -73,23 +57,45 @@ export class Profile implements OnInit {
       validators: this.passwordMatchValidator
     });
 
-    // Load saved health profile from localStorage
-    const savedHealthProfile = localStorage.getItem('healthProfile');
-    const healthProfile = savedHealthProfile ? JSON.parse(savedHealthProfile) : {
-      allergies: this.allergies.reduce((acc, item) => ({ ...acc, [item.key]: false }), {}),
-      dietaryPreferences: this.dietaryPreferences.reduce((acc, item) => ({ ...acc, [item.key]: false }), {}),
-      medicalConditions: ''
-    };
-
-    this.healthProfileForm = this.fb.group({
+    this.nutritionProfileForm = this.fb.group({
       allergies: this.fb.group(
-        this.allergies.reduce((acc, item) => ({ ...acc, [item.key]: [healthProfile.allergies[item.key] || false] }), {})
+        this.allergies.reduce((acc, item) => ({ ...acc, [item.key]: [false] }), {})
       ),
       dietaryPreferences: this.fb.group(
-        this.dietaryPreferences.reduce((acc, item) => ({ ...acc, [item.key]: [healthProfile.dietaryPreferences[item.key] || false] }), {})
+        this.dietaryPreferences.reduce((acc, item) => ({ ...acc, [item.key]: [false] }), {})
       ),
-      medicalConditions: [healthProfile.medicalConditions]
+      medicalConditions: ['']
     });
+  }
+
+  private loadNutritionProfile() {
+    this.userService.getNutritionProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile) => {
+          const selectedAllergens = new Set(profile.allergens ?? []);
+          const selectedDietaryPreferences = new Set(profile.dietaryPreferences ?? []);
+
+          const allergyControls = this.allergies.reduce((acc, option) => ({
+            ...acc,
+            [option.key]: selectedAllergens.has(option.apiValue)
+          }), {} as Record<string, boolean>);
+
+          const dietaryControls = this.dietaryPreferences.reduce((acc, option) => ({
+            ...acc,
+            [option.key]: selectedDietaryPreferences.has(option.apiValue)
+          }), {} as Record<string, boolean>);
+
+          this.nutritionProfileForm.patchValue({
+            allergies: allergyControls,
+            dietaryPreferences: dietaryControls,
+            medicalConditions: profile.medicalConditions ?? ''
+          });
+        },
+        error: () => {
+          // Keep defaults when no profile data is available.
+        }
+      });
   }
 
   private passwordMatchValidator(group: FormGroup) {
@@ -124,7 +130,7 @@ export class Profile implements OnInit {
       };
 
       this.userService.updateProfile(updateData)
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (user) => {
             this.authService.currentUser.set(user);
@@ -158,7 +164,7 @@ export class Profile implements OnInit {
       };
 
       this.userService.changePassword(passwordData)
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.isChangingPassword.set(false);
@@ -191,21 +197,42 @@ export class Profile implements OnInit {
     return this.user()?.role === 'ADMIN' ? 'badge-admin' : 'badge-user';
   }
 
-  saveHealthProfile() {
-    if (this.healthProfileForm.valid) {
-      this.isSavingHealthProfile.set(true);
+  saveNutritionProfile() {
+    if (this.nutritionProfileForm.valid) {
+      this.isSavingNutritionProfile.set(true);
       this.clearMessages();
 
-      const healthProfile = this.healthProfileForm.value;
-
-      // Simulare API call (pentru moment doar localStorage)
-      setTimeout(() => {
-        localStorage.setItem('healthProfile', JSON.stringify(healthProfile));
-        this.isSavingHealthProfile.set(false);
-        this.successMessage.set('Health profile saved successfully!');
-        this.clearMessageAfterDelay();
-      }, 500);
+      this.userService.updateNutritionProfile(this.toApiNutritionProfilePayload())
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.isSavingNutritionProfile.set(false);
+            this.successMessage.set('Nutrition profile saved successfully!');
+            this.clearMessageAfterDelay();
+          },
+          error: (error) => {
+            this.isSavingNutritionProfile.set(false);
+            this.errorMessage.set(error.error?.error || 'Failed to save nutrition profile');
+          }
+        });
     }
+  }
+
+  private toApiNutritionProfilePayload() {
+    const formValue = this.nutritionProfileForm.value;
+    const allergens = this.allergies
+      .filter(option => formValue.allergies?.[option.key])
+      .map(option => option.apiValue);
+
+    const dietaryPreferences = this.dietaryPreferences
+      .filter(option => formValue.dietaryPreferences?.[option.key])
+      .map(option => option.apiValue);
+
+    return {
+      allergens,
+      dietaryPreferences,
+      medicalConditions: formValue.medicalConditions ?? ''
+    };
   }
 
   private clearMessages() {
