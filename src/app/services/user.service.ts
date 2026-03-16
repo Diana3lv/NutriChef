@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, UpdateProfileData, ChangePasswordData } from '../interfaces/user';
+import { NutritionProfile } from '../interfaces/nutrition-profile';
 
 
 @Injectable({
@@ -17,5 +18,13 @@ export class UserService {
 
   changePassword(data: ChangePasswordData): Observable<void> {
     return this.http.put<void>(`${this.API_URL}/password`, data);
+  }
+
+  getNutritionProfile(): Observable<NutritionProfile> {
+    return this.http.get<NutritionProfile>(`${this.API_URL}/nutrition-profile-settings`);
+  }
+
+  updateNutritionProfile(data: NutritionProfile): Observable<NutritionProfile> {
+    return this.http.put<NutritionProfile>(`${this.API_URL}/nutrition-profile-settings`, data);
   }
 }
