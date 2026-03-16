@@ -18,33 +18,9 @@ export const routes: Routes = [
     path: '',
     component: MainLayout,
     children: [
-      { 
-        path: 'home',
-        component: Home,
-        canActivate: [authGuard]
-      }
-    ]
-  },
-  {
-    path: '',
-    component: MainLayout,
-    children: [
-      { 
-        path: 'profile',
-        component: Profile,
-        canActivate: [authGuard]
-      }
-    ]
-  },
-  {
-    path: '',
-    component: MainLayout,
-    children: [
-      { 
-        path: 'inventory',
-        component: Inventory,
-        canActivate: [authGuard]
-      }
+      { path: 'home', component: Home, canActivate: [authGuard] },
+      { path: 'profile', component: Profile, canActivate: [authGuard] },
+      { path: 'inventory', component: Inventory, canActivate: [authGuard] }
     ]
   },
   { 

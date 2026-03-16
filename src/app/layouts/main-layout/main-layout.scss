@@ -26,3 +26,31 @@
   width: 100%;
   margin: 0 auto;
 }
+
+.inventory-fab {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: $primary-vintage;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  z-index: 1000;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: $text-primary;
+  }
+}

@@ -14,6 +14,25 @@
   &:focus-within {
     border-color: rgba(180, 150, 120, 0.8);
   }
+
+  &.small {
+    max-width: 100%;
+    
+    .search-input {
+      padding: 9px 14px;
+      font-size: 14px;
+    }
+
+    .search-btn {
+      padding: 9px 16px;
+      background-color: $primary-vintage;
+      letter-spacing: 0.1em;
+      
+      &:hover {
+        background: $primary-vintage-dark;
+      }
+    }
+  }
 }
 
 .search-input {

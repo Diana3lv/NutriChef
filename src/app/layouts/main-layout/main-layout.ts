@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { Navbar } from '../../components/navbar/navbar';
 import { SidebarService } from '../../services/sidebar.service';
@@ -7,7 +7,7 @@ import { SidebarService } from '../../services/sidebar.service';
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, Sidebar, Navbar],
+  imports: [RouterOutlet, RouterLink, Sidebar, Navbar],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })
