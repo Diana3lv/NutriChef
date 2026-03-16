@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { STORAGE_KEYS } from '../../constants/storage-keys';
+import { UserService } from '../../services/user.service';
+import { ALLERGY_OPTIONS, DIETARY_PREFERENCE_OPTIONS } from '../../constants/nutrition-profile-options';
 
 @Component({
   selector: 'app-onboarding',
@@ -14,32 +16,16 @@ import { STORAGE_KEYS } from '../../constants/storage-keys';
 export class Onboarding {
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private userService = inject(UserService);
 
   currentStep = signal(1);
   totalSteps = 3;
   isSaving = signal(false);
+  errorMessage = signal<string | null>(null);
 
-  allergies = [
-    { key: 'nuts', label: 'Nuts' },
-    { key: 'peanuts', label: 'Peanuts' },
-    { key: 'shellfish', label: 'Shellfish' },
-    { key: 'fish', label: 'Fish' },
-    { key: 'dairy', label: 'Dairy' },
-    { key: 'eggs', label: 'Eggs' },
-    { key: 'soy', label: 'Soy' },
-    { key: 'wheat', label: 'Wheat' }
-  ];
+  allergies = ALLERGY_OPTIONS;
 
-  dietaryPreferences = [
-    { key: 'vegetarian', label: 'Vegetarian' },
-    { key: 'vegan', label: 'Vegan' },
-    { key: 'pescatarian', label: 'Pescatarian' },
-    { key: 'keto', label: 'Keto' },
-    { key: 'paleo', label: 'Paleo' },
-    { key: 'glutenFree', label: 'Gluten-Free' },
-    { key: 'dairyFree', label: 'Dairy-Free' },
-    { key: 'lowCarb', label: 'Low-Carb' }
-  ];
+  dietaryPreferences = DIETARY_PREFERENCE_OPTIONS;
 
   form: FormGroup = this.fb.group({
     allergies: this.fb.group(
@@ -82,11 +68,36 @@ export class Onboarding {
 
   finish() {
     this.isSaving.set(true);
-    // TODO: save to backend when API is ready
+    this.errorMessage.set(null);
 
-    const healthProfile = this.form.value;
-    localStorage.setItem('healthProfile', JSON.stringify(healthProfile));
-    sessionStorage.removeItem(STORAGE_KEYS.pendingOnboarding);
-    this.router.navigate(['/home']);
+    this.userService.updateNutritionProfile(this.toApiPayload())
+      .subscribe({
+        next: () => {
+          this.isSaving.set(false);
+          sessionStorage.removeItem(STORAGE_KEYS.pendingOnboarding);
+          this.router.navigate(['/home']);
+        },
+        error: (error) => {
+          this.isSaving.set(false);
+          this.errorMessage.set(error.error?.error || 'Failed to save nutrition profile');
+        }
+      });
+  }
+
+  private toApiPayload() {
+    const formValue = this.form.value;
+    const selectedAllergens = this.allergies
+      .filter(option => formValue.allergies?.[option.key])
+      .map(option => option.apiValue);
+
+    const selectedDietaryPreferences = this.dietaryPreferences
+      .filter(option => formValue.dietaryPreferences?.[option.key])
+      .map(option => option.apiValue);
+
+    return {
+      allergens: selectedAllergens,
+      dietaryPreferences: selectedDietaryPreferences,
+      medicalConditions: formValue.medicalConditions ?? ''
+    };
   }
 }
