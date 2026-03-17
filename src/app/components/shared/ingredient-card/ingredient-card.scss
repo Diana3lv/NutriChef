@@ -1,0 +1,158 @@
+@use '../../../../styles/variables' as *;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.ingredient-card {
+  background: white;
+  border: 1px solid rgba(180, 150, 120, 0.2);
+  border-radius: 2px;
+  padding: 16px 18px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: rgba(180, 150, 120, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  &.expiring {
+    border-color: rgba(196, 135, 58, 0.35);
+    background: rgba(196, 135, 58, 0.03);
+  }
+
+  &.expired {
+    border-color: rgba(184, 84, 80, 0.3);
+    background: rgba(184, 84, 80, 0.03);
+  }
+}
+
+.card-delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+
+  .delete-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(70%) sepia(20%) saturate(300%) hue-rotate(350deg);
+  }
+
+  &:hover { 
+    opacity: 1;
+    .delete-icon {
+      filter: invert(40%) sepia(40%) saturate(3000%) hue-rotate(340deg);
+    }
+  }
+}
+
+.card-name {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 15px;
+  color: $text-primary;
+  margin-bottom: 5px;
+  padding-right: 20px;
+}
+
+.card-qty {
+  font-size: 12px;
+  color: $text-secondary;
+  margin-bottom: auto; /* Push footer down */
+}
+
+.card-qty-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: auto;
+
+  input {
+    width: 60px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    padding: 3px 0;
+    font-size: 12px;
+    color: $text-primary;
+    outline: none;
+    transition: border-color 0.2s ease;
+    &:focus { border-color: $primary-vintage; }
+  }
+
+  select {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    padding: 3px 0;
+    font-size: 12px;
+    color: $text-secondary;
+    outline: none;
+    cursor: pointer;
+  }
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(180, 150, 120, 0.12);
+  padding-top: 10px;
+  margin-top: 14px;
+}
+
+.expiry-badge {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+
+  &.ok { color: $difficulty-easy; }
+  &.soon { color: $difficulty-medium; }
+  &.expired { color: $difficulty-hard; }
+}
+
+.expiry-edit {
+  input[type="date"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    padding: 2px 0;
+    font-size: 10px;
+    font-family: $font-family-primary;
+    color: $text-secondary;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    &:focus { border-color: $primary-vintage; }
+  }
+}
+
+.card-edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: $font-family-primary;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $primary-vintage;
+  padding: 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+
+  &:hover { border-color: $primary-vintage; }
+}

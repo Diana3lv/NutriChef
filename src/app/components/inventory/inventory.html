@@ -23,53 +23,16 @@
 
       <div class="ingredient-grid">
         @for (item of category.items; track item.id) {
-          <div class="ingredient-card"
-            [class.expiring]="isExpiringSoon(item.expiryDate)"
-            [class.expired]="isExpired(item.expiryDate)">
-
-            <button class="card-delete-btn" (click)="openDeleteModal(item)">×</button>
-
-            <div class="card-name">{{ item.name }}</div>
-
-            <!-- View mode -->
-            @if (editingItemId() !== item.id) {
-              <div class="card-qty">{{ item.quantity }} {{ item.unit }}</div>
-              <div class="card-footer">
-                <span class="expiry-badge" [ngClass]="getExpiryClass(item.expiryDate)">
-                  {{ getExpiryLabel(item.expiryDate) }}
-                </span>
-                <button class="card-edit-btn" (click)="startEdit(item.id)">Edit</button>
-              </div>
-            }
-
-            <!-- Edit mode -->
-            @if (editingItemId() === item.id) {
-              <div class="card-qty-edit">
-                <input
-                  type="number"
-                  [value]="item.quantity"
-                  (change)="updateQuantity(item, $event)"
-                  min="0">
-                <select (change)="updateUnit(item, $event)">
-                  <option [selected]="item.unit === 'g'">g</option>
-                  <option [selected]="item.unit === 'kg'">kg</option>
-                  <option [selected]="item.unit === 'ml'">ml</option>
-                  <option [selected]="item.unit === 'L'">L</option>
-                  <option [selected]="item.unit === 'pcs'">pcs</option>
-                </select>
-              </div>
-              <div class="card-footer">
-                <div class="expiry-edit">
-                  <input
-                    type="date"
-                    [value]="item.expiryDate"
-                    (change)="updateExpiry(item, $event)">
-                </div>
-                <button class="card-edit-btn" (click)="saveEdit(item)">Save</button>
-              </div>
-            }
-
-          </div>
+          <app-ingredient-card
+            [item]="item"
+            [isEditing]="editingItemId() === item.id"
+            (delete)="openDeleteModal(item)"
+            (edit)="startEdit(item.id)"
+            (save)="saveEdit(item)"
+            (updateQuantity)="updateQuantity(item, $event)"
+            (updateUnit)="updateUnit(item, $event)"
+            (updateExpiry)="updateExpiry(item, $event)">
+          </app-ingredient-card>
         }
 
         @if (category.items.length === 0) {

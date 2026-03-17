@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientCategory, InventoryItem } from '../../interfaces/inventory';
 import { SearchBar } from '../shared/search-bar/search-bar';
+import { IngredientCard } from '../shared/ingredient-card/ingredient-card';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SearchBar],
+  imports: [CommonModule, ReactiveFormsModule, SearchBar, IngredientCard],
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })
@@ -119,52 +120,23 @@ export class Inventory {
     this.editingItemId.set(null);
   }
 
-  updateQuantity(item: InventoryItem, event: Event) {
-    const val = parseFloat((event.target as HTMLInputElement).value);
-    if (!isNaN(val)) item.quantity = val;
+  updateQuantity(item: InventoryItem, val: number) {
+    if (!isNaN(val)) {
+      this.inventoryItems.update(items =>
+        items.map(i => i.id === item.id ? { ...i, quantity: val } : i)
+      );
+    }
   }
 
-  updateUnit(item: InventoryItem, event: Event) {
-    item.unit = (event.target as HTMLSelectElement).value;
+  updateUnit(item: InventoryItem, val: string) {
+    this.inventoryItems.update(items =>
+      items.map(i => i.id === item.id ? { ...i, unit: val } : i)
+    );
   }
 
-  updateExpiry(item: InventoryItem, event: Event) {
-    item.expiryDate = (event.target as HTMLInputElement).value;
-  }
-
-  // Helper methods
-  isExpired(date: string): boolean {
-    return new Date(date) < new Date();
-  }
-
-  isExpiringSoon(date: string): boolean {
-    const diff = new Date(date).getTime() - Date.now();
-    // Check if expiring within 3 days (positive diff means future date)
-    return diff > 0 && diff < 3 * 24 * 60 * 60 * 1000; 
-  }
-
-  getExpiryClass(date: string): string {
-    if (this.isExpired(date)) return 'expired';
-    if (this.isExpiringSoon(date)) return 'soon';
-    return 'ok';
-  }
-
-  getExpiryLabel(date: string): string {
-    const d = new Date(date);
-    const now = new Date();
-    // Reset time components for accurate day calculation
-    d.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-    
-    if (d < now) return 'Expired';
-    
-    const diff = d.getTime() - now.getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) return 'Expires today';
-    if (days === 1) return 'Tomorrow';
-    if (days <= 7) return `${days} days left`;
-    
-    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  updateExpiry(item: InventoryItem, val: string) {
+    this.inventoryItems.update(items =>
+      items.map(i => i.id === item.id ? { ...i, expiryDate: val } : i)
+    );
   }
 }

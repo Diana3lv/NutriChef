@@ -6,12 +6,13 @@
   <div class="content-wrapper" (scroll)="onContentScroll()">
     <app-navbar></app-navbar>
 
-    <div class="content">
+    <div class="content" (click)="handleContentClick()">
       <router-outlet></router-outlet>
     </div>
 
-    <a class="inventory-fab" routerLink="/inventory" title="Manage Inventory">
-      <img src="assets/images/icons/inventory.png" style="width: 24px; height: 24px; filter: brightness(0) invert(1);"> 
+    <a class="fab-inventory" routerLink="/inventory">
+      <div class="fab-icon"></div>
+      <span class="fab-label">Inventory</span>
     </a>
     
   </div>

@@ -1,3 +1,4 @@
+@use "sass:color";
 @use '../../../styles/variables' as *;
 
 :host {
@@ -27,30 +28,57 @@
   margin: 0 auto;
 }
 
-.inventory-fab {
-  position: absolute;
-  bottom: 32px;
-  right: 32px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: $primary-vintage;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.fab-inventory {
+  position: fixed;
+  bottom: 35px;
+  right: 35px;
+  gap: 8px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 48px;
+  width: 48px;
+  background: #1f1f1f;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
   text-decoration: none;
-  z-index: 1000;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-
-  img {
-    width: 24px;
-    height: 24px;
-    filter: brightness(0) invert(1);
-  }
+  z-index: 99;
+  transition: width 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(20, 14, 8, 0.25);
 
   &:hover {
-    transform: scale(1.05);
-    background-color: $text-primary;
+    width: 160px;
+    box-shadow: 0 6px 28px rgba(20, 14, 8, 0.35);
+  }
+
+  .fab-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    background-color: color.adjust($primary-vintage, $lightness: 30%);
+    mask-image: url("/assets/images/icons/inventory.png");
+    mask-size: 20px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-image: url("/assets/images/icons/inventory.png");
+    -webkit-mask-size: 20px;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+  }
+
+  .fab-label {
+    font-family: $font-family-serif;
+    font-style: italic;
+    font-size: 15px;
+    color: color.adjust($primary-vintage, $lightness: 30%);
+    opacity: 0.95;
+    transition: opacity 0.2s ease 0.1s, transform 0.2s ease 0.1s;
+    align-self: center;
+
+    .fab-inventory:hover & {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
