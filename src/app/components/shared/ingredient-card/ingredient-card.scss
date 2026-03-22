@@ -7,7 +7,7 @@
 
 .ingredient-card {
   background: white;
-  border: 1px solid rgba(180, 150, 120, 0.2);
+  border: 1px solid $border-vintage-light;
   border-radius: 2px;
   padding: 16px 18px;
   position: relative;
@@ -17,18 +17,18 @@
   flex-direction: column;
 
   &:hover {
-    border-color: rgba(180, 150, 120, 0.4);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-color: $border-vintage;
+    box-shadow: 0 4px 16px rgba($black, 0.06);
   }
 
   &.expiring {
-    border-color: rgba(196, 135, 58, 0.35);
-    background: rgba(196, 135, 58, 0.03);
+    border-color: rgba($difficulty-medium, 0.35);
+    background: rgba($difficulty-medium, 0.03);
   }
 
   &.expired {
-    border-color: rgba(184, 84, 80, 0.3);
-    background: rgba(184, 84, 80, 0.03);
+    border-color: rgba($difficulty-hard, 0.3);
+    background: rgba($difficulty-hard, 0.03);
   }
 }
 
@@ -84,7 +84,7 @@
     width: 60px;
     background: transparent;
     border: none;
-    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    border-bottom: 1px solid rgba($primary-vintage, 0.4);
     padding: 3px 0;
     font-size: 12px;
     color: $text-primary;
@@ -96,7 +96,7 @@
   select {
     background: transparent;
     border: none;
-    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    border-bottom: 1px solid rgba($primary-vintage, 0.4);
     padding: 3px 0;
     font-size: 12px;
     color: $text-secondary;
@@ -109,7 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid rgba(180, 150, 120, 0.12);
+  border-top: 1px solid rgba($primary-vintage, 0.12);
   padding-top: 10px;
   margin-top: 14px;
 }
@@ -128,7 +128,7 @@
   input[type="date"] {
     background: transparent;
     border: none;
-    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    border-bottom: 1px solid rgba($primary-vintage, 0.4);
     padding: 2px 0;
     font-size: 10px;
     font-family: $font-family-primary;

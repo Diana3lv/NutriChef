@@ -49,6 +49,8 @@ $border-color: $gray-200;
 // Typography
 $font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-family-heading: 'Poppins', 'Inter', sans-serif;
+$font-family-serif: 'Lora', serif;
+$font-family-serif-display: 'Playfair Display', serif;
 
 // Font Sizes
 $font-size-xs: 0.75rem;
@@ -102,17 +104,22 @@ $z-fixed: 1030;
 $z-modal: 1050;
 
 // ============================================
-// Vintage Cookbook Style - Home
+// Vintage Cookbook Style
 // ============================================
 
 // Background
-$bg-vintage: #FAF9F7;
+$bg-vintage: #F9F5F1;
+$bg-vintage-glass: rgba(250, 245, 235, 0.92);
+
+// Borders
+$border-vintage: rgba(180, 150, 120, 0.4);
+$border-vintage-light: rgba(180, 150, 120, 0.2);
 
 // Typography
-$font-family-serif: 'Lora', serif;
-$font-family-serif-display: 'DM Serif Display', serif;
+$font-family-serif: 'Georgia', 'Times New Roman', serif;
+$font-family-serif-display: 'Playfair Display', 'Georgia', serif;
 
 // Difficulty Colors
-$difficulty-easy: #6A9E6F;
-$difficulty-medium: #C4873A;
-$difficulty-hard: #B85450;
+$difficulty-easy: #4CAF50;
+$difficulty-medium: #FF9800;
+$difficulty-hard: #F44336;

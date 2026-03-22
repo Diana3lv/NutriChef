@@ -6,13 +6,13 @@
   width: 100%;
   max-width: 780px;
   margin: 0 auto;
-  border: 1.5px solid rgba(180, 150, 120, 0.4);
-  background: rgba(250, 245, 235, 0.92);
+  border: 1.5px solid $border-vintage;
+  background: $bg-vintage-glass;
   transition: border-color 0.3s ease;
   backdrop-filter: blur(8px);
 
   &:focus-within {
-    border-color: rgba(180, 150, 120, 0.8);
+    border-color: rgba($primary-vintage, 0.8);
   }
 
   &.small {
@@ -47,7 +47,7 @@
   padding: 16px 20px;
 
   &::placeholder {
-    color: rgba(100, 80, 60, 0.45);
+    color: $text-hint;
   }
 }
 
@@ -57,9 +57,9 @@
   gap: 7px;
   background: transparent;
   border: none;
-  border-left: 1.5px solid rgba(180, 150, 120, 0.35);
+  border-left: 1.5px solid rgba($primary-vintage, 0.35);
   cursor: pointer;
-  color: rgba(100, 80, 60, 0.6);
+  color: $text-secondary;
   font-family: $font-family-primary;
   font-size: 11px;
   font-weight: 500;

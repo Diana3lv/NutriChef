@@ -79,7 +79,7 @@
 }
 
 .recipe-title {
-  font-family: 'Lora', serif;
+  font-family: $font-family-serif;
   font-size: 20px;
   font-weight: 600;
   font-style: italic;
@@ -91,7 +91,7 @@
 .recipe-divider {
   width: 24px;
   height: 1px;
-  background: #ccc;
+  background: $gray-300;
   margin-bottom: 12px;
 }
 

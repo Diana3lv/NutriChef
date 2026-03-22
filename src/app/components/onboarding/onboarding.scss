@@ -15,13 +15,13 @@
   width: 100%;
   max-width: 780px;
   background: white;
-  border: 1px solid rgba(180, 150, 120, 0.2);
+  border: 1px solid rgba($primary-vintage, 0.2);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .onboarding-sidebar {
-  background: #1E1A16;
+  background: $gray-900;
   padding: 48px 28px;
   display: flex;
   flex-direction: column;
@@ -134,7 +134,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border: 1px solid rgba(180, 150, 120, 0.2);
+  border: 1px solid rgba($primary-vintage, 0.2);
   border-radius: 2px;
   font-size: 13px;
   color: $text-primary;
@@ -154,14 +154,14 @@
 
   &:hover {
     border-color: $primary-vintage;
-    background: rgba(196, 149, 106, 0.04);
+    background: rgba($primary-vintage, 0.04);
   }
 }
 
 .health-textarea {
   width: 100%;
   background: transparent;
-  border: 1px solid rgba(180, 150, 120, 0.3);
+  border: 1px solid rgba($primary-vintage, 0.3);
   border-radius: 2px;
   padding: 12px 14px;
   font-family: $font-family-primary;
@@ -178,7 +178,7 @@
 
   &::placeholder {
     font-style: italic;
-    color: rgba(100, 80, 60, 0.35);
+    color: $text-disabled;
   }
 }
 
@@ -187,7 +187,7 @@
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 25px;
+  padding-top: 24px;
 }
 
 .nav-buttons {

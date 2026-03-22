@@ -14,7 +14,7 @@
 
 .inventory-header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 40px;
 }
@@ -25,6 +25,7 @@
   font-weight: 400;
   font-size: 36px;
   color: $text-primary;
+  margin-left: 20px;
 }
 
 .header-controls {
@@ -80,7 +81,7 @@
 
 .btn-ghost {
   background: transparent;
-  border: 1px solid rgba(180, 150, 120, 0.4);
+  border: 1px solid rgba($primary-vintage, 0.4);
   border-radius: 2px;
   padding: 10px 24px;
   font-family: $font-family-primary;
@@ -88,7 +89,7 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(100, 80, 60, 0.7);
+  color: $text-secondary;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
 
@@ -97,7 +98,7 @@
 
 .btn-danger {
   background: transparent;
-  border: 1px solid rgba(184, 84, 80, 0.3);
+  border: 1px solid rgba($difficulty-hard, 0.3);
   border-radius: 2px;
   padding: 10px 24px;
   font-family: $font-family-primary;
@@ -109,7 +110,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
-  &:hover { background: rgba(184, 84, 80, 0.06); border-color: $difficulty-hard; }
+  &:hover { background: rgba($difficulty-hard, 0.06); border-color: $difficulty-hard; }
 }
 
 .inventory-category {
@@ -131,7 +132,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(180, 150, 120, 0.25);
+    background: rgba($primary-vintage, 0.25);
   }
 }
 
@@ -146,14 +147,14 @@
   padding: 20px 0;
   font-size: 13px;
   font-style: italic;
-  color: rgba(100, 80, 60, 0.35);
+  color: $text-disabled;
   font-family: $font-family-serif;
 }
 
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(30, 26, 22, 0.5);
+  background: rgba($black, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,7 +163,7 @@
 
 .modal {
   background: white;
-  border: 1px solid rgba(180, 150, 120, 0.25);
+  border: 1px solid rgba($primary-vintage, 0.25);
   border-radius: 2px;
   width: 100%;
   max-width: 440px;
