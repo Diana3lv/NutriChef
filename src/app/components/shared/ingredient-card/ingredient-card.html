@@ -1,0 +1,49 @@
+<div class="ingredient-card"
+  [class.expiring]="isExpiringSoon(item.expiryDate)"
+  [class.expired]="isExpired(item.expiryDate)">
+
+  <button class="card-delete-btn" (click)="delete.emit()">
+    <img src="assets/images/icons/exit.svg" alt="Delete" class="delete-icon">
+  </button>
+
+  <div class="card-name">{{ item.name }}</div>
+
+  <!-- View mode -->
+  @if (!isEditing) {
+    <div class="card-qty">{{ item.quantity }} {{ item.unit }}</div>
+    <div class="card-footer">
+      <span class="expiry-badge" [ngClass]="getExpiryClass(item.expiryDate)">
+        {{ getExpiryLabel(item.expiryDate) }}
+      </span>
+      <button class="card-edit-btn" (click)="edit.emit()">Edit</button>
+    </div>
+  }
+
+  <!-- Edit mode -->
+  @if (isEditing) {
+    <div class="card-qty-edit">
+      <input
+        type="number"
+        [value]="item.quantity"
+        (change)="onQuantityChange($event)"
+        min="0">
+      <select (change)="onUnitChange($event)">
+        <option [selected]="item.unit === 'g'">g</option>
+        <option [selected]="item.unit === 'kg'">kg</option>
+        <option [selected]="item.unit === 'ml'">ml</option>
+        <option [selected]="item.unit === 'L'">L</option>
+        <option [selected]="item.unit === 'pcs'">pcs</option>
+      </select>
+    </div>
+    <div class="card-footer">
+      <div class="expiry-edit">
+        <input
+          type="date"
+          [value]="item.expiryDate"
+          (change)="onExpiryChange($event)">
+      </div>
+      <button class="card-edit-btn" (click)="save.emit()">Save</button>
+    </div>
+  }
+
+</div>

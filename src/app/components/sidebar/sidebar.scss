@@ -2,13 +2,16 @@
 @use '../../../styles/mixins' as *;
 
 .sidebar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   height: 100vh;
   width: 0;
   background: transparent;
   transition: all 0.3s ease;
   overflow: visible;
   flex-shrink: 0;
+  z-index: 101;
 
   &.expanded {
     width: 260px;
@@ -23,7 +26,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: $primary-green;
+    background: $primary-vintage;
     color: white;
     border: none;
     cursor: pointer;
@@ -35,8 +38,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background: $primary-green-dark;
-      transform: scale(1.1);
+      background: $primary-vintage-dark;
     }
 
     .arrow {
@@ -61,6 +63,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .menu-items {
@@ -68,18 +71,23 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 0 10px;
+    padding: 40px 10px;
   }
 
+  .home-btn,
   .menu-item {
     display: flex;
     align-items: center;
     gap: 15px;
     padding: 12px 15px;
-    border-radius: 10px;
+    border-radius: 2px;
     text-decoration: none;
-    color: $text-primary;
-    transition: all 0.3s ease;
+    font-family: $font-family-primary;
+    font-size: 13px;
+    color: rgba(100, 80, 60, 0.7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s ease, background-color 0.2s ease;
     white-space: nowrap;
     cursor: pointer;
 
@@ -88,8 +96,9 @@
       height: 24px;
       min-width: 24px;
       object-fit: contain;
-      filter: grayscale(50%);
-      transition: filter 0.3s ease;
+      filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
     }
 
     .label {
@@ -99,25 +108,36 @@
     }
 
     &:hover {
-      background: $gray-100;
-      color: $primary-green;
+      background-color: rgba($primary-vintage, 0.08);
+      color: $primary-vintage;
       
       .icon-img {
-        filter: none;
-      }
-    }
-
-    &.active {
-      background: rgba($primary-green, 0.1);
-      color: $primary-green;
-      font-weight: 600;
-      
-      .icon-img {
-        filter: none;
+        opacity: 1;
       }
     }
   }
 
+  .home-btn {
+    margin: 32px 10px 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba($primary-vintage, 0.25);
+    padding-bottom: 10px;
+  }
+
+  .menu-item {
+    &.active {
+      background-color: rgba($primary-vintage, 0.12);
+      color: $primary-vintage;
+      border-left: 2px solid $primary-vintage;
+      padding-left: 12px;
+      
+      .icon-img {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.expanded .home-btn .label,
   &.expanded .menu-item .label {
     opacity: 1;
   }
@@ -125,16 +145,22 @@
   .sign-out-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 15px;
-    padding: 12px 15px;
-    margin: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #fee;
-    color: #d32f2f;
-    font-weight: 600;
+    padding: 10px;
+    margin: 10px auto;
+    width: fit-content;
+    max-width: 180px;
+    border-radius: 2px;
+    border: 0.5px solid rgba($difficulty-hard, 0.2);
+    background: transparent;
+    color: rgba($difficulty-hard, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     white-space: nowrap;
 
     .icon-img {
@@ -142,6 +168,8 @@
       height: 24px;
       min-width: 24px;
       object-fit: contain;
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
     }
 
     .label {
@@ -150,8 +178,13 @@
     }
 
     &:hover {
-      background: #fdd;
-      transform: translateX(-2px);
+      background-color: rgba($difficulty-hard, 0.06);
+      border-color: rgba($difficulty-hard, 0.4);
+      color: $difficulty-hard;
+
+      .icon-img {
+        opacity: 1;
+      }
     }
   }
 

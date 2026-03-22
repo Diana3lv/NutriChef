@@ -9,37 +9,28 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
     .navbar-content {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 30px;
+        width: 100%;
+        padding: 0 30px 0 90px;
         display: flex;
         align-items: center;
-        gap: 40px;
-        height: 80px;
+        gap: 60px;
+        height: 75px;
     }
 
     .logo {
         display: flex;
         align-items: center;
-        gap: 12px;
         text-decoration: none;
         cursor: pointer;
-        transition: transform 0.2s ease;
+        transition: opacity 0.2s ease;
 
         &:hover {
-            transform: scale(1.02);
+            opacity: 0.88;
         }
 
         .logo-img {
             height: 70px;
             width: auto;
-        }
-
-        .logo-text {
-            font-weight: 700;
-            font-size: 24px;
-            color: $primary-color;
-            font-family: 'Poppins', sans-serif;
         }
     }
 
@@ -47,7 +38,6 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        flex: 1;
     }
 
     .menu-dropdown {
@@ -55,60 +45,63 @@
     }
 
     .menu-btn {
-        padding: 10px 18px;
+        padding: 7px 14px;
         background: transparent;
-        border: none;
-        font-weight: 600;
-        font-size: 15px;
-        color: $text-primary;
+        border: 1px solid transparent;
+        border-radius: 2px;
+        font-family: $font-family-primary;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: $text-secondary;
         cursor: pointer;
-        border-radius: 8px;
         display: flex;
         align-items: center;
-        gap: 6px;
-        transition: all 0.3s ease;
-        font-family: 'Inter', sans-serif;
+        gap: 5px;
+        transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
         &:hover {
-            background: $bg-secondary;
-            color: $primary-color;
+            border-color: rgba($primary-vintage, 0.4);
+            color: $primary-vintage-light;
+            background-color: rgba($primary-vintage, 0.05);
         }
-
         &.active {
-            background: $bg-secondary;
-            color: $primary-color;
+            border-color: $primary-vintage-light;
+            color: $primary-vintage-light;
+            background-color: rgba($primary-vintage, 0.08);
         }
     }
 
+        
     .dropdown-content {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 6px);
         left: 0;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        min-width: 250px;
-        padding: 8px;
+        background: $bg-vintage;
+        border: 1px solid rgba($primary-vintage, 0.3);
+        border-radius: 2px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        min-width: 240px;
+        padding: 6px;
         animation: slideDown 0.2s ease;
         max-height: 400px;
         overflow-y: auto;
-
-        /* Custom scrollbar */
+    
         &::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
-
+    
         &::-webkit-scrollbar-track {
-            background: $bg-secondary;
-            border-radius: 10px;
+            background: transparent;
         }
-
+    
         &::-webkit-scrollbar-thumb {
-            background: $primary-color;
-            border-radius: 10px;
-
+            background: rgba($primary-vintage, 0.3);
+            border-radius: 2px;
+    
             &:hover {
-                background: $primary-dark;
+                background: $primary-vintage-light;
             }
         }
     }
@@ -148,30 +141,30 @@
     }
 
     .favorites-btn {
-        padding: 10px 16px;
+        margin-left: auto;
         background: transparent;
         border: none;
-        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        padding: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.4s ease;
 
         .heart-icon {
-            width: 24px;
-            height: 24px;
-            filter: grayscale(0.3) brightness(0.8);
-            transition: all 0.3s ease;
+            width: 22px;
+            height: 22px;
+            filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }
 
         &:hover {
-            background: rgba($accent-color, 0.1);
-            transform: scale(1.05);
+            background-color: rgba(196, 149, 106, 0.12);
 
             .heart-icon {
-                filter: grayscale(0) brightness(1.2);
-                animation: heartbeat 0.6s ease;
+                opacity: 1;
             }
         }
     }
@@ -193,7 +186,6 @@
     }
 }
 
-// Responsive
 @media (max-width: 1024px) {
     .navbar {
         .navbar-content {
@@ -202,16 +194,12 @@
         }
 
         .nav-menu {
-            gap: 4px;
+            gap: 2px;
         }
 
         .menu-btn {
-            padding: 8px 12px;
-            font-size: 14px;
-        }
-
-        .logo-text {
-            display: none;
+            padding: 6px 10px;
+            font-size: 10px;
         }
     }
 }

@@ -1,0 +1,320 @@
+@use '../../../styles/variables' as *;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $bg-vintage;
+}
+
+.inventory-container {
+  padding: 60px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.inventory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.inventory-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 36px;
+  color: $text-primary;
+  margin-left: 20px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-search {
+  width: 280px;
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: $primary-vintage;
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: $primary-vintage-dark;
+  }
+}
+
+.btn-primary {
+  background: $primary-vintage;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 10px 24px;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) { background: $primary-vintage-dark; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba($primary-vintage, 0.4);
+  border-radius: 2px;
+  padding: 10px 24px;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover { border-color: $primary-vintage; color: $primary-vintage; }
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba($difficulty-hard, 0.3);
+  border-radius: 2px;
+  padding: 10px 24px;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $difficulty-hard;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover { background: rgba($difficulty-hard, 0.06); border-color: $difficulty-hard; }
+}
+
+.inventory-category {
+  margin-bottom: 40px;
+}
+
+.category-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $primary-vintage;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba($primary-vintage, 0.25);
+  }
+}
+
+.ingredient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+
+.empty-category {
+  padding: 20px 0;
+  font-size: 13px;
+  font-style: italic;
+  color: $text-disabled;
+  font-family: $font-family-serif;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba($black, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal {
+  background: white;
+  border: 1px solid rgba($primary-vintage, 0.25);
+  border-radius: 2px;
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 48px;
+}
+
+.modal-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 26px;
+  color: $text-primary;
+  margin-bottom: 6px;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  color: $text-secondary;
+  margin-bottom: 28px;
+}
+
+.modal-field {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(100, 80, 60, 0.7);
+    margin-bottom: 8px;
+  }
+
+  input, select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+    padding: 8px 0;
+    font-family: $font-family-serif;
+    font-style: italic;
+    font-size: 15px;
+    color: $text-primary;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &:focus { border-color: $primary-vintage; }
+
+    &::placeholder {
+      font-style: italic;
+      color: rgba(100, 80, 60, 0.3);
+    }
+  }
+
+  select {
+    font-style: normal;
+    font-family: $font-family-primary;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+
+.modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(180, 150, 120, 0.2);
+}
+
+.modal-confirm-text {
+  font-size: 14px;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin-bottom: 8px;
+
+  strong {
+    font-family: $font-family-serif;
+    font-style: italic;
+    color: $text-primary;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-container {
+    padding: 40px 24px;
+  }
+
+  .inventory-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-controls {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar { width: 100%; }
+
+  .ingredient-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .modal {
+    margin: 24px;
+    padding: 32px 28px;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-exit {
+  background: white;
+  border: 1px solid rgba(180, 150, 120, 0.3);
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $primary-vintage;
+    border-color: $primary-vintage;
+    
+    .back-icon {
+      filter: invert(1);
+    }
+  }
+}
+
+.back-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}

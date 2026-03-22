@@ -1,0 +1,282 @@
+@use '../../../styles/variables' as *;
+
+.onboarding-container {
+  min-height: 100vh;
+  background: $bg-vintage;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.onboarding-card {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  width: 100%;
+  max-width: 780px;
+  background: white;
+  border: 1px solid rgba($primary-vintage, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.onboarding-sidebar {
+  background: $gray-900;
+  padding: 48px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s ease;
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.step-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.2s ease;
+}
+
+.step-title {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.2s ease;
+}
+
+.sidebar-step.done {
+  .step-num {
+    border-color: $primary-vintage;
+    color: $primary-vintage;
+  }
+  .step-label { color: rgba(255, 255, 255, 0.45); }
+  .step-title { color: rgba(255, 255, 255, 0.5); }
+}
+
+.sidebar-step.active {
+  .step-num {
+    background: $primary-vintage;
+    border-color: $primary-vintage;
+    color: white;
+  }
+  .step-label { color: rgba(255, 255, 255, 0.5); }
+  .step-title { color: white; }
+}
+
+.onboarding-content {
+  padding: 48px 44px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  margin-bottom: 28px;
+}
+
+.card-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 28px;
+  color: $text-primary;
+  margin-bottom: 6px;
+}
+
+.card-description {
+  font-size: 13px;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba($primary-vintage, 0.2);
+  border-radius: 2px;
+  font-size: 13px;
+  color: $text-primary;
+  font-family: $font-family-primary;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: $primary-vintage;
+    flex-shrink: 0;
+  }
+
+  span { user-select: none; }
+
+  &:hover {
+    border-color: $primary-vintage;
+    background: rgba($primary-vintage, 0.04);
+  }
+}
+
+.health-textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba($primary-vintage, 0.3);
+  border-radius: 2px;
+  padding: 12px 14px;
+  font-family: $font-family-primary;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $text-primary;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: $primary-vintage;
+  }
+
+  &::placeholder {
+    font-style: italic;
+    color: $text-disabled;
+  }
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  font-family: $font-family-primary;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  outline: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  @extend .btn;
+  background: $primary-vintage;
+  color: white;
+  padding: 10px 28px;
+
+  &:hover:not(:disabled) {
+    background: $primary-vintage-dark;
+  }
+}
+
+.btn-secondary {
+  @extend .btn;
+  background: transparent;
+  color: rgba(100, 80, 60, 0.7);
+  border: 1px solid rgba(180, 150, 120, 0.4);
+  padding: 10px 24px;
+
+  &:hover:not(:disabled) {
+    border-color: $primary-vintage;
+    color: $primary-vintage;
+  }
+}
+
+.btn-skip {
+  @extend .btn;
+  background: transparent;
+  color: rgba(100, 80, 60, 0.4);
+  padding: 10px 0;
+  font-size: 11px;
+
+  &:hover {
+    color: $text-secondary;
+  }
+}
+
+@media (max-width: 640px) {
+  .onboarding-card {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-sidebar {
+    flex-direction: row;
+    padding: 20px 24px;
+    gap: 0;
+    overflow-x: auto;
+
+    .sidebar-step {
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px 0 0;
+      border-bottom: none;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      white-space: nowrap;
+
+      &:last-child { border-right: none; }
+    }
+
+    .step-text { align-items: center; }
+  }
+
+  .onboarding-content {
+    padding: 32px 28px;
+  }
+}

@@ -1,0 +1,328 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/forms'; 
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $bg-vintage;
+}
+
+.profile-container {
+  max-width: 680px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+  padding: 60px 80px;
+}
+
+.profile-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 36px;
+  color: $text-primary;
+  margin-bottom: 30px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 2px;
+  font-size: 13px;
+  margin-bottom: 24px;
+  border: 1px solid transparent;
+
+  &.alert-success {
+    background: rgba($difficulty-easy, 0.08);
+    border-color: rgba($difficulty-easy, 0.3);
+    color: $difficulty-easy;
+  }
+
+  &.alert-error {
+    background: rgba($difficulty-hard, 0.08);
+    border-color: rgba($difficulty-hard, 0.3);
+    color: $difficulty-hard;
+  }
+}
+
+.profile-section {
+  margin-bottom: 100px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $primary-vintage;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &::before {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: rgba($primary-vintage, 0.38);
+  }
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: rgba($primary-vintage, 0.38);
+  }
+}
+
+.profile-field {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba($primary-vintage, 0.2);
+
+  &:first-of-type {
+    border-top: 1px solid rgba($primary-vintage, 0.2);
+  }
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-secondary;
+}
+
+.field-value {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 15px;
+  color: $text-primary;
+
+  &.muted {
+    font-family: $font-family-primary;
+    font-style: normal;
+    font-size: 13px;
+    color: $text-secondary;
+  }
+}
+
+.field-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    @extend .form-field-input;
+  }
+}
+
+.error-text {
+  @extend .form-error-text;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+
+  &.badge-user {
+    background: rgba(196, 149, 106, 0.1);
+    color: $primary-vintage-dark;
+  }
+
+  &.badge-admin {
+    background: rgba(106, 158, 111, 0.1);
+    color: $difficulty-easy;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-edit {
+  background: transparent;
+  border: none;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $primary-vintage;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: $primary-vintage;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 40px 24px;
+  }
+
+  .profile-field {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 12px;
+  }
+
+  .field-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .field-value,
+  .field-input-wrap {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .btn-edit,
+  .badge {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+}
+
+.health-subsection {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.subsection-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-primary;
+  margin-bottom: 16px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px 16px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: $text-primary;
+  font-family: $font-family-primary;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: $primary-vintage;
+  }
+
+  span {
+    user-select: none;
+  }
+
+  &:hover {
+    color: $primary-vintage;
+  }
+}
+
+.health-textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba($primary-vintage, 0.3);
+  border-radius: 2px;
+  padding: 12px 14px;
+  font-family: $font-family-primary;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $text-primary;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: $primary-vintage;
+  }
+
+  &::placeholder {
+    font-style: italic;
+    color: $text-disabled;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal {
+  background: white;
+  border: 1px solid rgba($primary-vintage, 0.25);
+  border-radius: 2px;
+  width: 100%;
+  max-width: 480px;
+  padding: 40px 48px;
+}
+
+.modal-header {
+  margin-bottom: 32px;
+}
+
+.modal-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 28px;
+  color: $text-primary;
+  margin-bottom: 6px;
+}
+
+.modal-field {
+  margin-bottom: 24px;
+
+  label {
+    @extend .form-field-label;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    @extend .form-field-input;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 32px;
+  padding-top: 24px;
+}

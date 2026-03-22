@@ -1,1 +1,57 @@
-<p>home works!</p>
+<div class="home-container" [class.sidebar-expanded]="isSidebarExpanded()">
+    <!-- Hero Section with Background Image -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <!-- Home title -->
+            <h1 class="hero-title">
+                Find your next delicious recipe
+                to make today
+            </h1>
+
+            <!-- Search bar -->
+            <app-search-bar 
+                (search)="onSearch($event)" 
+                (filterOpen)="onFilterOpen()">
+            </app-search-bar>
+        </div>
+    </section>
+
+    <div class="scroll-indicator" [class.hidden]="!showScrollIndicator()">
+        <img src="assets/images/icons/scroll_down.svg" alt="Scroll Down" class="scroll-icon">
+    </div>
+    
+    <!-- Popular Recipes Section -->
+    <section class="recipes-section">
+        @if (isLoading()) {
+          <div class="status-message">Loading recipes...</div>
+        } @else if (error()) {
+          <div class="status-message error">{{ error() }}</div>
+        } @else {
+          <h2 class="section-title">Popular Recipes</h2>
+          <div class="recipe-grid">
+              @for (recipe of popularRecipes; track recipe.id) {
+                <app-recipe-card 
+                    [recipe]="recipe"
+                    (cardClick)="viewRecipe($event)">
+                </app-recipe-card>
+              }
+              @empty {
+                <div class="no-recipes">No popular recipes found</div>
+              }
+          </div>
+        }
+    </section>
+
+    <!-- Recommended Recipes Section -->
+    <section class="recipes-section" *ngIf="!isLoading() && !error()">
+        <h2 class="section-title">Recommended Recipes</h2>
+        <div class="recipe-grid">
+            @for (recipe of recommendedRecipes; track recipe.id) {
+              <app-recipe-card 
+                  [recipe]="recipe"
+                  (cardClick)="viewRecipe($event)">
+              </app-recipe-card>
+            }
+        </div>
+    </section>
+</div>

@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { Auth } from '../../services/auth.service';
+import { STORAGE_KEYS } from '../../constants/storage-keys';
 
 @Component({
   selector: 'app-register',
@@ -53,7 +54,8 @@ export class Register {
     
     this.authService.register({ firstName, lastName, email, password }).subscribe({
       next: () => {
-        this.router.navigate(['/home']);
+        sessionStorage.setItem(STORAGE_KEYS.pendingOnboarding, 'true');
+        this.router.navigate(['/onboarding']);
       },
       error: (error) => {
         console.error('Registration failed:', error);

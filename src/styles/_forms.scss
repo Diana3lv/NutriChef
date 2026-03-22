@@ -1,0 +1,85 @@
+@use 'variables' as *;
+
+.form-field-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(180, 150, 120, 0.4);
+  padding: 8px 0;
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 15px;
+  color: $text-primary;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: $primary-vintage;
+  }
+
+  &::placeholder {
+    font-style: italic;
+    font-family: $font-family-serif;
+    font-size: 15px;
+    color: rgba(100, 80, 60, 0.3);
+  }
+
+  &.error {
+    border-color: $difficulty-hard;
+  }
+}
+
+.form-field-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(100, 80, 60, 0.7);
+  margin-bottom: 8px;
+}
+
+.form-error-text {
+  font-size: 11px;
+  color: $difficulty-hard;
+  margin-top: 5px;
+}
+
+.btn-primary {
+  background: $primary-vintage;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 10px 24px;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) { background: $primary-vintage-dark; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(180, 150, 120, 0.4);
+  border-radius: 2px;
+  padding: 10px 24px;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(100, 80, 60, 0.7);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $primary-vintage;
+    color: $primary-vintage;
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}

@@ -1,0 +1,136 @@
+@use '../../../../styles/variables' as *;
+
+.search-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  border: 1.5px solid $border-vintage;
+  background: $bg-vintage-glass;
+  transition: border-color 0.3s ease;
+  backdrop-filter: blur(8px);
+
+  &:focus-within {
+    border-color: rgba($primary-vintage, 0.8);
+  }
+
+  &.small {
+    max-width: 100%;
+    
+    .search-input {
+      padding: 9px 14px;
+      font-size: 14px;
+    }
+
+    .search-btn {
+      padding: 9px 16px;
+      background-color: $primary-vintage;
+      letter-spacing: 0.1em;
+      
+      &:hover {
+        background: $primary-vintage-dark;
+      }
+    }
+  }
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 16px;
+  color: $text-primary;
+  padding: 16px 20px;
+
+  &::placeholder {
+    color: $text-hint;
+  }
+}
+
+.search-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  border-left: 1.5px solid rgba($primary-vintage, 0.35);
+  cursor: pointer;
+  color: $text-secondary;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 20px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: $text-primary;
+
+    .filter-icon {
+      opacity: 1;
+    }
+  }
+
+  .filter-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+}
+
+.search-btn {
+  background-color: $primary-vintage-light;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0 28px;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: $primary-vintage-dark;
+  }
+
+  &:active {
+    background-color: $primary-vintage-dark;
+  }
+
+  .search-icon {
+    width: 12px;
+    height: 12px;
+    filter: invert(1);
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column;
+    border-radius: $border-radius-lg;
+    padding: 16px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 8px 0;
+  }
+
+  .search-btn {
+    width: 100%;
+    border-radius: $border-radius-md;
+  }
+}

@@ -1,0 +1,118 @@
+<div class="inventory-container">
+
+  <!-- Header -->
+  <div class="inventory-header">
+    <div class="header-left">
+      <button class="btn-exit" (click)="goBack()">
+        <img src="assets/images/icons/arrow_back.svg" alt="Back" class="back-icon">
+      </button>
+      <h1 class="inventory-title">My Inventory</h1>
+    </div>
+    <div class="header-controls">
+      <app-search-bar
+        class="inventory-search"
+        [placeholder]="'Search ingredients...'"
+        [showFilter]="false"
+        [size]="'small'"
+        [liveSearch]="true"
+        (search)="onSearch($event)">
+      </app-search-bar>
+      <button class="btn-add" (click)="openAddModal()">+ Add Item</button>
+    </div>
+  </div>
+
+  <!-- Ingredient Categories -->
+  @for (category of filteredCategories(); track category.name) {
+    <div class="inventory-category">
+      <div class="category-label">{{ category.name }}</div>
+
+      <div class="ingredient-grid">
+        @for (item of category.items; track item.id) {
+          <app-ingredient-card
+            [item]="item"
+            [isEditing]="editingItemId() === item.id"
+            (delete)="openDeleteModal(item)"
+            (edit)="startEdit(item.id)"
+            (save)="saveEdit(item)"
+            (updateQuantity)="updateQuantity(item, $event)"
+            (updateUnit)="updateUnit(item, $event)"
+            (updateExpiry)="updateExpiry(item, $event)">
+          </app-ingredient-card>
+        }
+
+        @if (category.items.length === 0) {
+          <div class="empty-category">No items in this category</div>
+        }
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- Modal for adding item -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" (click)="closeAddModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-title">Add Ingredient</div>
+      <div class="modal-subtitle">Add a new item to your inventory</div>
+
+      <form [formGroup]="addForm">
+        <div class="modal-field">
+          <label>Ingredient Name</label>
+          <input type="text" formControlName="name" placeholder="e.g. Whole Milk">
+        </div>
+
+        <div class="modal-row">
+          <div class="modal-field">
+            <label>Quantity</label>
+            <input type="number" formControlName="quantity" placeholder="0">
+          </div>
+          <div class="modal-field">
+            <label>Unit</label>
+            <select formControlName="unit">
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="L">L</option>
+              <option value="pcs">pcs</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label>Category</label>
+          <select formControlName="category">
+            <option *ngFor="let cat of IngredientCategory | keyvalue" [value]="cat.value">{{cat.value}}</option>
+          </select>
+        </div>
+
+        <div class="modal-field">
+          <label>Expiry Date</label>
+          <input type="date" formControlName="expiryDate" style="font-style:normal;font-family:inherit;font-size:14px">
+        </div>
+      </form>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" (click)="closeAddModal()">Cancel</button>
+        <button class="btn-primary" (click)="addItem()" [disabled]="addForm.invalid">Add Item</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal for confirmation to delete item -->
+@if (showDeleteModal()) {
+  <div class="modal-backdrop" (click)="closeDeleteModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-title">Remove Item</div>
+      <p class="modal-confirm-text">
+        Are you sure you want to remove <strong>{{ itemToDelete()?.name }}</strong> from your inventory?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-ghost" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" (click)="confirmDelete()">Remove</button>
+      </div>
+    </div>
+  </div>
+}
+

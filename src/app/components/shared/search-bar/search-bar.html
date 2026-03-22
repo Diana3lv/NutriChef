@@ -1,0 +1,24 @@
+<div class="search-container" [ngClass]="{'small': size === 'small'}">
+    <input 
+        type="text" 
+        class="search-input"
+        [placeholder]="placeholder"
+        (keyup.enter)="onSearch()"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onInputChange()"
+    />
+    
+    @if (showFilter) {
+    <button class="search-filter-btn" (click)="onFilterOpen()">
+        <img src="assets/images/icons/filter.png" alt="" class="filter-icon">
+        Filters
+    </button>
+    }
+
+    <button class="search-btn" (click)="onSearch()">
+        @if (size === 'default') {
+        <img src="assets/images/icons/search.png" alt="" class="search-icon">
+        }
+        Search
+    </button>
+</div>

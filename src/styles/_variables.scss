@@ -2,16 +2,12 @@
 // NutriChef Design System - Variables
 // ============================================
 
-// Primary Colors
-$primary-green: #4CAF50;
-$primary-green-light: #81C784;
-$primary-green-dark: #388E3C;
-$primary-color: $primary-green;
-$primary-dark: $primary-green-dark;
-
-$secondary-orange: #FF9800;
-$secondary-orange-light: #FFB74D;
-$secondary-orange-dark: #F57C00;
+// Primary Colors - Vintage Brown-Gold Theme
+$primary-vintage: #C4956A;
+$primary-vintage-light: #D4A97E;
+$primary-vintage-dark: #A67845;
+$primary-color: $primary-vintage;
+$primary-dark: $primary-vintage-dark;
 
 // Accent Colors
 $accent-color: #E91E63;
@@ -31,8 +27,8 @@ $gray-900: #212121;
 $black: #000000;
 
 // Semantic Colors
-$success: $primary-green;
-$warning: $secondary-orange;
+$success: #4CAF50;
+$warning: #FF9800;
 $error: #EF5350;
 $info: #26A69A;
 
@@ -53,6 +49,8 @@ $border-color: $gray-200;
 // Typography
 $font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-family-heading: 'Poppins', 'Inter', sans-serif;
+$font-family-serif: 'Lora', serif;
+$font-family-serif-display: 'Playfair Display', serif;
 
 // Font Sizes
 $font-size-xs: 0.75rem;
@@ -104,3 +102,24 @@ $z-dropdown: 1000;
 $z-sticky: 1020;
 $z-fixed: 1030;
 $z-modal: 1050;
+
+// ============================================
+// Vintage Cookbook Style
+// ============================================
+
+// Background
+$bg-vintage: #F9F5F1;
+$bg-vintage-glass: rgba(250, 245, 235, 0.92);
+
+// Borders
+$border-vintage: rgba(180, 150, 120, 0.4);
+$border-vintage-light: rgba(180, 150, 120, 0.2);
+
+// Typography
+$font-family-serif: 'Georgia', 'Times New Roman', serif;
+$font-family-serif-display: 'Playfair Display', 'Georgia', serif;
+
+// Difficulty Colors
+$difficulty-easy: #4CAF50;
+$difficulty-medium: #FF9800;
+$difficulty-hard: #F44336;

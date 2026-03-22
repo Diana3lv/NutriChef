@@ -7,6 +7,14 @@
     <!-- Sidebar content (only visible when expanded) -->
     @if (isExpanded()) {
         <div class="sidebar-content">
+            <!-- Home button (only visible when NOT on home page) -->
+            @if (showHomeButton()) {
+                <a class="home-btn" [routerLink]="'/home'" (click)="closeSidebar()">
+                    <img src="assets/images/icons/home.png" alt="Home" class="icon-img">
+                    <span class="label">Home</span>
+                </a>
+            }
+
             <!-- Menu items -->
             <nav class="menu-items">
                 @for (item of menuItems; track item.route) {

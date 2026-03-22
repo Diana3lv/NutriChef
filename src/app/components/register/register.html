@@ -87,7 +87,7 @@
                 </div>
 
                 <!-- Submit button -->
-                <button type="submit" class="submit-btn" [disabled]="registerForm.invalid || authService.isLoading()">
+                <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || authService.isLoading()">
 
                     @if (authService.isLoading()) {
                     <span>Creating account...</span>

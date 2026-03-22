@@ -1,0 +1,22 @@
+<div class="recipe-card" (click)="onClick()">
+    <div class="recipe-image">
+        <img [src]="recipe.imageUrl" [alt]="recipe.title" />
+    </div>
+    <div class="recipe-info">
+        <div class="recipe-difficulty" [ngClass]="'difficulty-' + getDifficultyClass()">
+            {{ recipe.difficulty }}
+        </div>
+        <h3 class="recipe-title">{{ recipe.title }}</h3>
+        <div class="recipe-divider"></div>
+        <div class="recipe-meta">
+            <span class="prep-time">
+                <img src="assets/images/icons/timer.png" alt="Prep Time" class="clock-icon">
+                {{ getTotalTime() }} min
+            </span>
+            <span class="servings">
+                <img src="assets/images/icons/people.png" alt="Servings" class="servings-icon">
+                {{ recipe.servings }} servings
+            </span>
+        </div>
+    </div>
+</div>
