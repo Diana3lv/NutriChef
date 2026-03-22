@@ -1,6 +1,6 @@
 export interface Recipe {
   id: number;
-  name: string;
+  title: string;
   description: string;
   instructions: string;
   prepTimeMinutes: number;
@@ -12,4 +12,11 @@ export interface Recipe {
   updatedAt: string;
   sourceUrl: string;
   sourceApi: string;
+  ingredients?: Ingredient[];
+}
+
+export interface Ingredient {
+  name: string;
+  quantity: string;
+  unit: string;
 }

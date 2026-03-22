@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Recipe } from '../../../interfaces/recipe';
 
 @Component({
   selector: 'app-recipe-card',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './recipe-card.html',
   styleUrl: './recipe-card.scss',
 })
@@ -16,7 +17,12 @@ export class RecipeCard {
     this.cardClick.emit(this.recipe.id);
   }
 
+  getDifficultyClass(): string {
+    return this.recipe?.difficulty?.toLowerCase() || 'unknown';
+  }
+
   getTotalTime(): number {
-    return this.recipe.prepTimeMinutes + this.recipe.cookTimeMinutes;
+    if (!this.recipe) return 0;
+    return (this.recipe.prepTimeMinutes || 0) + (this.recipe.cookTimeMinutes || 0);
   }
 }

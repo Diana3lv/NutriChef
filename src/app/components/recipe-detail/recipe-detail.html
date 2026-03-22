@@ -1,0 +1,106 @@
+<div class="recipe-container" *ngIf="recipe()">
+
+  <!-- Hero -->
+  <div class="recipe-hero">
+    <img [src]="recipe()?.imageUrl" [alt]="recipe()?.title" class="hero-img">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <button class="btn-back" (click)="goBack()">
+        <img src="assets/images/icons/arrow_back.svg" alt="Back" class="back-icon">
+        Back
+      </button>
+      <div class="hero-bottom">
+        <h1 class="hero-title">{{ recipe()?.title }}</h1>
+        <div class="hero-sub">
+          <span class="difficulty-badge" [ngClass]="getDifficultyClass()">
+            {{ recipe()?.difficulty }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="recipe-body">
+
+    <!-- Sidebar -->
+    <aside class="recipe-sidebar">
+
+      <div class="sidebar-section">
+        <div class="section-label">Details</div>
+        <div class="meta-stack">
+          <div class="meta-row">
+            <span class="meta-key">Prep time</span>
+            <span class="meta-val">{{ recipe()?.prepTimeMinutes }} min</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Cook time</span>
+            <span class="meta-val">{{ recipe()?.cookTimeMinutes }} min</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Total time</span>
+            <span class="meta-val">{{ getTotalTime() }} min</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Servings</span>
+            <span class="meta-val">{{ recipe()?.servings }} portions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-label">Ingredients</div>
+        <div class="ingredient-list">
+          @for (ingredient of recipe()?.ingredients; track ingredient.name) {
+            <div class="ingredient-row">
+              <span class="ingredient-name">{{ ingredient.name }}</span>
+              <span class="ingredient-qty">{{ ingredient.quantity }} {{ ingredient.unit }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <button class="btn-favorite"
+        (click)="toggleFavorite()"
+        [class.active]="isFavorite()">
+        <img
+          src="assets/images/icons/favorites.png"
+          alt="Favorite"
+          class="favorite-icon">
+        {{ isFavorite() ? 'Saved' : 'Save Recipe' }}
+      </button>
+
+    </aside>
+
+    <!-- Main content -->
+    <main class="recipe-main">
+
+      @if (recipe()?.description) {
+        <p class="recipe-description">{{ recipe()?.description }}</p>
+      }
+
+      <div class="section-label">Instructions</div>
+
+      @for (step of parsedSteps(); track $index) {
+        <div class="instruction-step">
+          <div class="step-num">{{ $index + 1 }}</div>
+          <div class="step-text">{{ step }}</div>
+        </div>
+      }
+
+    </main>
+
+  </div>
+
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading()" class="loading-state">
+    <p>Loading...</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error()" class="error-state">
+    <p>{{ error() }}</p>
+    <button (click)="goBack()">Go Back</button>
+</div>

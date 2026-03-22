@@ -1,12 +1,12 @@
 <div class="recipe-card" (click)="onClick()">
     <div class="recipe-image">
-        <img [src]="recipe.imageUrl" [alt]="recipe.name" />
+        <img [src]="recipe.imageUrl" [alt]="recipe.title" />
     </div>
     <div class="recipe-info">
-        <div class="recipe-difficulty" [class]="'difficulty-' + recipe.difficulty.toLowerCase()">
+        <div class="recipe-difficulty" [ngClass]="'difficulty-' + getDifficultyClass()">
             {{ recipe.difficulty }}
         </div>
-        <h3 class="recipe-title">{{ recipe.name }}</h3>
+        <h3 class="recipe-title">{{ recipe.title }}</h3>
         <div class="recipe-divider"></div>
         <div class="recipe-meta">
             <span class="prep-time">
