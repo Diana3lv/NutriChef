@@ -2,7 +2,12 @@
 
   <!-- Header -->
   <div class="inventory-header">
-    <h1 class="inventory-title">My Inventory</h1>
+    <div class="header-left">
+      <button class="btn-exit" (click)="goBack()">
+        <img src="assets/images/icons/arrow_back.svg" alt="Back" class="back-icon">
+      </button>
+      <h1 class="inventory-title">My Inventory</h1>
+    </div>
     <div class="header-controls">
       <app-search-bar
         class="inventory-search"

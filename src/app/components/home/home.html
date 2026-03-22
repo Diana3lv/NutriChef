@@ -22,25 +22,36 @@
     
     <!-- Popular Recipes Section -->
     <section class="recipes-section">
-        <h2 class="section-title">Popular Recipes</h2>
-        <div class="recipe-grid">
-            <app-recipe-card 
-                *ngFor="let recipe of popularRecipes"
-                [recipe]="recipe"
-                (cardClick)="viewRecipe($event)">
-            </app-recipe-card>
-        </div>
+        @if (isLoading()) {
+          <div class="status-message">Loading recipes...</div>
+        } @else if (error()) {
+          <div class="status-message error">{{ error() }}</div>
+        } @else {
+          <h2 class="section-title">Popular Recipes</h2>
+          <div class="recipe-grid">
+              @for (recipe of popularRecipes; track recipe.id) {
+                <app-recipe-card 
+                    [recipe]="recipe"
+                    (cardClick)="viewRecipe($event)">
+                </app-recipe-card>
+              }
+              @empty {
+                <div class="no-recipes">No popular recipes found</div>
+              }
+          </div>
+        }
     </section>
 
     <!-- Recommended Recipes Section -->
-    <section class="recipes-section">
+    <section class="recipes-section" *ngIf="!isLoading() && !error()">
         <h2 class="section-title">Recommended Recipes</h2>
         <div class="recipe-grid">
-            <app-recipe-card 
-                *ngFor="let recipe of recommendedRecipes"
-                [recipe]="recipe"
-                (cardClick)="viewRecipe($event)">
-            </app-recipe-card>
+            @for (recipe of recommendedRecipes; track recipe.id) {
+              <app-recipe-card 
+                  [recipe]="recipe"
+                  (cardClick)="viewRecipe($event)">
+              </app-recipe-card>
+            }
         </div>
     </section>
 </div>

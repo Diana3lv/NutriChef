@@ -126,3 +126,23 @@
     grid-template-columns: 1fr;
   }
 }
+.status-message {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: $text-secondary;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
+  
+  &.error {
+    color: $error;
+    background: rgba(239, 83, 80, 0.1);
+  }
+}
+
+.no-recipes {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: $text-hint;
+}

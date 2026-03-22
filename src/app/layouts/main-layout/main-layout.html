@@ -3,14 +3,14 @@
 <div class="layout">
   <app-sidebar></app-sidebar>
 
-  <div class="content-wrapper" (scroll)="onContentScroll()">
+  <div class="content-wrapper" #contentWrapper (scroll)="onContentScroll()">
     <app-navbar></app-navbar>
 
     <div class="content" (click)="handleContentClick()">
       <router-outlet></router-outlet>
     </div>
 
-    <a class="fab-inventory" routerLink="/inventory">
+    <a class="fab-inventory" routerLink="/inventory" *ngIf="!isInventoryPage()">
       <div class="fab-icon"></div>
       <span class="fab-label">Inventory</span>
     </a>

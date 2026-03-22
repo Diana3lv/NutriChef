@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientCategory, InventoryItem } from '../../interfaces/inventory';
 import { SearchBar } from '../shared/search-bar/search-bar';
@@ -14,6 +14,7 @@ import { IngredientCard } from '../shared/ingredient-card/ingredient-card';
 })
 export class Inventory {
   private fb = inject(FormBuilder);
+  private location = inject(Location);
 
   IngredientCategory = IngredientCategory;
 
@@ -139,4 +140,9 @@ export class Inventory {
       items.map(i => i.id === item.id ? { ...i, expiryDate: val } : i)
     );
   }
+
+  goBack() {
+    this.location.back();
+  }
 }
+

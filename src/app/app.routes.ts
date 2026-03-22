@@ -7,6 +7,7 @@ import { Register } from './components/register/register';
 import { Onboarding } from './components/onboarding/onboarding';
 import { Profile } from './components/profile/profile';
 import { Inventory } from './components/inventory/inventory';
+import { RecipeDetail } from './components/recipe-detail/recipe-detail';
 
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
@@ -20,7 +21,8 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: Home, canActivate: [authGuard] },
       { path: 'profile', component: Profile, canActivate: [authGuard] },
-      { path: 'inventory', component: Inventory, canActivate: [authGuard] }
+      { path: 'inventory', component: Inventory, canActivate: [authGuard] },
+      { path: 'recipes/:id', component: RecipeDetail, canActivate: [authGuard] }
     ]
   },
   { 

@@ -13,7 +13,7 @@ export class SearchBar {
   @Input() placeholder = 'Search by recipe title or by filters...';
   @Input() showFilter = true;
   @Input() size: 'default' | 'small' = 'default';
-  @Input() liveSearch = false; // Emits on input change
+  @Input() liveSearch = false;
 
   @Output() search = new EventEmitter<string>();
   @Output() filterOpen = new EventEmitter<void>();
