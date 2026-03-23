@@ -64,7 +64,8 @@ export class Profile implements OnInit {
       dietaryPreferences: this.fb.group(
         this.dietaryPreferences.reduce((acc, item) => ({ ...acc, [item.key]: [false] }), {})
       ),
-      medicalConditions: ['']
+      medicalConditions: [''],
+      intolerances: ['']
     });
   }
 
@@ -89,7 +90,8 @@ export class Profile implements OnInit {
           this.nutritionProfileForm.patchValue({
             allergies: allergyControls,
             dietaryPreferences: dietaryControls,
-            medicalConditions: profile.medicalConditions ?? ''
+            medicalConditions: profile.medicalConditions ?? '',
+            intolerances: profile.intolerances ?? ''
           });
         },
         error: () => {
@@ -231,7 +233,8 @@ export class Profile implements OnInit {
     return {
       allergens,
       dietaryPreferences,
-      medicalConditions: formValue.medicalConditions ?? ''
+      medicalConditions: formValue.medicalConditions ?? '',
+      intolerances: formValue.intolerances ?? ''
     };
   }
 
