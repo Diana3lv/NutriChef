@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest, catchError, of } from 'rxjs';
 import { Auth } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
-import { ALLERGY_OPTIONS, DIETARY_PREFERENCE_OPTIONS } from '../../constants/nutrition-profile-options';
+import { NutritionProfileOptionsService, HealthOption } from '../../services/nutrition-profile-options.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,6 +17,7 @@ import { ALLERGY_OPTIONS, DIETARY_PREFERENCE_OPTIONS } from '../../constants/nut
 export class Profile implements OnInit {
   private authService = inject(Auth);
   private userService = inject(UserService);
+  private healthOptionsService = inject(NutritionProfileOptionsService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   
@@ -24,20 +26,78 @@ export class Profile implements OnInit {
   isChangingPassword = signal(false);
   isSaving = signal(false);
   isSavingNutritionProfile = signal(false);
+  isLoadingForms = signal(true);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
+  allergiesError = signal<string | null>(null);
+  dietaryPreferencesError = signal<string | null>(null);
 
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
   nutritionProfileForm!: FormGroup;
 
-  allergies = ALLERGY_OPTIONS;
-
-  dietaryPreferences = DIETARY_PREFERENCE_OPTIONS;
+  allergies = signal<HealthOption[]>([]);
+  dietaryPreferences = signal<HealthOption[]>([]);
 
   ngOnInit() {
-    this.initializeForms();
-    this.loadNutritionProfile();
+    combineLatest([
+      this.healthOptionsService.getAllergens().pipe(
+        catchError((err) => {
+          console.error('Failed to load allergens:', err);
+          this.allergiesError.set('Failed to load allergen options');
+          return of([] as HealthOption[]);
+        })
+      ),
+      this.healthOptionsService.getDietaryPreferences().pipe(
+        catchError((err) => {
+          console.error('Failed to load dietary preferences:', err);
+          this.dietaryPreferencesError.set('Failed to load dietary preference options');
+          return of([] as HealthOption[]);
+        })
+      ),
+      this.userService.getNutritionProfile().pipe(
+        catchError(() => of(null))
+      )
+    ]).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ([allergens, preferences, profile]) => {
+          this.allergies.set(allergens);
+          this.dietaryPreferences.set(preferences);
+          this.allergiesError.set(allergens.length === 0 ? this.allergiesError() : null);
+          this.dietaryPreferencesError.set(preferences.length === 0 ? this.dietaryPreferencesError() : null);
+          this.initializeForms();
+          if (profile) {
+            this.populateFormWithProfileData(profile);
+          }
+          this.isLoadingForms.set(false);
+        },
+        error: (err) => {
+          console.error('Unexpected error in profile initialization:', err);
+          this.isLoadingForms.set(false);
+        }
+      });
+  }
+
+  private populateFormWithProfileData(profile: any) {
+    const selectedAllergens = new Set(profile.allergens ?? []);
+    const selectedDietaryPreferences = new Set(profile.dietaryPreferences ?? []);
+
+    const allergyControls = this.allergies().reduce((acc, option) => ({
+      ...acc,
+      [option.apiValue]: selectedAllergens.has(option.apiValue)
+    }), {} as Record<string, boolean>);
+
+    const dietaryControls = this.dietaryPreferences().reduce((acc, option) => ({
+      ...acc,
+      [option.apiValue]: selectedDietaryPreferences.has(option.apiValue)
+    }), {} as Record<string, boolean>);
+
+    this.nutritionProfileForm.patchValue({
+      allergies: allergyControls,
+      dietaryPreferences: dietaryControls,
+      medicalConditions: profile.medicalConditions ?? '',
+      intolerances: profile.intolerances ?? ''
+    });
   }
 
   private initializeForms() {
@@ -59,45 +119,14 @@ export class Profile implements OnInit {
 
     this.nutritionProfileForm = this.fb.group({
       allergies: this.fb.group(
-        this.allergies.reduce((acc, item) => ({ ...acc, [item.key]: [false] }), {})
+        this.allergies().reduce((acc, item) => ({ ...acc, [item.apiValue]: [false] }), {})
       ),
       dietaryPreferences: this.fb.group(
-        this.dietaryPreferences.reduce((acc, item) => ({ ...acc, [item.key]: [false] }), {})
+        this.dietaryPreferences().reduce((acc, item) => ({ ...acc, [item.apiValue]: [false] }), {})
       ),
       medicalConditions: [''],
       intolerances: ['']
     });
-  }
-
-  private loadNutritionProfile() {
-    this.userService.getNutritionProfile()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (profile) => {
-          const selectedAllergens = new Set(profile.allergens ?? []);
-          const selectedDietaryPreferences = new Set(profile.dietaryPreferences ?? []);
-
-          const allergyControls = this.allergies.reduce((acc, option) => ({
-            ...acc,
-            [option.key]: selectedAllergens.has(option.apiValue)
-          }), {} as Record<string, boolean>);
-
-          const dietaryControls = this.dietaryPreferences.reduce((acc, option) => ({
-            ...acc,
-            [option.key]: selectedDietaryPreferences.has(option.apiValue)
-          }), {} as Record<string, boolean>);
-
-          this.nutritionProfileForm.patchValue({
-            allergies: allergyControls,
-            dietaryPreferences: dietaryControls,
-            medicalConditions: profile.medicalConditions ?? '',
-            intolerances: profile.intolerances ?? ''
-          });
-        },
-        error: () => {
-          // Keep defaults when no profile data is available.
-        }
-      });
   }
 
   private passwordMatchValidator(group: FormGroup) {
@@ -207,7 +236,8 @@ export class Profile implements OnInit {
       this.userService.updateNutritionProfile(this.toApiNutritionProfilePayload())
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: () => {
+          next: (updatedProfile) => {
+            this.populateFormWithProfileData(updatedProfile);
             this.isSavingNutritionProfile.set(false);
             this.successMessage.set('Nutrition profile saved successfully!');
             this.clearMessageAfterDelay();
@@ -222,12 +252,12 @@ export class Profile implements OnInit {
 
   private toApiNutritionProfilePayload() {
     const formValue = this.nutritionProfileForm.value;
-    const allergens = this.allergies
-      .filter(option => formValue.allergies?.[option.key])
+    const allergens = this.allergies()
+      .filter(option => formValue.allergies?.[option.apiValue])
       .map(option => option.apiValue);
 
-    const dietaryPreferences = this.dietaryPreferences
-      .filter(option => formValue.dietaryPreferences?.[option.key])
+    const dietaryPreferences = this.dietaryPreferences()
+      .filter(option => formValue.dietaryPreferences?.[option.apiValue])
       .map(option => option.apiValue);
 
     return {
