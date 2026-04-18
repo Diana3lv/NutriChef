@@ -1,6 +1,7 @@
 @use './variables' as *;
 @use './forms' as *;
 
+
 .left-section {
   position: relative;
   background-image: url('/assets/images/backgrounds/bg.jpg');
@@ -116,15 +117,6 @@
   }
 }
 
-.error-message {
-  background: rgba(184, 84, 80, 0.08);
-  border: 1px solid rgba(184, 84, 80, 0.3);
-  border-radius: 2px;
-  color: $difficulty-hard;
-  padding: 10px 14px;
-  font-size: 12px;
-  margin-bottom: 24px;
-}
 
 .password-requirements {
   display: flex;

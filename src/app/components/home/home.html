@@ -23,35 +23,40 @@
     <!-- Popular Recipes Section -->
     <section class="recipes-section">
         @if (isLoading()) {
-          <div class="status-message">Loading recipes...</div>
+          <div class="info-message loading">Loading recipes...</div>
         } @else if (error()) {
-          <div class="status-message error">{{ error() }}</div>
+          <div class="info-message error">{{ error() }}</div>
         } @else {
           <h2 class="section-title">Popular Recipes</h2>
-          <div class="recipe-grid">
-              @for (recipe of popularRecipes; track recipe.id) {
-                <app-recipe-card 
-                    [recipe]="recipe"
-                    (cardClick)="viewRecipe($event)">
-                </app-recipe-card>
-              }
-              @empty {
-                <div class="no-recipes">No popular recipes found</div>
-              }
-          </div>
+          @if (popularRecipes.length === 0) {
+            <div class="info-message">There are no popular recipes to show at the moment.</div>
+          } @else {
+            <div class="recipe-grid">
+                @for (recipe of popularRecipes; track recipe.id) {
+                  <app-recipe-card 
+                      [recipe]="recipe"
+                      (cardClick)="viewRecipe($event)">
+                  </app-recipe-card>
+                }
+            </div>
+          }
         }
     </section>
 
     <!-- Recommended Recipes Section -->
     <section class="recipes-section" *ngIf="!isLoading() && !error()">
         <h2 class="section-title">Recommended Recipes</h2>
-        <div class="recipe-grid">
-            @for (recipe of recommendedRecipes; track recipe.id) {
-              <app-recipe-card 
-                  [recipe]="recipe"
-                  (cardClick)="viewRecipe($event)">
-              </app-recipe-card>
-            }
-        </div>
+        @if (recommendedRecipes.length === 0) {
+          <div class="info-message">There are no recommended recipes to show at the moment.</div>
+        } @else {
+          <div class="recipe-grid">
+              @for (recipe of recommendedRecipes; track recipe.id) {
+                <app-recipe-card 
+                    [recipe]="recipe"
+                    (cardClick)="viewRecipe($event)">
+                </app-recipe-card>
+              }
+          </div>
+        }
     </section>
 </div>

@@ -1,0 +1,93 @@
+@use 'variables' as *;
+@use 'forms' as *;
+
+// Error and success messages
+.error-message {
+  font-size: 13px;
+  color: $error;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background-color: rgba($error, 0.1);
+  border-left: 3px solid rgba($error, 0.8);
+  border-radius: 2px;
+}
+
+.success-message {
+  font-size: 13px;
+  color: $success;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background-color: rgba($success, 0.1);
+  border-left: 3px solid rgba($success, 0.8);
+  border-radius: 2px;
+}
+
+// Generic alert boxes
+.alert {
+  padding: 12px 16px;
+  border-radius: 2px;
+  font-size: 13px;
+  margin-bottom: 24px;
+  border: 1px solid transparent;
+
+  &.alert-success {
+    background: rgba($success, 0.08);
+    border-color: rgba($success, 0.3);
+    color: $success;
+  }
+
+  &.alert-error {
+    background: rgba($difficulty-hard, 0.08);
+    border-color: rgba($difficulty-hard, 0.3);
+    color: $difficulty-hard;
+  }
+
+  &.alert-warning {
+    background: rgba($warning, 0.08);
+    border-color: rgba($warning, 0.3);
+    color: $warning;
+  }
+
+  &.alert-info {
+    background: rgba($info, 0.08);
+    border-color: rgba($info, 0.3);
+    color: $info;
+  }
+}
+
+// Status messages
+.status-message {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: $text-secondary;
+  background: rgba($white, 0.5);
+  border-radius: 8px;
+
+  &.error {
+    color: $error;
+    background: rgba($error, 0.1);
+  }
+
+  &.success {
+    color: $success;
+    background: rgba($success, 0.1);
+  }
+}
+
+// State indicators
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem;
+  color: $text-secondary;
+}
+
+// Form validation
+.error-text {
+  @extend .form-error-text !optional;
+}
