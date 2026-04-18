@@ -18,6 +18,10 @@ export class RecipeService {
     return this.http.get<Recipe[]>(this.API_URL);
   }
 
+  getPersonalized(): Observable<Recipe[]> {
+    return this.http.get<Recipe[]>(`${this.API_URL}/personalized`);
+  }
+
   getById(id: number): Observable<Recipe> {
     return this.http.get<Recipe>(`${this.API_URL}/${id}`);
   }

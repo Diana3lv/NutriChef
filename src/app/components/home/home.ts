@@ -32,7 +32,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private scrollListener?: () => void;
 
   ngOnInit() {
-    this.recipeService.getAll().pipe(
+    this.recipeService.getPersonalized().pipe(
       finalize(() => this.isLoading.set(false))
     ).subscribe({
       next: (recipes) => {
