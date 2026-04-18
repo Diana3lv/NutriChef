@@ -85,10 +85,13 @@
             <!-- Allergies -->
             <div class="health-subsection">
                 <div class="subsection-title">Allergies</div>
+                @if (allergiesError()) {
+                    <p class="error-message">{{ allergiesError() }}</p>
+                }
                 <div class="checkbox-grid" formGroupName="allergies">
-                    @for (allergy of allergies; track allergy.key) {
+                    @for (allergy of allergies(); track allergy.apiValue) {
                     <label class="checkbox-item">
-                        <input type="checkbox" [formControlName]="allergy.key">
+                        <input type="checkbox" [formControlName]="allergy.apiValue">
                         <span>{{ allergy.label }}</span>
                     </label>
                     }
@@ -98,10 +101,13 @@
             <!-- Dietary Preferences -->
             <div class="health-subsection">
                 <div class="subsection-title">Dietary Preferences</div>
+                @if (dietaryPreferencesError()) {
+                    <p class="error-message">{{ dietaryPreferencesError() }}</p>
+                }
                 <div class="checkbox-grid" formGroupName="dietaryPreferences">
-                    @for (preference of dietaryPreferences; track preference.key) {
+                    @for (preference of dietaryPreferences(); track preference.apiValue) {
                     <label class="checkbox-item">
-                        <input type="checkbox" [formControlName]="preference.key">
+                        <input type="checkbox" [formControlName]="preference.apiValue">
                         <span>{{ preference.label }}</span>
                     </label>
                     }
