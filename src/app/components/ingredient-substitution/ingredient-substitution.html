@@ -1,0 +1,54 @@
+<div class="ingredient-substitution-container">
+  <div class="substitution-header">
+    <h3>Substitutions for {{ ingredientName }}</h3>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading substitutions...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && !error && substitutions.length === 0" class="empty-state">
+    <p>No substitutions available for this ingredient.</p>
+  </div>
+
+  <!-- Substitutions list -->
+  <div *ngIf="!loading && substitutions.length > 0" class="substitutions-list">
+    <div
+      *ngFor="let sub of substitutions"
+      class="substitution-card"
+      [class.selected]="selectedSubstitution === sub"
+      (click)="selectSubstitution(sub)"
+    >
+      <div class="substitution-name">{{ sub.name }}</div>
+      <div class="substitution-details">
+        <span class="unit">{{ sub.unit }}</span>
+        <span class="ratio">Ratio: {{ getRatioDescription(sub.ratio) }}</span>
+      </div>
+
+      <!-- Allergens -->
+      <div *ngIf="hasAllergens(sub.allergens)" class="allergens">
+        <span class="allergen-label">Allergens:</span>
+        <span
+          *ngFor="let allergen of sub.allergens"
+          class="allergen-badge"
+        >
+          {{ allergen }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected substitution details -->
+  <div *ngIf="selectedSubstitution" class="selected-substitution-info">
+    <h4>Selected: {{ selectedSubstitution.name }}</h4>
+    <p>Substitute at a ratio of {{ getRatioDescription(selectedSubstitution.ratio) }}</p>
+    <button class="use-substitution-btn">Use this substitution</button>
+  </div>
+</div>
