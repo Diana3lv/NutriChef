@@ -1,19 +1,39 @@
 <!-- <p>main-layout works!</p> -->
 
-<div class="layout">
-  <app-sidebar></app-sidebar>
+<div class="layout" [class.no-chrome]="isAdmin()">
+  <app-sidebar *ngIf="!isAdmin()"></app-sidebar>
 
-  <div class="content-wrapper" #contentWrapper (scroll)="onContentScroll()">
-    <app-navbar></app-navbar>
+  <div class="content-wrapper" #contentWrapper>
+    <app-navbar *ngIf="!isAdmin()"></app-navbar>
 
     <div class="content" (click)="handleContentClick()">
       <router-outlet></router-outlet>
     </div>
 
-    <a class="fab-inventory" routerLink="/inventory" *ngIf="!isInventoryPage()">
+    <a class="fab fab-inventory" routerLink="/inventory" *ngIf="showInventoryFab()">
       <div class="fab-icon"></div>
       <span class="fab-label">Inventory</span>
     </a>
+
+    <a class="fab fab-admin fab-ingredients" routerLink="/admin/ingredients" *ngIf="showAdminFab()">
+      <div class="fab-icon"></div>
+      <span class="fab-label">Ingredient Management</span>
+    </a>
+
+    <a class="fab fab-admin fab-users" routerLink="/admin/users" *ngIf="showAdminFab()">
+      <div class="fab-icon"></div>
+      <span class="fab-label">User Management</span>
+    </a>
+
+    <a class="fab fab-admin fab-recipes" routerLink="/admin/recipes" *ngIf="showAdminFab()">
+      <div class="fab-icon"></div>
+      <span class="fab-label">Recipe Management</span>
+    </a>
+
+    <button class="fab-sign-out" *ngIf="isAdmin()" (click)="signOut()">
+      <div class="fab-sign-out-icon"></div>
+      <span class="fab-sign-out-label">Sign Out</span>
+    </button>
     
   </div>
 </div>

@@ -19,7 +19,7 @@ export class Sidebar {
   private router = inject(Router);
 
   isExpanded = this.sidebarService.isExpanded;
-  
+
   private currentUrl = toSignal(
     this.router.events.pipe(
       filter((event): event is any => event.constructor.name === 'NavigationEnd'),
@@ -32,14 +32,15 @@ export class Sidebar {
     const url = this.currentUrl();
     return url !== '/home' && url !== '/';
   });
-  
+
+  isAdmin = computed(() => this.authService.currentUser()?.role === 'ADMIN');
+
   toggleIcon = 'assets/images/icons/arrow.png';
   signOutIcon = 'assets/images/icons/sign_out.png';
 
   menuItems = [
     { label: 'Profile', route: '/profile', icon: 'assets/images/icons/profile.png' },
     { label: 'Ask NutriAI', route: '/nutri-ai', icon: 'assets/images/icons/nutri-ai.png' },
-    { label: 'Favorites', route: '/favorites', icon: 'assets/images/icons/favorites.png' },
     { label: 'Shopping List', route: '/shopping-list', icon: 'assets/images/icons/shopping_list.png' }
   ];
 

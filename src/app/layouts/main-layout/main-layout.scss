@@ -1,5 +1,6 @@
 @use "sass:color";
 @use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
 
 :host {
   display: block;
@@ -12,6 +13,12 @@
   height: 100vh;
   background: $bg-primary;
   overflow: hidden;
+
+  &.no-chrome {
+    .content-wrapper {
+      width: 100%;
+    }
+  }
 }
 
 .content-wrapper {
@@ -28,11 +35,13 @@
   margin: 0 auto;
 }
 
-.fab-inventory {
+.fab-inventory,
+.fab-ingredients,
+.fab-users,
+.fab-recipes {
   position: fixed;
   bottom: 35px;
   right: 35px;
-  gap: 8px;
   display: flex;
   height: 48px;
   width: 48px;
@@ -47,21 +56,14 @@
   transition: width 0.3s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 20px rgba(20, 14, 8, 0.25);
 
-  &:hover {
-    width: 160px;
-    box-shadow: 0 6px 28px rgba(20, 14, 8, 0.35);
-  }
-
   .fab-icon {
     width: 48px;
     height: 48px;
     flex-shrink: 0;
     background-color: color.adjust($primary-vintage, $lightness: 30%);
-    mask-image: url("/assets/images/icons/inventory.png");
     mask-size: 20px;
     mask-repeat: no-repeat;
     mask-position: center;
-    -webkit-mask-image: url("/assets/images/icons/inventory.png");
     -webkit-mask-size: 20px;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
@@ -75,10 +77,110 @@
     opacity: 0.95;
     transition: opacity 0.2s ease 0.1s, transform 0.2s ease 0.1s;
     align-self: center;
+  }
 
-    .fab-inventory:hover & {
+  &:hover {
+    box-shadow: 0 6px 28px rgba(20, 14, 8, 0.35);
+
+    .fab-label {
       opacity: 1;
       transform: translateX(0);
     }
+  }
+}
+
+.fab-inventory {
+  .fab-icon {
+    mask-image: url("/assets/images/icons/inventory.png");
+    -webkit-mask-image: url("/assets/images/icons/inventory.png");
+  }
+
+  &:hover {
+    width: 130px;
+  }
+}
+
+.fab-admin {
+  .fab-icon {
+    mask-image: url("/assets/images/icons/menu-book.png");
+    -webkit-mask-image: url("/assets/images/icons/menu-book.png");
+  }
+
+  &:hover {
+    width: 200px;
+  }
+}
+
+.fab-ingredients {
+  bottom: 99px; // 35px base + 48px height + 16px gap above recipe FAB
+
+  .fab-icon {
+    mask-image: url("/assets/images/icons/inventory.png");
+    -webkit-mask-image: url("/assets/images/icons/inventory.png");
+  }
+
+  &:hover {
+    width: 230px;
+  }
+}
+
+.fab-users {
+  bottom: 163px; // 99px + 48px height + 16px gap
+
+  .fab-icon {
+    mask-image: url("/assets/images/icons/people.png");
+    -webkit-mask-image: url("/assets/images/icons/people.png");
+  }
+
+  &:hover {
+    width: 190px;
+  }
+}
+
+.fab-sign-out {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  width: 48px;
+  background: rgba(color.adjust($difficulty-hard, $lightness: -18%), 0.72);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 200;
+  transition: width 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba($difficulty-hard, 0.25);
+
+  &:hover {
+    width: 120px;
+    box-shadow: 0 6px 20px rgba($difficulty-hard, 0.4);
+  }
+
+  .fab-sign-out-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.85);
+    mask-image: url("/assets/images/icons/sign_out.png");
+    mask-size: 22px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-image: url("/assets/images/icons/sign_out.png");
+    -webkit-mask-size: 22px;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+  }
+
+  .fab-sign-out-label {
+    font-family: $font-family-serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    padding-right: 16px;
+    white-space: nowrap;
   }
 }
