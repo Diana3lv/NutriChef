@@ -1,0 +1,514 @@
+<div class="management-wrapper">
+  <div class="management-sidenav">
+    <button class="go-back-btn" (click)="goBack()">
+      <img src="assets/images/icons/arrow-back.svg" alt="Back" class="icon-sm">
+      Go Back
+    </button>
+  </div>
+<div class="admin-ingredients-page">
+  <!-- Page logo (standalone layout) -->
+  <div class="page-logo">
+    <img src="assets/images/logo/FullLogo_Buffered_Transparent.png" alt="NutriChef" class="logo-img" />
+  </div>
+
+  <div class="page-header">
+    <h1 class="page-title">Ingredient Management Panel</h1>
+    <button class="btn btn-primary" (click)="openAddIngredientModal()">
+      + Add Ingredient
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  <!-- INGREDIENTS TABLE -->
+  <section class="card">
+    <h2>All Ingredients</h2>
+    @if (isLoading() && ingredients().length === 0) {
+      <p class="loading-text">Loading...</p>
+    } @else if (ingredients().length === 0) {
+      <p class="empty-state">No ingredients yet. Click "+ Add Ingredient" to get started.</p>
+    } @else {
+      <div class="search-row">
+        <input
+          type="text"
+          class="table-search-input"
+          placeholder="Search ingredients…"
+          [value]="tableSearchQuery()"
+          (input)="tableSearchQuery.set($any($event.target).value)"
+        />
+      </div>
+      @if (filteredTableIngredients().length === 0) {
+        <p class="empty-state">No ingredients match your search.</p>
+      } @else {
+      <div class="ingredient-table">
+        <div class="ingredient-table-header">
+          <span>Name</span>
+          <span>Food Group</span>
+          <span>Category</span>
+          <span>Unit</span>
+          <span>Allergens</span>
+          <span>Substitutions</span>
+          <span></span>
+        </div>
+        @for (ing of filteredTableIngredients(); track ing.id) {
+          <div class="ingredient-row">
+            <span class="ing-name">{{ ing.name }}</span>
+            <span class="ing-food-group">{{ ing.foodGroup || '-' }}</span>
+            <span class="ing-category">{{ ing.category || '-' }}</span>
+            <span class="ing-unit">{{ ing.unit }}</span>
+            <span class="ing-allergens">
+              @if (ing.allergens && ing.allergens.length > 0) {
+                @for (allergen of ing.allergens; track allergen) {
+                  <span class="allergen-chip">{{ allergen }}</span>
+                }
+              } @else {
+                <span class="none-text">-</span>
+              }
+            </span>
+            <span class="ing-sub-count">
+              @if (ing.substitutions && ing.substitutions.length > 0) {
+                <span class="sub-count-badge">{{ ing.substitutions.length }}</span>
+              } @else {
+                <span class="none-text">-</span>
+              }
+            </span>
+            <span class="ing-actions">
+              <button
+                class="btn btn-sm"
+                [class.btn-outline]="ing.substitutions && ing.substitutions.length > 0"
+                [class.btn-primary]="!ing.substitutions || ing.substitutions.length === 0"
+                (click)="openViewSubstitutions(ing.id)"
+              >
+                {{ (ing.substitutions && ing.substitutions.length > 0) ? 'View Substitutions' : '+ Add Substitution' }}
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+      }
+    }
+  </section>
+
+  <!-- ADD INGREDIENT MODAL -->
+  @if (showAddIngredientModal()) {
+    <div class="modal-overlay" (click)="closeAddIngredientModal()">
+      <div class="modal-content add-ingredient-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title-lg">Add New Ingredient</h3>
+          <button class="close-btn" (click)="closeAddIngredientModal()">
+            <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
+          </button>
+        </div>
+
+        <form (ngSubmit)="submitNewIngredient()" class="modal-form">
+          <div class="modal-body ingredient-form-body">
+
+            <!-- Name -->
+            <div class="ing-form-field">
+              <label>Name <span class="required-mark">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="newIngredient.name"
+                name="ingName"
+                placeholder="e.g. Butter"
+                required
+              />
+            </div>
+
+            <!-- Unit -->
+            <div class="ing-form-field">
+              <label>Unit <span class="required-mark">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="newIngredient.unit"
+                name="ingUnit"
+                placeholder="e.g. g, ml, pcs"
+                required
+              />
+            </div>
+
+            <!-- Food Group -->
+            <div class="ing-form-field full-width">
+              <label>Food Group</label>
+              <div class="food-group-search">
+                <input
+                  type="text"
+                  [value]="foodGroupQuery()"
+                  (input)="onFoodGroupInput($any($event.target).value)"
+                  (focus)="showFoodGroupDropdown.set(true)"
+                  (blur)="onFoodGroupBlur()"
+                  name="ingFoodGroup"
+                  placeholder="Search existing or type a new group…"
+                  autocomplete="off"
+                />
+                @if (showFoodGroupDropdown() && filteredFoodGroups().length > 0) {
+                  <ul class="food-group-dropdown">
+                    @for (g of filteredFoodGroups(); track g) {
+                      <li (mousedown)="selectFoodGroup(g)">{{ g }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="ing-form-field">
+              <label>Category</label>
+              <select [(ngModel)]="newIngredient.category" name="ingCategory" class="ing-select">
+                <option [ngValue]="null">- select -</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Grains">Grains</option>
+                <option value="Meat">Meat</option>
+                <option value="Seafood">Seafood</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Allergens -->
+            <div class="ing-form-field full-width">
+              <label>Allergens</label>
+              <div class="allergen-grid">
+                @for (a of availableAllergens(); track a.value) {
+                  <button
+                    type="button"
+                    class="allergen-toggle"
+                    [class.selected]="isAllergenSelected(a.value)"
+                    (click)="toggleAllergen(a.value)"
+                  >{{ a.label }}</button>
+                }
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeAddIngredientModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading()">
+              @if (isLoading()) { Saving… } @else { Create Ingredient }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Food Group sub-modal removed: user can type directly into the food group field -->
+  }
+
+  <!-- VIEW SUBSTITUTIONS MODAL -->
+  @if (viewingIngredientId() !== null) {
+    <div class="modal-overlay" (click)="closeViewSubstitutions()">
+      <div class="m3" (click)="$event.stopPropagation()">
+        <div class="m3-header">
+          <div>
+            <div class="m3-title">Ingredient Substitutions</div>
+            <div class="m3-subtitle">Viewing alternatives for <em>{{ viewingIngredient()?.name }}</em></div>
+          </div>
+          <button class="close-btn" (click)="closeViewSubstitutions()">
+            <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
+          </button>
+        </div>
+
+        <div class="m3-body">
+
+          <!-- EXISTING SUBSTITUTIONS -->
+          @if (!viewingIngredient()?.substitutions?.length) {
+            <div class="empty-subs-state">
+              <p>No substitutions yet for <strong>{{ viewingIngredient()?.name }}</strong>.</p>
+            </div>
+          } @else {
+            @for (sub of viewingIngredient()!.substitutions!; track sub.id) {
+              <div class="ingredient-entry">
+                @if (!sub.alternatives || sub.alternatives.length === 0) {
+                  <p class="no-alternatives">No alternatives defined.</p>
+                } @else {
+                  @for (alt of sub.alternatives; track $index) {
+                    <div class="ingr-name-row">
+                      <img src="assets/images/icons/scroll_down.svg" alt="→" class="arrow-icon">
+                      <span class="ingr-alt-name">{{ alt.name }}</span>
+                      @if ($first) {
+                        <button
+                          class="btn-del-sub-round"
+                          (click)="deleteSubstitution(viewingIngredient()!.id, sub.id)"
+                          title="Delete this substitution option"
+                        >
+                          <img src="assets/images/icons/exit.svg" alt="Delete" class="icon-xs">
+                        </button>
+                      }
+                    </div>
+                    <div class="ingr-sub">
+                      <span class="ratio-pill">{{ alt.ratio ?? 1 }}:1 ratio</span>
+                      @if (alt.allergens && alt.allergens.length > 0) {
+                        @for (a of alt.allergens; track a) {
+                          <span class="allergen-pill">{{ a }}</span>
+                        }
+                      }
+                      @if (alt.description) {
+                        <em class="alt-desc-inline">"{{ alt.description }}"</em>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+          }
+
+          <!-- ADD NEW SUBSTITUTION OPTION (inline) -->
+          <div class="add-sub-section">
+            <button
+              class="btn-add-sub-toggle"
+              (click)="toggleAddSubForm()"
+            >
+              @if (showAddSubForm()) {
+                &#x2212; Cancel
+              } @else {
+                &#x2B; Add New Substitution Option
+              }
+            </button>
+
+            @if (showAddSubForm()) {
+              <div class="add-sub-form">
+                <div class="search-bar-wrapper">
+                  <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search ingredients..."
+                    [ngModel]="ingredientSearchQuery()"
+                    (ngModelChange)="ingredientSearchQuery.set($event)"
+                    (focus)="searchFocused.set(true)"
+                    (blur)="searchFocused.set(false)"
+                    name="ingredientSearchInline"
+                  />
+                </div>
+
+                <!-- Selected alternatives (always visible) -->
+                @if (selectedAlternatives().size > 0) {
+                  <div class="selected-summary">
+                    @for (alt of availableAlts(); track alt.id) {
+                      @if (isAlternativeSelected(alt.id)) {
+                        <div class="alternative-item selected">
+                          <div class="alternative-checkbox">
+                            <label>
+                              <input
+                                type="checkbox"
+                                [checked]="true"
+                                (change)="toggleAlternative(alt.id)"
+                              />
+                              <span class="alt-label-name">{{ alt.name }}</span>
+                              <em>({{ alt.unit }})</em>
+                            </label>
+                          </div>
+                          <div class="alternative-config">
+                            <div class="config-row">
+                              <div class="form-group">
+                                <label [for]="'sel-ratio-' + alt.id">Ratio</label>
+                                <input
+                                  [id]="'sel-ratio-' + alt.id"
+                                  type="number"
+                                  step="0.1"
+                                  min="0.1"
+                                  [value]="selectedAlternatives().get(alt.id)?.ratio ?? 1.0"
+                                  (change)="updateRatio(alt.id, +$any($event.target).value)"
+                                  placeholder="1.0"
+                                />
+                              </div>
+                              <div class="form-group">
+                                <label [for]="'sel-desc-' + alt.id">Description <em>(optional)</em></label>
+                                <input
+                                  [id]="'sel-desc-' + alt.id"
+                                  type="text"
+                                  [value]="selectedAlternatives().get(alt.id)?.description ?? ''"
+                                  (change)="updateDescription(alt.id, $any($event.target).value)"
+                                  placeholder="e.g. mix with water"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+
+                <!-- Hint: only when search is empty AND not yet focused -->
+                @if (!ingredientSearchQuery() && !searchFocused()) {
+                  <p class="form-hint">
+                    Select one or more ingredients that can replace <strong>{{ viewingIngredient()?.name }}</strong>.
+                    <br>
+                    All selected ingredients together form one substitution option.
+                  </p>
+                }
+
+                <!-- Filtered search results (only when typing) -->
+                @if (ingredientSearchQuery()) {
+                  <div class="alternatives-list">
+                    @for (alt of filteredAvailableAlternatives(); track alt.id) {
+                      @if (!isAlternativeSelected(alt.id)) {
+                        <div class="alternative-item" [class.selected]="isAlternativeSelected(alt.id)">
+                          <div class="alternative-checkbox">
+                            <label>
+                              <input
+                                type="checkbox"
+                                [checked]="isAlternativeSelected(alt.id)"
+                                (change)="toggleAlternative(alt.id)"
+                              />
+                              <span class="alt-label-name">{{ alt.name }}</span>
+                              <em>({{ alt.unit }})</em>
+                            </label>
+                          </div>
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+
+                <div class="add-sub-form-footer">
+                  <button
+                    class="btn btn-primary"
+                    (click)="submitSubstitutionInline()"
+                    [disabled]="isLoading() || selectedAlternatives().size === 0"
+                  >
+                    @if (isLoading()) { Saving... } @else { Save Substitution }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <div class="m3-footer">
+          <button class="btn btn-secondary" (click)="closeViewSubstitutions()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- EDIT SUBSTITUTIONS MODAL (legacy modal path) -->
+  @if (editingIngredientId() !== null) {
+    <div class="modal-overlay" (click)="closeEditSubstitutions()">
+      <div class="modal-content add-sub-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-header-content">
+            <h3>New Substitution Option</h3>
+            <span class="modal-subtitle">for <em>{{ editingIngredient()?.name }}</em></span>
+          </div>
+          <button class="close-btn" (click)="closeEditSubstitutions()">
+            <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="search-bar-wrapper">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search ingredients..."
+              [ngModel]="ingredientSearchQuery()"
+              (ngModelChange)="ingredientSearchQuery.set($event)"
+              (focus)="searchFocused.set(true)"
+              (blur)="searchFocused.set(false)"
+              name="ingredientSearchEdit"
+            />
+          </div>
+
+          @if (selectedAlternatives().size > 0) {
+            <div class="selected-summary">
+              @for (alt of availableAlts(); track alt.id) {
+                @if (isAlternativeSelected(alt.id)) {
+                  <div class="alternative-item selected">
+                    <div class="alternative-checkbox">
+                      <label>
+                        <input
+                          type="checkbox"
+                          [checked]="true"
+                          (change)="toggleAlternative(alt.id)"
+                        />
+                        <span class="alt-label-name">{{ alt.name }}</span>
+                        <em>({{ alt.unit }})</em>
+                      </label>
+                    </div>
+                    <div class="alternative-config">
+                      <div class="config-row">
+                        <div class="form-group">
+                          <label [for]="'edit-sel-ratio-' + alt.id">Ratio</label>
+                          <input
+                            [id]="'edit-sel-ratio-' + alt.id"
+                            type="number"
+                            step="0.1"
+                            min="0.1"
+                            [value]="selectedAlternatives().get(alt.id)?.ratio ?? 1.0"
+                            (change)="updateRatio(alt.id, +$any($event.target).value)"
+                            placeholder="1.0"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label [for]="'edit-sel-desc-' + alt.id">Description <em>(optional)</em></label>
+                          <input
+                            [id]="'edit-sel-desc-' + alt.id"
+                            type="text"
+                            [value]="selectedAlternatives().get(alt.id)?.description ?? ''"
+                            (change)="updateDescription(alt.id, $any($event.target).value)"
+                            placeholder="e.g. mix with water"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          @if (!ingredientSearchQuery() && !searchFocused()) {
+            <p class="form-hint">
+              Select one or more ingredients that can replace <strong>{{ editingIngredient()?.name }}</strong>.
+              All selected ingredients together form one substitution option.
+            </p>
+          }
+
+          @if (ingredientSearchQuery()) {
+            <div class="alternatives-list">
+              @for (alt of filteredAvailableAlternatives(); track alt.id) {
+                @if (!isAlternativeSelected(alt.id)) {
+                  <div class="alternative-item">
+                    <div class="alternative-checkbox">
+                      <label>
+                        <input
+                          type="checkbox"
+                          [checked]="false"
+                          (change)="toggleAlternative(alt.id)"
+                        />
+                        <span class="alt-label-name">{{ alt.name }}</span>
+                        <em>({{ alt.unit }})</em>
+                      </label>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeEditSubstitutions()">Cancel</button>
+          <button
+            class="btn btn-primary"
+            (click)="submitSubstitution()"
+            [disabled]="isLoading() || selectedAlternatives().size === 0"
+          >
+            @if (isLoading()) { Saving... } @else { Save Substitution }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+</div>

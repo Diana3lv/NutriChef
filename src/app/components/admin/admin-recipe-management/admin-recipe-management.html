@@ -1,0 +1,317 @@
+<div class="management-wrapper">
+  <div class="management-sidenav">
+    <button class="go-back-btn" (click)="goBack()">
+      <img src="assets/images/icons/arrow-back.svg" alt="Back" class="icon-sm">
+      Go Back
+    </button>
+  </div>
+<div class="admin-page">
+
+  <!-- Page logo -->
+  <div class="page-logo">
+    <img src="assets/images/logo/FullLogo_Buffered_Transparent.png" alt="NutriChef" class="logo-img" />
+  </div>
+
+  <!-- List View -->
+  @if (!showForm()) {
+    <div class="page-header">
+      <h1 class="page-title">Recipe Management Panel</h1>
+      <button class="btn-primary" (click)="openCreateForm()">+ Add Recipe</button>
+    </div>
+
+    <section class="card">
+      <h2>All Recipes</h2>
+      @if (isLoadingRecipes()) {
+        <p class="loading-text">Loading recipes...</p>
+      } @else if (recipes().length === 0) {
+        <p class="empty-hint">No recipes found. Click "Add Recipe" to create one.</p>
+      } @else {
+        <div class="search-row">
+          <input
+            type="text"
+            class="table-search-input"
+            placeholder="Search recipes…"
+            [value]="recipeSearchQuery()"
+            (input)="recipeSearchQuery.set($any($event.target).value)"
+          />
+        </div>
+        @if (filteredRecipes().length === 0) {
+          <p class="empty-hint">No recipes match your search.</p>
+        } @else {
+        <div class="t1-box">
+        <table class="t1">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Difficulty</th>
+              <th>Prep + Cook</th>
+              <th>Servings</th>
+              <th>Ingredients</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (recipe of filteredRecipes(); track recipe.id) {
+              <tr>
+                <td class="col-title">{{ recipe.title }}</td>
+                <td>
+                  <span class="badge" [class]="recipe.difficulty.toLowerCase()">
+                    {{ recipe.difficulty }}
+                  </span>
+                </td>
+                <td class="col-meta">{{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} min</td>
+                <td class="col-meta">{{ recipe.servings }}</td>
+                <td class="col-meta">{{ recipe.ingredients.length || 0 }}</td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="btn-edit" (click)="openEditForm(recipe)">Edit</button>
+                    <button class="btn-delete" (click)="deleteRecipe(recipe.id)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+        }
+      }
+    </section>
+  }
+
+  <!-- Form View -->
+  @if (showForm()) {
+    <div class="admin-header">
+      <h1 class="page-title">{{ editingRecipeId() ? 'Edit Recipe' : 'Add New Recipe' }}</h1>
+    </div>
+
+    <form class="recipe-form" (submit)="onSubmit(); $event.preventDefault()">
+
+      <!-- Basic Information -->
+      <section class="form-section">
+        <h2 class="section-title">Basic Information</h2>
+
+        <div class="form-field">
+          <label class="form-field-label">Title *</label>
+          <input
+            class="form-field-input"
+            type="text"
+            [value]="title()"
+            (input)="title.set($any($event.target).value)"
+            placeholder="Recipe title"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Description</label>
+          <textarea
+            class="form-field-input textarea"
+            [value]="description()"
+            (input)="description.set($any($event.target).value)"
+            placeholder="Short description of the recipe"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Instructions</label>
+          <textarea
+            class="form-field-input textarea"
+            [value]="instructions()"
+            (input)="instructions.set($any($event.target).value)"
+            placeholder="Step-by-step instructions..."
+            rows="6"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-field-label">Prep Time (min)</label>
+            <input
+              class="form-field-input"
+              type="number"
+              min="0"
+              [value]="prepTimeMinutes()"
+              (input)="prepTimeMinutes.set(+$any($event.target).value)"
+            />
+          </div>
+          <div class="form-field">
+            <label class="form-field-label">Cook Time (min)</label>
+            <input
+              class="form-field-input"
+              type="number"
+              min="0"
+              [value]="cookTimeMinutes()"
+              (input)="cookTimeMinutes.set(+$any($event.target).value)"
+            />
+          </div>
+          <div class="form-field">
+            <label class="form-field-label">Servings</label>
+            <input
+              class="form-field-input"
+              type="number"
+              min="1"
+              [value]="servings()"
+              (input)="servings.set(+$any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-field-label">Difficulty</label>
+            <select
+              class="form-field-input select-input"
+              [value]="difficulty()"
+              (change)="difficulty.set($any($event.target).value)"
+            >
+              <option value="EASY">Easy</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HARD">Hard</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recipe Image -->
+      <section class="form-section">
+        <h2 class="section-title">Recipe Image</h2>
+        <div class="image-upload-area">
+          @if (imagePreviewUrl()) {
+            <img [src]="imagePreviewUrl()" alt="Preview" class="image-preview" />
+          } @else {
+            <div class="image-placeholder">
+              <span class="image-placeholder-icon">📷</span>
+              <span class="image-placeholder-text">No image selected</span>
+            </div>
+          }
+          <label class="btn-secondary image-upload-btn">
+            Choose Image
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              style="display:none"
+            />
+          </label>
+        </div>
+      </section>
+
+      <!-- Ingredients -->
+      <section class="form-section">
+        <h2 class="section-title">Ingredients</h2>
+
+        <div class="form-field ingredient-search-field">
+          <label class="form-field-label">Search & Add Ingredients</label>
+          <input
+            class="form-field-input"
+            type="text"
+            [value]="ingredientSearch()"
+            (input)="ingredientSearch.set($any($event.target).value)"
+            placeholder="Type to search ingredients..."
+            autocomplete="off"
+          />
+          @if (filteredIngredients().length > 0) {
+            <div class="ingredient-dropdown">
+              @for (ingredient of filteredIngredients(); track ingredient.id) {
+                <button
+                  type="button"
+                  class="ingredient-option"
+                  (click)="addIngredient(ingredient)"
+                >
+                  <span class="ingredient-option-name">{{ ingredient.name }}</span>
+                  <span class="ingredient-option-unit">{{ ingredient.unit }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        @if (selectedIngredients().length > 0) {
+          <div class="selected-ingredients">
+            <div class="selected-ingredients-header">
+              <span>Ingredient</span>
+              <span>Unit</span>
+              <span>Quantity</span>
+              <span></span>
+            </div>
+            @for (si of selectedIngredients(); track si.ingredient.id) {
+              <div class="selected-ingredient-row">
+                <span class="ingredient-name">{{ si.ingredient.name }}</span>
+                <span class="ingredient-unit">{{ si.ingredient.unit }}</span>
+                <input
+                  class="quantity-input"
+                  type="text"
+                  [value]="si.quantity"
+                  (input)="updateQuantity(si.ingredient.id, $any($event.target).value)"
+                  placeholder="qty"
+                />
+                <button
+                  type="button"
+                  class="remove-btn"
+                  (click)="removeIngredient(si.ingredient.id)"
+                >
+                  <img src="assets/images/icons/exit.svg" alt="Remove" class="icon-xs">
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-hint">Search and add ingredients from the database above</p>
+        }
+      </section>
+
+      <!-- Tags -->
+      <section class="form-section">
+        <h3 class="section-title">Tags</h3>
+        <p class="section-hint">Select all that apply. Tags power the Browse by Category pages.</p>
+        @for (group of availableTags; track group.group) {
+          <div class="tag-group">
+            <p class="tag-group-label">{{ group.group }}</p>
+            <div class="tag-checkboxes">
+              @for (tag of group.tags; track tag.value) {
+                <label class="tag-checkbox-label" [class.selected]="isTagSelected(tag.value)">
+                  <input
+                    type="checkbox"
+                    [checked]="isTagSelected(tag.value)"
+                    (change)="toggleTag(tag.value)"
+                  />
+                  {{ tag.label }}
+                </label>
+              }
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- Messages -->
+      @if (submitError()) {
+        <p class="form-error-text">{{ submitError() }}</p>
+      }
+      @if (submitSuccess()) {
+        <p class="success-text">
+          Recipe {{ editingRecipeId() ? 'updated' : 'created' }} successfully!
+        </p>
+      }
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeForm()">Cancel</button>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="isSubmitting() || !title().trim()"
+        >
+          @if (isSubmitting()) {
+            @if (isUploadingImage()) { Uploading image... } @else { Saving recipe... }
+          } @else {
+            {{ editingRecipeId() ? 'Update Recipe' : 'Create Recipe' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+
+</div>
+</div>
