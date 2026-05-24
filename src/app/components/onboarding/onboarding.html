@@ -8,7 +8,9 @@
           [class.done]="step < currentStep()"
           [class.active]="step === currentStep()">
           <div class="step-num">
-            @if (step < currentStep()) { ✓ } @else { {{ step }} }
+            @if (step < currentStep()) {
+              <img src="assets/images/icons/tick.svg" class="step-tick-icon" alt="✓">
+            } @else { {{ step }} }
           </div>
           <div class="step-text">
             <div class="step-label">Step {{ step }}</div>

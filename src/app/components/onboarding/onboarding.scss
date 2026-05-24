@@ -54,6 +54,12 @@
   flex-shrink: 0;
   margin-top: 2px;
   transition: all 0.2s ease;
+
+  .step-tick-icon {
+    width: 13px;
+    height: 13px;
+    filter: invert(1);
+  }
 }
 
 .step-text {
