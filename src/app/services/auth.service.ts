@@ -1,14 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap, catchError, throwError, of, map } from 'rxjs';
 import { User, RegisterData, LoginCredentials, AuthResponse } from '../interfaces/user';
+import { API_BASE } from '../constants/api';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = `${API_BASE}/api/auth`;
   
   private readonly TOKEN_KEY = 'authToken';
   private readonly USER_KEY = 'currentUser';
@@ -18,9 +19,9 @@ export class Auth {
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  constructor(
-    private http: HttpClient,
-  ) {
+  private http = inject(HttpClient);
+
+  constructor() {
     this.checkAuthStatus();
   }
 
