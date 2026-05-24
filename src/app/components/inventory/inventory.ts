@@ -1,7 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { IngredientCategory, InventoryItem } from '../../interfaces/inventory';
+import { IngredientSuggestion, InventoryService } from '../../services/inventory.service';
 import { SearchBar } from '../shared/search-bar/search-bar';
 import { IngredientCard } from '../shared/ingredient-card/ingredient-card';
 
@@ -12,18 +15,16 @@ import { IngredientCard } from '../shared/ingredient-card/ingredient-card';
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })
-export class Inventory {
+export class Inventory implements OnInit {
   private fb = inject(FormBuilder);
   private location = inject(Location);
+  private inventoryService = inject(InventoryService);
 
   IngredientCategory = IngredientCategory;
 
-  // Mock inventory data
-  inventoryItems = signal<InventoryItem[]>([
-    { id: '1', name: 'Carrots', quantity: 500, unit: 'g', category: IngredientCategory.Vegetables, expiryDate: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0] },
-    { id: '2', name: 'Milk', quantity: 1, unit: 'L', category: IngredientCategory.Dairy, expiryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] },
-    { id: '3', name: 'Chicken Breast', quantity: 2, unit: 'kg', category: IngredientCategory.Meat, expiryDate: new Date(Date.now() - 86400000).toISOString().split('T')[0] }
-  ]);
+  inventoryItems = signal<InventoryItem[]>([]);
+  isLoading = signal(true);
+  error = signal<string | null>(null);
   searchQuery = signal('');
   showAddModal = signal(false);
   showDeleteModal = signal(false);
@@ -33,10 +34,35 @@ export class Inventory {
   addForm = this.fb.group({
     name: ['', Validators.required],
     quantity: [0, [Validators.required, Validators.min(0)]],
-    unit: ['g', Validators.required],
-    category: ['Other', Validators.required],
     expiryDate: ['', Validators.required]
   });
+
+  ingredientSuggestions = signal<IngredientSuggestion[]>([]);
+  showSuggestions = signal(false);
+  selectedUnit = signal<string>('');
+  private nameSearch$ = new Subject<string>();
+
+  ngOnInit() {
+    this.nameSearch$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(query => this.inventoryService.searchIngredients(query))
+    ).subscribe(results => {
+      this.ingredientSuggestions.set(results);
+      this.showSuggestions.set(results.length > 0);
+    });
+
+    this.inventoryService.getInventory().subscribe({
+      next: (items) => {
+        this.inventoryItems.set(items);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load inventory.');
+        this.isLoading.set(false);
+      }
+    });
+  }
 
   filteredItems = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -67,28 +93,60 @@ export class Inventory {
   }
 
   openAddModal() {
-    this.addForm.reset({ unit: 'g', category: 'Other', quantity: 0 });
+    this.addForm.reset({ quantity: 0 });
+    this.ingredientSuggestions.set([]);
+    this.showSuggestions.set(false);
     this.showAddModal.set(true);
   }
 
   closeAddModal() {
     this.showAddModal.set(false);
+    this.showSuggestions.set(false);
+    this.selectedUnit.set('');
+  }
+
+  onNameInput(event: Event) {
+    const query = (event.target as HTMLInputElement).value;
+    this.nameSearch$.next(query);
+  }
+
+  selectIngredient(suggestion: IngredientSuggestion) {
+    this.addForm.patchValue({ name: suggestion.name });
+    this.selectedUnit.set(suggestion.unit ?? '');
+    this.showSuggestions.set(false);
+    this.ingredientSuggestions.set([]);
   }
 
   addItem() {
     if (this.addForm.valid) {
       const formVal = this.addForm.value;
       const newItem: InventoryItem = {
-        id: crypto.randomUUID(),
+        id: '',
         name: formVal.name!,
         quantity: formVal.quantity!,
-        unit: formVal.unit!,
-        category: formVal.category as IngredientCategory,
+        unit: '',
+        category: IngredientCategory.Other,
         expiryDate: formVal.expiryDate!
       };
       
-      this.inventoryItems.update(items => [...items, newItem]);
-      this.closeAddModal();
+      this.inventoryService.addItem(newItem).subscribe({
+        next: (created) => {
+          // The backend merges quantities when the ingredient already exists,
+          // returning the updated existing item (same id). Use upsert to avoid
+          // duplicate entries when track-by-id sees the same id twice.
+          this.inventoryItems.update(items => {
+            const idx = items.findIndex(i => i.id === created.id);
+            if (idx >= 0) {
+              const updated = [...items];
+              updated[idx] = created;
+              return updated;
+            }
+            return [...items, created];
+          });
+          this.closeAddModal();
+        },
+        error: () => this.error.set('Failed to add item.')
+      });
     }
   }
 
@@ -105,8 +163,13 @@ export class Inventory {
   confirmDelete() {
     const item = this.itemToDelete();
     if (item) {
-      this.inventoryItems.update(items => items.filter(i => i.id !== item.id));
-      this.closeDeleteModal();
+      this.inventoryService.deleteItem(item.id).subscribe({
+        next: () => {
+          this.inventoryItems.update(items => items.filter(i => i.id !== item.id));
+          this.closeDeleteModal();
+        },
+        error: () => this.error.set('Failed to delete item.')
+      });
     }
   }
 
@@ -115,10 +178,13 @@ export class Inventory {
   }
 
   saveEdit(item: InventoryItem) {
-    this.inventoryItems.update(items => 
-      items.map(i => i.id === item.id ? { ...item } : i)
-    );
-    this.editingItemId.set(null);
+    this.inventoryService.updateItem(item).subscribe({
+      next: (updated) => {
+        this.inventoryItems.update(items => items.map(i => i.id === updated.id ? updated : i));
+        this.editingItemId.set(null);
+      },
+      error: () => this.error.set('Failed to update item.')
+    });
   }
 
   updateQuantity(item: InventoryItem, val: number) {
