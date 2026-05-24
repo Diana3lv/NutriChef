@@ -1,0 +1,262 @@
+// ============================================================
+// Shared Management Panel Styles
+// Used by: admin-ingredients, admin-recipe-management, admin-ingredient-management
+// ============================================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// =====================
+// PAGE WRAPPER
+// =====================
+@mixin management-page-base {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem 100px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@mixin management-page-narrow-base {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.management-page {
+  @include management-page-base;
+}
+
+.management-page-narrow {
+  @include management-page-narrow-base;
+}
+
+// =====================
+// PAGE LOGO
+// =====================
+.page-logo {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+
+  .logo-img {
+    height: 130px;
+    width: auto;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+// =====================
+// GO BACK BUTTON
+// =====================
+.go-back-btn {
+  background: transparent;
+  border: 1px solid $border-vintage-light;
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-family: $font-family-primary;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  margin-bottom: 12px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: rgba(196, 149, 106, 0.08);
+    color: $primary-vintage;
+    border-color: $primary-vintage;
+  }
+}
+
+// =====================
+// PAGE HEADER
+// =====================
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: $font-family-serif-display;
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 600;
+  color: $text-primary;
+  margin: 0;
+}
+
+// =====================
+// CARD
+// =====================
+.card {
+  background: $white;
+  border: 1px solid $border-vintage-light;
+  border-radius: 4px;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+
+  h2 {
+    font-family: $font-family-primary;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(100, 80, 60, 0.6);
+    margin: 0 0 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid $border-vintage-light;
+  }
+}
+
+// =====================
+// ALERTS
+// =====================
+.alert {
+  padding: 10px 14px;
+  border-radius: 2px;
+  font-size: $font-size-sm;
+  font-family: $font-family-primary;
+  border-left: 3px solid;
+  margin-bottom: 12px;
+
+  &.alert-error {
+    background: rgba($error, 0.06);
+    color: $error;
+    border-left-color: $error;
+  }
+
+  &.alert-success {
+    background: rgba($success, 0.06);
+    color: $success;
+    border-left-color: $success;
+  }
+}
+
+// =====================
+// COMMON TABLE STATES
+// =====================
+.loading-text,
+.empty-hint,
+.empty-state {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: $font-size-sm;
+  color: $text-hint;
+  padding: 1rem 0;
+}
+
+// =====================
+// FLOATING PAGE FOOTER (sign-out)
+// =====================
+.page-footer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+// =====================
+// MANAGEMENT LAYOUT WRAPPER
+// =====================
+.management-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+.management-sidenav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100px;
+  padding: 48px 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+// =====================
+// TABLE SEARCH ROW
+// =====================
+.search-row {
+  margin-bottom: 16px;
+}
+
+.table-search-input {
+  width: 100%;
+  max-width: 360px;
+  padding: 8px 12px;
+  border: 1px solid $border-vintage-light;
+  border-radius: 2px;
+  background: transparent;
+  font-family: $font-family-primary;
+  font-size: 13px;
+  color: $text-primary;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: $text-hint;
+  }
+
+  &:focus {
+    border-color: $primary-vintage;
+  }
+}
+
+// =====================
+// ICON SIZES & ROTATIONS
+// =====================
+.icon-sm {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: invert(0.4);
+
+  .go-back-btn:hover & { filter: invert(0); }
+  .close-btn:hover & { filter: invert(0.6); }
+}
+
+.icon-xs {
+  width: 14px;
+  height: 14px;
+  display: block;
+  filter: invert(0.4);
+
+  .remove-btn:hover & { filter: invert(0.6); }
+}
+
+.icon-arrow-left {
+  width: 16px;
+  height: 16px;
+  display: block;
+  transform: rotate(180deg);
+  filter: invert(0.5);
+
+  .btn-page:hover & { filter: invert(0); }
+}
+
+.icon-arrow-right {
+  width: 16px;
+  height: 16px;
+  display: block;
+  transform: rotate(0deg);
+  filter: invert(0.5);
+
+  .btn-page:hover & { filter: invert(0); }
+}
