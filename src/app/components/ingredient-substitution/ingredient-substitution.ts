@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IngredientSubstitutionService, Substitution } from '../../services/ingredient-substitution.service';
+import { IngredientSubstitutionService, Substitution, SubstitutionAlternative } from '../../services/ingredient-substitution.service';
 
 @Component({
   selector: 'app-ingredient-substitution',
@@ -16,7 +16,7 @@ export class IngredientSubstitutionComponent implements OnInit {
   substitutions: Substitution[] = [];
   loading = false;
   error: string | null = null;
-  selectedSubstitution: Substitution | null = null;
+  selectedAlternative: SubstitutionAlternative | null = null;
 
   constructor(private substitutionService: IngredientSubstitutionService) {}
 
@@ -35,6 +35,7 @@ export class IngredientSubstitutionComponent implements OnInit {
     this.substitutionService.getSubstitutions(this.ingredientId).subscribe({
       next: (data) => {
         this.substitutions = data;
+        console.log(data);
         this.loading = false;
       },
       error: (err) => {
@@ -45,16 +46,16 @@ export class IngredientSubstitutionComponent implements OnInit {
     });
   }
 
-  selectSubstitution(substitution: Substitution): void {
-    this.selectedSubstitution = substitution;
+  selectAlternative(alternative: SubstitutionAlternative): void {
+    this.selectedAlternative = alternative;
   }
 
   hasAllergens(allergens: string[]): boolean {
     return allergens && allergens.length > 0;
   }
 
-  getRatioDescription(ratio: string): string {
-    // Format ratio for display (e.g., "1:2" stays as "1:2")
-    return ratio || '1:1';
+  getRatioDescription(ratio: number | undefined): string {
+    if (!ratio || ratio === 1) return '1:1';
+    return `1:${ratio}`;
   }
 }

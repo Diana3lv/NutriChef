@@ -20,35 +20,60 @@
 
   <!-- Substitutions list -->
   <div *ngIf="!loading && substitutions.length > 0" class="substitutions-list">
-    <div
-      *ngFor="let sub of substitutions"
-      class="substitution-card"
-      [class.selected]="selectedSubstitution === sub"
-      (click)="selectSubstitution(sub)"
-    >
-      <div class="substitution-name">{{ sub.name }}</div>
-      <div class="substitution-details">
-        <span class="unit">{{ sub.unit }}</span>
-        <span class="ratio">Ratio: {{ getRatioDescription(sub.ratio) }}</span>
-      </div>
+    @for (sub of substitutions; track sub.id) {
+      <div class="substitution-group">
+        <div class="group-header">Substitution Option {{ sub.id }}</div>
+        
+        @for (alt of sub.alternatives; track alt.id) {
+          <div
+            class="substitution-card"
+            [class.selected]="selectedAlternative === alt"
+            (click)="selectAlternative(alt)"
+          >
+            <div class="substitution-info">
+              <div class="info-row">
+                <span class="label">Name:</span>
+                <span class="value">{{ alt.name }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Unit:</span>
+                <span class="value">{{ alt.unit }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Ratio:</span>
+                <span class="ratio-badge">{{ getRatioDescription(alt.ratio) }}</span>
+              </div>
+            </div>
 
-      <!-- Allergens -->
-      <div *ngIf="hasAllergens(sub.allergens)" class="allergens">
-        <span class="allergen-label">Allergens:</span>
-        <span
-          *ngFor="let allergen of sub.allergens"
-          class="allergen-badge"
-        >
-          {{ allergen }}
-        </span>
+            @if (alt.description) {
+              <div class="substitution-description">
+                {{ alt.description }}
+              </div>
+            }
+
+            <!-- Allergens -->
+            <div *ngIf="hasAllergens(alt.allergens)" class="allergens">
+              <span class="allergen-label">Allergens:</span>
+              <span
+                *ngFor="let allergen of alt.allergens"
+                class="allergen-badge"
+              >
+                {{ allergen }}
+              </span>
+            </div>
+          </div>
+        }
       </div>
-    </div>
+    }
   </div>
 
   <!-- Selected substitution details -->
-  <div *ngIf="selectedSubstitution" class="selected-substitution-info">
-    <h4>Selected: {{ selectedSubstitution.name }}</h4>
-    <p>Substitute at a ratio of {{ getRatioDescription(selectedSubstitution.ratio) }}</p>
+  <div *ngIf="selectedAlternative" class="selected-substitution-info">
+    <h4>Selected: {{ selectedAlternative.name }}</h4>
+    <p>Substitute at a ratio of {{ getRatioDescription(selectedAlternative.ratio) }}</p>
+    @if (selectedAlternative.description) {
+      <p class="description">{{ selectedAlternative.description }}</p>
+    }
     <button class="use-substitution-btn">Use this substitution</button>
   </div>
 </div>

@@ -1,21 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE } from '../constants/api';
+import { Ingredient, Substitution } from './ingredient-management.service';
 
-export interface Substitution {
-  name: string;
-  unit: string;
-  allergens: string[];
-  ratio: string;
-}
+export type { Ingredient, Substitution };
+export type SubstitutionAlternative = Ingredient; // Type alias
 
 @Injectable({
   providedIn: 'root'
 })
 export class IngredientSubstitutionService {
-  private apiUrl = '/api/ingredients';
-
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = `${API_BASE}/api/ingredients`;
+  private http = inject(HttpClient);
 
   getSubstitutions(ingredientId: number): Observable<Substitution[]> {
     return this.http.get<Substitution[]>(

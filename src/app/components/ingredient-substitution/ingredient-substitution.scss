@@ -65,10 +65,46 @@
       background-color: rgba($primary-color, 0.05);
     }
 
-    .substitution-name {
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-      margin-bottom: $spacing-sm;
+    .substitution-info {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-md;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-xs $spacing-sm;
+      background-color: rgba($primary-color, 0.02);
+      border-left: 3px solid $primary-color;
+      border-radius: $border-radius-sm;
+
+      .label {
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+        font-size: $font-size-sm;
+        min-width: 60px;
+      }
+
+      .value {
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+        flex: 1;
+        text-align: right;
+      }
+
+      .ratio-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.6rem;
+        background-color: rgba($primary-color, 0.15);
+        color: $primary-color;
+        border-radius: 20px;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+      }
     }
 
     .substitution-details {
@@ -85,6 +121,17 @@
       .ratio {
         color: $text-secondary;
       }
+    }
+
+    .substitution-description {
+      font-size: $font-size-sm;
+      color: $text-secondary;
+      font-style: italic;
+      padding: $spacing-sm;
+      background-color: rgba($info, 0.05);
+      border-left: 2px solid $info;
+      border-radius: $border-radius-sm;
+      margin: $spacing-sm 0;
     }
 
     .allergens {
@@ -112,6 +159,20 @@
     }
   }
 
+  .substitution-group {
+    margin-bottom: $spacing-lg;
+
+    .group-header {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-secondary;
+      padding: $spacing-sm $spacing-md;
+      background-color: $bg-tertiary;
+      border-radius: $border-radius-sm;
+      margin-bottom: $spacing-md;
+    }
+  }
+
   .selected-substitution-info {
     padding: $spacing-md;
     background-color: rgba($success, 0.05);
@@ -128,6 +189,11 @@
       margin: 0 0 $spacing-md 0;
       color: $text-secondary;
       font-size: $font-size-sm;
+
+      &.description {
+        font-style: italic;
+        color: $text-secondary;
+      }
     }
 
     .use-substitution-btn {
