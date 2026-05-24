@@ -24,26 +24,6 @@
   margin-bottom: 30px;
 }
 
-.alert {
-  padding: 12px 16px;
-  border-radius: 2px;
-  font-size: 13px;
-  margin-bottom: 24px;
-  border: 1px solid transparent;
-
-  &.alert-success {
-    background: rgba($difficulty-easy, 0.08);
-    border-color: rgba($difficulty-easy, 0.3);
-    color: $difficulty-easy;
-  }
-
-  &.alert-error {
-    background: rgba($difficulty-hard, 0.08);
-    border-color: rgba($difficulty-hard, 0.3);
-    color: $difficulty-hard;
-  }
-}
-
 .profile-section {
   margin-bottom: 100px;
 }

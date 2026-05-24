@@ -1,0 +1,135 @@
+<div class="management-wrapper">
+  <div class="management-sidenav">
+    <button class="go-back-btn" (click)="goBack()">
+      <img src="assets/images/icons/arrow-back.svg" alt="Back" class="icon-sm">
+      Go Back
+    </button>
+  </div>
+<div class="admin-page">
+
+  <!-- Page logo -->
+  <div class="page-logo">
+    <img src="assets/images/logo/FullLogo_Buffered_Transparent.png" alt="NutriChef" class="logo-img" />
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">User Management Panel</h1>
+  </div>
+
+  <!-- Alerts -->
+  @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+      <button (click)="loadUsers()" class="btn-retry">Retry</button>
+    </div>
+  }
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  <!-- Users Table Card -->
+  <section class="card">
+    <h2>All Users</h2>
+
+    @if (isLoading()) {
+      <p class="loading-text">Loading users...</p>
+    } @else {
+      <!-- Filters & Search -->
+      <div class="filter-section">
+        <input
+          type="text"
+          placeholder="Search by email or name…"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event); onSearch()"
+          class="search-input"
+        />
+        <select
+          [ngModel]="roleFilter()"
+          (ngModelChange)="roleFilter.set($event); onRoleFilterChange()"
+          class="role-filter-select"
+        >
+          <option value="">All Roles</option>
+          @for (role of roleOptions; track role.value) {
+            <option [value]="role.value">{{ role.label }}</option>
+          }
+        </select>
+        @if (searchQuery() || roleFilter()) {
+          <button (click)="clearFilters()" class="btn-clear-filters">Clear</button>
+        }
+      </div>
+
+      <!-- Table -->
+      <div class="t1-box">
+        <table class="t1">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Last Login</th>
+              <th>Recipes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (paginatedUsers().length === 0) {
+              <tr>
+                <td colspan="8">
+                  <p class="empty-hint">
+                    @if (users().length === 0) { No users found. }
+                    @else { No users match the selected filters. }
+                  </p>
+                </td>
+              </tr>
+            } @else {
+              @for (user of paginatedUsers(); track user.id) {
+                <tr [class.inactive-row]="!user.isActive">
+                  <td class="col-title">{{ getUserDisplayName(user) }}</td>
+                  <td class="col-email">{{ user.email }}</td>
+                  <td class="col-role">
+                    <span class="role-badge" [class]="getRoleBadgeClass(user.role)">{{ user.role }}</span>
+                  </td>
+                  <td>
+                    <span class="badge" [class]="getStatusClass(user)">
+                      {{ getStatusLabel(user) }}
+                    </span>
+                  </td>
+                  <td class="col-meta">{{ formatDate(user.createdAt) }}</td>
+                  <td class="col-meta">{{ formatDate(user.lastLogin) }}</td>
+                  <td class="col-meta">{{ user.recipesCreatedCount }}</td>
+                  <td>
+                    <div class="actions-cell">
+                      <button
+                        class="btn-delete"
+                        (click)="deleteUser(user)"
+                        title="Delete user"
+                        [disabled]="user.role === 'ADMIN'"
+                      >Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1" class="btn-page" title="Previous">
+            <img src="assets/images/icons/arrow-forward.svg" alt="Previous" class="icon-arrow-left">
+          </button>
+          <span class="page-info">Page {{ currentPage() }} of {{ totalPages() }}</span>
+          <button (click)="nextPage()" [disabled]="currentPage() === totalPages()" class="btn-page" title="Next">
+            <img src="assets/images/icons/arrow-forward.svg" alt="Next" class="icon-arrow-right">
+          </button>
+        </div>
+      }
+    }
+  </section>
+</div>
+</div>

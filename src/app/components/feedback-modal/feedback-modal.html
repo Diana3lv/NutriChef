@@ -1,0 +1,113 @@
+<div class="modal-backdrop" (click)="error() ? dismissed.emit() : (isUpdate ? confirmNo() : null)"></div>
+<div class="modal-card" role="dialog" aria-modal="true">
+
+  <!-- Error screen (inventory validation failed / can't complete) -->
+  @if (error()) {
+    <div class="error-screen">
+      <div class="error-screen-icon">
+        <img src="assets/images/icons/attention.png" alt="Warning" class="attention-icon">
+      </div>
+      <h2 class="error-screen-title">Can't complete recipe</h2>
+      <p class="error-screen-subtitle">You don't have enough ingredients. Go to your shopping list to get what's missing.</p>
+
+      @if (missing()?.length) {
+        <div class="missing-list">
+          <div class="missing-list-header">
+            <span>Ingredient</span>
+            <span>Have</span>
+            <span>Need</span>
+          </div>
+          @for (item of missing()!; track item.name) {
+            <div class="missing-list-row">
+              <span class="missing-name">{{ item.name }}</span>
+              <span class="missing-have">{{ item.available }} {{ item.unit }}</span>
+              <span class="missing-need">{{ item.needed }} {{ item.unit }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button class="btn-submit" type="button" (click)="dismissed.emit()">Got it</button>
+      </div>
+    </div>
+
+  <!-- Confirm update screen (only when existing feedback) -->
+  } @else if (showConfirmScreen()) {
+    <div class="modal-header">
+      <h2 class="modal-title">Update your feedback?</h2>
+      <p class="modal-subtitle">You've already rated <strong>{{ recipeTitle }}</strong>. Do you want to update your notes?</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-skip" type="button" (click)="confirmNo()">No, skip</button>
+      <button class="btn-submit" type="button" (click)="confirmYes()">Yes, update</button>
+    </div>
+  } @else {
+
+    <div class="modal-header">
+      <h2 class="modal-title">How did it go?</h2>
+      <p class="modal-subtitle">Share your experience with <strong>{{ recipeTitle }}</strong>.</p>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Star rating -->
+      <div class="field-group">
+        <label class="field-label">Your rating <span class="required">*</span></label>
+        <div class="stars-row">
+          @for (star of stars; track star) {
+            <button
+              class="star-btn"
+              [class.active]="star <= selectedRating()"
+              (click)="setRating(star)"
+              type="button"
+              [attr.aria-label]="star + ' star' + (star > 1 ? 's' : '')"
+            >★</button>
+          }
+        </div>
+        @if (ratingError()) {
+          <p class="field-error">Please select a rating before submitting.</p>
+        }
+      </div>
+
+      <!-- What I liked -->
+      <div class="field-group">
+        <label class="field-label" for="liked-notes">What did you like?</label>
+        <textarea
+          id="liked-notes"
+          class="field-textarea"
+          rows="3"
+          placeholder="e.g. The texture was perfect…"
+          [value]="likedNotes()"
+          (input)="likedNotes.set($any($event.target).value)"
+        ></textarea>
+      </div>
+
+      <!-- What to improve -->
+      <div class="field-group">
+        <label class="field-label" for="improvement-notes">What would you improve next time?</label>
+        <textarea
+          id="improvement-notes"
+          class="field-textarea"
+          rows="3"
+          placeholder="e.g. Add more spice, reduce cooking time…"
+          [value]="improvementNotes()"
+          (input)="improvementNotes.set($any($event.target).value)"
+        ></textarea>
+        <p class="field-hint">This note will appear on the recipe page as a reminder.</p>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      @if (isUpdate) {
+        <button class="btn-skip" type="button" (click)="cancel()">Cancel</button>
+      }
+      <button class="btn-submit" type="button" (click)="submit()">
+        {{ isUpdate ? 'Update notes' : 'Save & finish' }}
+      </button>
+    </div>
+
+  }
+
+</div>

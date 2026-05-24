@@ -15,10 +15,12 @@
     </button>
     }
 
+    @if (!liveSearch) {
     <button class="search-btn" (click)="onSearch()">
         @if (size === 'default') {
         <img src="assets/images/icons/search.png" alt="" class="search-icon">
         }
         Search
     </button>
+    }
 </div>

@@ -77,3 +77,44 @@
     box-shadow: 0 0 0 3px rgba($primary-vintage, 0.1);
   }
 }
+
+// Sign Out Button (matches sidebar style)
+@mixin sign-out-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 10px 20px;
+  width: fit-content;
+  border-radius: 2px;
+  border: 0.5px solid rgba($difficulty-hard, 0.2);
+  background: transparent;
+  color: rgba($difficulty-hard, 0.7);
+  font-family: $font-family-primary;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+
+  .icon-img {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    object-fit: contain;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover {
+    background-color: rgba($difficulty-hard, 0.06);
+    border-color: rgba($difficulty-hard, 0.4);
+    color: $difficulty-hard;
+
+    .icon-img {
+      opacity: 1;
+    }
+  }
+}

@@ -138,6 +138,12 @@
             color: $primary-color;
             padding-left: 20px;
         }
+
+        &.active {
+            color: $primary-vintage;
+            font-weight: 600;
+            background: rgba($primary-vintage, 0.06);
+        }
     }
 
     .favorites-btn {
@@ -164,6 +170,62 @@
             background-color: rgba(196, 149, 106, 0.12);
 
             .heart-icon {
+                opacity: 1;
+            }
+        }
+    }
+
+    .done-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.4s ease;
+
+        .done-icon {
+            width: 22px;
+            height: 22px;
+            filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        &:hover {
+            background-color: rgba(196, 149, 106, 0.12);
+
+            .done-icon {
+                opacity: 1;
+            }
+        }
+    }
+
+    .shopping-list-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.4s ease;
+
+        .shopping-list-icon {
+            width: 22px;
+            height: 22px;
+            filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(200deg) brightness(0.6);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        &:hover {
+            background-color: rgba(33, 150, 243, 0.12);
+
+            .shopping-list-icon {
                 opacity: 1;
             }
         }

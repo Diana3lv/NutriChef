@@ -4,17 +4,96 @@
         <div class="hero-content">
             <!-- Home title -->
             <h1 class="hero-title">
-                Find your next delicious recipe
-                to make today
+                {{ heroTitle() }}
             </h1>
 
             <!-- Search bar -->
             <app-search-bar 
+                [liveSearch]="true"
                 (search)="onSearch($event)" 
                 (filterOpen)="onFilterOpen()">
             </app-search-bar>
         </div>
     </section>
+
+    <!-- Filter Panel -->
+    @if (showFilterPanel()) {
+      <div class="filter-panel">
+        <div class="filter-panel-header">
+          <span class="filter-panel-title">Filter Recipes</span>
+          <div class="filter-panel-actions">
+            @if (activeFilterCount() > 0) {
+              <button class="filter-clear-btn" (click)="clearAllFilters()">Clear all ({{ activeFilterCount() }})</button>
+            }
+            <button class="filter-close-btn" (click)="onFilterOpen()">&#x2715;</button>
+          </div>
+        </div>
+        <div class="filter-panel-body">
+
+          @if (!isAdmin()) {
+            <div class="filter-group">
+              <div class="filter-group-title">Ingredient Availability</div>
+              <label class="filter-checkbox-label">
+                <input type="checkbox" [checked]="filterInventoryOnly()" (change)="filterInventoryOnly.set(!filterInventoryOnly())" />
+                <span>Only recipes I can make from my inventory</span>
+              </label>
+            </div>
+          }
+
+          <div class="filter-group">
+            <div class="filter-group-title">Must Include Ingredients</div>
+            <div class="filter-ingredient-search">
+              <input
+                type="text"
+                class="filter-ingredient-input"
+                placeholder="Search ingredient…"
+                [value]="ingredientFilterInput()"
+                (input)="ingredientFilterInput.set($any($event.target).value)"
+              />
+              @if (ingredientSuggestions().length > 0) {
+                <div class="filter-ingredient-dropdown">
+                  @for (name of ingredientSuggestions(); track name) {
+                    <button type="button" class="filter-ingredient-option" (click)="addRequiredIngredient(name)">{{ name }}</button>
+                  }
+                </div>
+              }
+            </div>
+            @if (filterRequiredIngredients().length > 0) {
+              <div class="filter-chips">
+                @for (name of filterRequiredIngredients(); track name) {
+                  <span class="filter-chip">{{ name }}<button class="filter-chip-remove" (click)="removeRequiredIngredient(name)">&#x2715;</button></span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-group-title">Difficulty</div>
+            <div class="filter-checkbox-col">
+              @for (d of difficultyOptions; track d) {
+                <label class="filter-checkbox-label">
+                  <input type="checkbox" [checked]="filterDifficulty().includes(d)" (change)="toggleDifficulty(d)" />
+                  <span class="difficulty-badge" [ngClass]="d.toLowerCase()">{{ d | titlecase }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="filter-group-title">Max Total Time</div>
+            <div class="filter-checkbox-col">
+              @for (opt of maxTimeOptions; track opt.value) {
+                <label class="filter-radio-label">
+                  <input type="radio" name="maxTime" [checked]="filterMaxTime() === opt.value" (change)="filterMaxTime.set(opt.value)" />
+                  <span>{{ opt.label }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+        </div>
+      </div>
+    }
 
     <div class="scroll-indicator" [class.hidden]="!showScrollIndicator()">
         <img src="assets/images/icons/scroll_down.svg" alt="Scroll Down" class="scroll-icon">
@@ -23,35 +102,42 @@
     <!-- Popular Recipes Section -->
     <section class="recipes-section">
         @if (isLoading()) {
-          <div class="status-message">Loading recipes...</div>
+          <div class="info-message loading">Loading recipes...</div>
         } @else if (error()) {
-          <div class="status-message error">{{ error() }}</div>
+          <div class="info-message error">{{ error() }}</div>
         } @else {
           <h2 class="section-title">Popular Recipes</h2>
+          @if (popularRecipes().length === 0) {
+            <div class="info-message">
+              {{ activeFilterCount() > 0 || searchQuery() ? 'No recipes match the current search or filters.' : 'There are no popular recipes to show at the moment.' }}
+            </div>
+          } @else {
+            <div class="recipe-grid">
+                @for (recipe of popularRecipes(); track recipe.id) {
+                  <app-recipe-card 
+                      [recipe]="recipe"
+                      (cardClick)="viewRecipe($event)">
+                  </app-recipe-card>
+                }
+            </div>
+          }
+        }
+    </section>
+
+    <!-- Recommended Recipes Section -->
+    <section class="recipes-section" *ngIf="!isLoading() && !error() && !isAdmin()">
+        <h2 class="section-title">Recommended Recipes</h2>
+        @if (recommendedRecipes().length === 0) {
+          <div class="info-message">There are no recommended recipes to show at the moment.</div>
+        } @else {
           <div class="recipe-grid">
-              @for (recipe of popularRecipes; track recipe.id) {
+              @for (recipe of recommendedRecipes(); track recipe.id) {
                 <app-recipe-card 
                     [recipe]="recipe"
                     (cardClick)="viewRecipe($event)">
                 </app-recipe-card>
               }
-              @empty {
-                <div class="no-recipes">No popular recipes found</div>
-              }
           </div>
         }
-    </section>
-
-    <!-- Recommended Recipes Section -->
-    <section class="recipes-section" *ngIf="!isLoading() && !error()">
-        <h2 class="section-title">Recommended Recipes</h2>
-        <div class="recipe-grid">
-            @for (recipe of recommendedRecipes; track recipe.id) {
-              <app-recipe-card 
-                  [recipe]="recipe"
-                  (cardClick)="viewRecipe($event)">
-              </app-recipe-card>
-            }
-        </div>
     </section>
 </div>

@@ -1,14 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, of, map } from 'rxjs';
 import { User, RegisterData, LoginCredentials, AuthResponse } from '../interfaces/user';
+import { API_BASE } from '../constants/api';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = `${API_BASE}/api/auth`;
   
   private readonly TOKEN_KEY = 'authToken';
   private readonly USER_KEY = 'currentUser';
@@ -18,9 +19,9 @@ export class Auth {
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  constructor(
-    private http: HttpClient,
-  ) {
+  private http = inject(HttpClient);
+
+  constructor() {
     this.checkAuthStatus();
   }
 
@@ -56,6 +57,7 @@ export class Auth {
     localStorage.removeItem(this.EXPIRY_KEY);
     this.currentUser.set(null);
     this.error.set(null);
+    // No navigation here, interceptor handles it
   }
 
   isAuthenticated(): boolean {
@@ -64,6 +66,17 @@ export class Auth {
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  validateCurrentSession(): Observable<boolean> {
+    return this.http.get(`${this.API_URL}/validate`, { observe: 'response' }).pipe(
+      map(() => true),
+      catchError((_error: HttpErrorResponse) => {
+        // Any validation failure means this local session cannot be trusted.
+        this.logout();
+        return of(false);
+      })
+    );
   }
 
   private handleAuthSuccess(response: AuthResponse): void {

@@ -24,3 +24,18 @@ export interface InventoryItem {
   category: IngredientCategory;
   expiryDate: string; // ISO Date string YYYY-MM-DD
 }
+
+export interface InventoryIngredientDTO {
+  id?: number;
+  ingredient: {
+    id?: number;
+    name: string;
+    unit?: string;
+    allergens?: string[];
+    category?: string;
+  };
+  quantity: string;
+  expiryDate?: string;
+  notes?: string;
+  dateAdded?: string;
+}

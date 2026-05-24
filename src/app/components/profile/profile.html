@@ -85,10 +85,13 @@
             <!-- Allergies -->
             <div class="health-subsection">
                 <div class="subsection-title">Allergies</div>
+                @if (allergiesError()) {
+                    <p class="error-message">{{ allergiesError() }}</p>
+                }
                 <div class="checkbox-grid" formGroupName="allergies">
-                    @for (allergy of allergies; track allergy.key) {
+                    @for (allergy of allergies(); track allergy.apiValue) {
                     <label class="checkbox-item">
-                        <input type="checkbox" [formControlName]="allergy.key">
+                        <input type="checkbox" [formControlName]="allergy.apiValue">
                         <span>{{ allergy.label }}</span>
                     </label>
                     }
@@ -98,10 +101,13 @@
             <!-- Dietary Preferences -->
             <div class="health-subsection">
                 <div class="subsection-title">Dietary Preferences</div>
+                @if (dietaryPreferencesError()) {
+                    <p class="error-message">{{ dietaryPreferencesError() }}</p>
+                }
                 <div class="checkbox-grid" formGroupName="dietaryPreferences">
-                    @for (preference of dietaryPreferences; track preference.key) {
+                    @for (preference of dietaryPreferences(); track preference.apiValue) {
                     <label class="checkbox-item">
-                        <input type="checkbox" [formControlName]="preference.key">
+                        <input type="checkbox" [formControlName]="preference.apiValue">
                         <span>{{ preference.label }}</span>
                     </label>
                     }
@@ -110,9 +116,16 @@
 
             <!-- Medical Conditions -->
             <div class="health-subsection">
-                <div class="subsection-title">Medical Conditions & Food Intolerances</div>
-                <textarea formControlName="medicalConditions" class="health-textarea" rows="4"
-                    placeholder="e.g., diabetes, celiac disease, lactose intolerance, histamine sensitivity, high blood pressure..."></textarea>
+                <div class="subsection-title">Medical Conditions</div>
+                <textarea formControlName="medicalConditions" class="health-textarea" rows="3"
+                    placeholder="e.g., diabetes, hypertension, heart disease, arthritis..."></textarea>
+            </div>
+
+            <!-- Food Intolerances -->
+            <div class="health-subsection">
+                <div class="subsection-title">Food Intolerances</div>
+                <textarea formControlName="intolerances" class="health-textarea" rows="3"
+                    placeholder="e.g., lactose intolerant, gluten intolerant, histamine sensitivity..."></textarea>
             </div>
 
             <div class="form-actions">

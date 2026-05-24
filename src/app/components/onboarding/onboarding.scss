@@ -54,6 +54,12 @@
   flex-shrink: 0;
   margin-top: 2px;
   transition: all 0.2s ease;
+
+  .step-tick-icon {
+    width: 13px;
+    height: 13px;
+    filter: invert(1);
+  }
 }
 
 .step-text {
@@ -102,6 +108,11 @@
   padding: 48px 44px;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+form {
+  flex: 1;
 }
 
 .card-header {
@@ -180,6 +191,23 @@
     font-style: italic;
     color: $text-disabled;
   }
+}
+
+.health-subsection {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.subsection-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-primary;
+  margin-bottom: 16px;
 }
 
 .card-actions {

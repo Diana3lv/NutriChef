@@ -1,0 +1,93 @@
+<div class="collection-page" [class.sidebar-expanded]="isSidebarExpanded()">
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Recipes In Progress</h1>
+      <p class="hero-subtitle">Recipes you're currently cooking</p>
+    </div>
+  </section>
+
+  <section class="recipes-section">
+    @if (isLoading()) {
+      <div class="info-message loading">Loading recipes...</div>
+    } @else if (error()) {
+      <div class="info-message error">{{ error() }}</div>
+    } @else if (items().length === 0) {
+      <div class="info-message empty">
+        <p>You're not cooking anything yet. Open a recipe and click "Start Cooking" to begin!</p>
+      </div>
+    } @else {
+      <div class="recipe-grid">
+        @for (item of paginatedItems(); track item.recipeId) {
+          <div class="progress-card">
+            <div class="card-image-wrap" (click)="viewRecipe(item.recipeId)">
+              <img
+                [src]="item.recipe?.imageUrl || 'assets/images/backgrounds/placeholder.jpg'"
+                [alt]="item.recipe?.title"
+                class="card-image"
+              />
+              <span
+                class="difficulty-badge"
+                [ngClass]="getDifficultyClass(item.recipe?.difficulty)"
+              >{{ item.recipe?.difficulty }}</span>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title" (click)="viewRecipe(item.recipeId)">
+                {{ item.recipe?.title }}
+              </h3>
+              <div class="card-meta">
+                <span class="meta-item">
+                  {{ (item.recipe?.prepTimeMinutes ?? 0) + (item.recipe?.cookTimeMinutes ?? 0) }} min
+                </span>
+                <span class="meta-sep">·</span>
+                <span class="meta-item">{{ item.recipe?.servings }} servings</span>
+              </div>
+              @if (item.feedback?.improvementNotes) {
+                <p class="improvement-hint">
+                  <span class="hint-label">Last time:</span> {{ item.feedback!.improvementNotes }}
+                </p>
+              }
+              <div class="card-actions">
+                <button class="btn-done" (click)="openFeedbackModal(item)">
+                  <img src="assets/images/icons/tick.svg" class="btn-tick-icon" alt=""> Mark as Done
+                </button>
+                <button class="btn-cancel" (click)="cancelItem(item)">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  @if (!isLoading() && !error() && items().length > 0) {
+    <footer class="pagination-bar">
+      <hr class="pagination-divider" />
+      <div class="pagination-controls">
+        <button class="page-arrow" [disabled]="currentPage() === 1" (click)="prevPage()">
+          <img src="assets/images/icons/arrow-forward.svg" alt="Previous" class="icon-arrow-left">
+        </button>
+        <span class="page-label">Page {{ currentPage() }} of {{ totalPages() }}</span>
+        <button class="page-arrow" [disabled]="currentPage() === totalPages()" (click)="nextPage()">
+          <img src="assets/images/icons/arrow-forward.svg" alt="Next" class="icon-arrow-right">
+        </button>
+      </div>
+    </footer>
+  }
+
+</div>
+
+<!-- Feedback modal overlay -->
+@if (showFeedbackModal()) {
+  <app-feedback-modal
+    [recipeTitle]="feedbackItem()?.recipe?.title ?? ''"
+    [existingFeedback]="getExistingFeedback()"
+    [errorMessage]="feedbackError()"
+    [missingIngredients]="feedbackMissingIngredients()"
+    (submitted)="onFeedbackSubmitted($event)"
+    (skipped)="onFeedbackSkipped()"
+    (dismissed)="closeFeedbackModal()"
+  ></app-feedback-modal>
+}

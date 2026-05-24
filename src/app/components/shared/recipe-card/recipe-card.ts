@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Recipe } from '../../../interfaces/recipe';
+import { RecipeDTO } from '../../../services/recipe.service';
 
 @Component({
   selector: 'app-recipe-card',
@@ -10,7 +10,7 @@ import { Recipe } from '../../../interfaces/recipe';
   styleUrl: './recipe-card.scss',
 })
 export class RecipeCard {
-  @Input({ required: true }) recipe!: Recipe;
+  @Input({ required: true }) recipe!: RecipeDTO;
   @Output() cardClick = new EventEmitter<number>();
 
   onClick() {

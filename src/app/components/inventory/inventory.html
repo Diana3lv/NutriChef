@@ -4,7 +4,7 @@
   <div class="inventory-header">
     <div class="header-left">
       <button class="btn-exit" (click)="goBack()">
-        <img src="assets/images/icons/arrow_back.svg" alt="Back" class="back-icon">
+        <img src="assets/images/icons/arrow-back.svg" alt="Back" class="back-icon">
       </button>
       <h1 class="inventory-title">My Inventory</h1>
     </div>
@@ -53,37 +53,44 @@
 @if (showAddModal()) {
   <div class="modal-backdrop" (click)="closeAddModal()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-title">Add Ingredient</div>
-      <div class="modal-subtitle">Add a new item to your inventory</div>
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-title">Add Ingredient</div>
+          <div class="modal-subtitle">Add a new item to your inventory</div>
+        </div>
+        <button class="modal-close-btn" (click)="closeAddModal()">
+          <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
+        </button>
+      </div>
 
       <form [formGroup]="addForm">
         <div class="modal-field">
           <label>Ingredient Name</label>
-          <input type="text" formControlName="name" placeholder="e.g. Whole Milk">
-        </div>
-
-        <div class="modal-row">
-          <div class="modal-field">
-            <label>Quantity</label>
-            <input type="number" formControlName="quantity" placeholder="0">
-          </div>
-          <div class="modal-field">
-            <label>Unit</label>
-            <select formControlName="unit">
-              <option value="g">g</option>
-              <option value="kg">kg</option>
-              <option value="ml">ml</option>
-              <option value="L">L</option>
-              <option value="pcs">pcs</option>
-            </select>
+          <div class="autocomplete-wrapper">
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g. Whole Milk"
+              (input)="onNameInput($event)"
+              autocomplete="off">
+            @if (showSuggestions()) {
+              <ul class="suggestions-list">
+                @for (s of ingredientSuggestions(); track s.id) {
+                  <li (mousedown)="selectIngredient(s)">{{ s.name }}</li>
+                }
+              </ul>
+            }
           </div>
         </div>
 
         <div class="modal-field">
-          <label>Category</label>
-          <select formControlName="category">
-            <option *ngFor="let cat of IngredientCategory | keyvalue" [value]="cat.value">{{cat.value}}</option>
-          </select>
+          <label>Quantity</label>
+          <div class="quantity-with-unit">
+            <input type="number" formControlName="quantity" placeholder="0">
+            @if (selectedUnit()) {
+              <span class="unit-hint">{{ selectedUnit() }}</span>
+            }
+          </div>
         </div>
 
         <div class="modal-field">

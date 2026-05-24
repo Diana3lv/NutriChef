@@ -65,7 +65,13 @@
                         <div class="password-requirements">
                             @for (req of getPasswordRequirements(); track req.text) {
                             <div class="requirement-item" [class.met]="req.met" [class.unmet]="!req.met">
-                                <span class="icon">{{ req.met ? '✓' : '✗' }}</span>
+                                <span class="icon">
+                                    @if (req.met) {
+                                        <img src="assets/images/icons/tick.svg" class="req-tick-icon" alt="✓">
+                                    } @else {
+                                        <img src="assets/images/icons/exit.svg" class="req-cross-icon" alt="✗">
+                                    }
+                                </span>
                                 <span class="text">{{ req.text }}</span>
                             </div>
                             }

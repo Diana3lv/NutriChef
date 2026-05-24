@@ -1,0 +1,197 @@
+@use '../../../styles/variables' as *;
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.collection-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// =====================
+// HERO
+// =====================
+.hero-section {
+    border-bottom: 1px solid $gray-800;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    position: relative;
+    width: 100%;
+    height: 26vh;
+    background-image: url('/assets/images/backgrounds/bg.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 80px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 0;
+    }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.hero-title {
+    font-family: $font-family-serif-display;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 38px;
+    color: white;
+    line-height: 1.2;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: 12px;
+}
+
+.hero-subtitle {
+    font-family: $font-family-primary;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+// =====================
+// TAB BAR
+// =====================
+.tab-bar {
+    display: flex;
+    gap: 0;
+    padding: 0 80px;
+    background: $bg-vintage;
+    border-bottom: 1px solid rgba($primary-vintage, 0.2);
+}
+
+.tab-btn {
+    padding: 14px 28px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: $font-family-primary;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        color: $text-primary;
+    }
+
+    &.active {
+        color: $primary-vintage;
+        border-bottom-color: $primary-vintage;
+    }
+}
+
+// =====================
+// RECIPE GRID
+// =====================
+.recipes-section {
+    flex: 1;
+    padding: 48px 80px 32px;
+    background: $bg-vintage;
+}
+
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 280px);
+    gap: 28px;
+    justify-content: center;
+}
+
+.info-message {
+    font-family: $font-family-primary;
+    font-size: 16px;
+    text-align: center;
+    padding: 60px 20px;
+    color: $text-secondary;
+
+    &.loading { color: $primary-vintage; }
+    &.error    { color: #c0392b; }
+    &.empty    { line-height: 1.8; }
+}
+
+// =====================
+// PAGINATION BAR
+// =====================
+.pagination-bar {
+    background: $bg-vintage;
+    padding: 0 80px 32px;
+}
+
+.pagination-divider {
+    border: none;
+    border-top: 2px solid rgba($primary-vintage, 0.25);
+    margin: 0 0 20px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+}
+
+.page-arrow {
+    background: transparent;
+    border: 1px solid $border-vintage-light;
+    border-radius: 2px;
+    padding: 6px 14px;
+    font-size: 18px;
+    color: $primary-vintage;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    line-height: 1;
+
+    &:hover:not(:disabled) {
+        background: rgba($primary-vintage, 0.08);
+        border-color: $primary-vintage;
+    }
+
+    &:disabled {
+        color: $text-hint;
+        border-color: $border-vintage-light;
+        cursor: default;
+    }
+}
+
+.page-label {
+    font-family: $font-family-primary;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: $text-secondary;
+    text-transform: uppercase;
+}
+
+.icon-arrow-left {
+    width: 16px;
+    height: 16px;
+    display: block;
+    transform: rotate(180deg);
+    filter: invert(0.5);
+}
+
+.icon-arrow-right {
+    width: 16px;
+    height: 16px;
+    display: block;
+    filter: invert(0.5);
+}

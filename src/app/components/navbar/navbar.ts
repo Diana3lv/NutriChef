@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs/operators';
 
 interface DropdownItem {
   label: string;
@@ -20,7 +22,25 @@ interface NavMenu {
   styleUrl: './navbar.scss',
 })
 export class Navbar {
+  private router = inject(Router);
   activeDropdown = signal<string | null>(null);
+
+  protected readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  activeGroup = computed(() => {
+    const url = this.currentUrl();
+    for (const menu of this.menuItems) {
+      if (menu.items.some(item => url.startsWith(item.route))) return menu.label;
+    }
+    return null;
+  });
 
   menuItems: NavMenu[] = [
     {
@@ -88,15 +108,14 @@ export class Navbar {
   }
 
   selectMenuItem(item: DropdownItem) {
-    console.log('Selected menu item:', item.label, 'Route:', item.route);
     this.closeDropdown();
-
-    //TODO: Implement navigation logic here
   }
 
   navigateToFavourites() {
-    console.log('Navigating to Favourites');
+    this.router.navigate(['/favorites']);
+  }
 
-    //TODO: Implement navigation logic to Favourites here
+  navigateToDone() {
+    this.router.navigate(['/done-recipes']);
   }
 }

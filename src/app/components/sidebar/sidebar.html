@@ -23,6 +23,12 @@
                         <span class="label"> {{ item.label }} </span>
                     </a>
                 }
+                @if (isAdmin()) {
+                    <a class="menu-item" routerLink="/admin/recipes" routerLinkActive="active" (click)="closeSidebar()">
+                        <img src="assets/images/icons/profile.png" alt="Admin" class="icon-img">
+                        <span class="label">Admin Panel</span>
+                    </a>
+                }
             </nav>
 
             <!-- Sign out button -->
