@@ -1,0 +1,44 @@
+<div class="browse-page" [class.sidebar-expanded]="isSidebarExpanded()">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">{{ heroTitle() }}</h1>
+            <p class="hero-subtitle">Browse our collection of {{ heroTitle().toLowerCase() }} recipes</p>
+        </div>
+    </section>
+
+    <section class="recipes-section">
+        @if (isLoading()) {
+            <div class="info-message loading">Loading recipes...</div>
+        } @else if (error()) {
+            <div class="info-message error">{{ error() }}</div>
+        } @else if (recipes().length === 0) {
+            <div class="info-message empty">
+                <p>No {{ heroTitle().toLowerCase() }} recipes found yet. Check back soon!</p>
+            </div>
+        } @else {
+            <div class="recipe-grid">
+                @for (recipe of paginatedRecipes(); track recipe.id) {
+                    <app-recipe-card
+                        [recipe]="recipe"
+                        (cardClick)="viewRecipe($event)">
+                    </app-recipe-card>
+                }
+            </div>
+        }
+    </section>
+
+    @if (!isLoading() && !error() && recipes().length > 0) {
+        <footer class="pagination-bar">
+            <hr class="pagination-divider" />
+            <div class="pagination-controls">
+                <button class="page-arrow" [disabled]="currentPage() === 1" (click)="prevPage()">
+                  <img src="assets/images/icons/arrow-forward.svg" alt="Previous" class="icon-arrow-left">
+                </button>
+                <span class="page-label">Page {{ currentPage() }} of {{ totalPages() }}</span>
+                <button class="page-arrow" [disabled]="currentPage() === totalPages()" (click)="nextPage()">
+                  <img src="assets/images/icons/arrow-forward.svg" alt="Next" class="icon-arrow-right">
+                </button>
+            </div>
+        </footer>
+    }
+</div>
