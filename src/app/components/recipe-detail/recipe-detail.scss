@@ -1,3 +1,4 @@
+@use "sass:color";
 @use '../../../styles/variables' as *;
 
 :host {
@@ -114,11 +115,12 @@
 
 .recipe-sidebar {
   position: sticky;
-  top: 80px;
+  top: 0;
   padding: 40px 36px;
   background: white;
+  max-height: 100vh;
+  overflow-y: auto;
   border-right: 1px solid rgba($primary-vintage, 0.2);
-  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -244,6 +246,291 @@
   }
 }
 
+.btn-done {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: transparent;
+  border: 1px solid rgba($primary-vintage, 0.3);
+  border-radius: 2px;
+  color: $text-secondary;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+  .done-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(340deg) brightness(0.5);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover {
+    border-color: $primary-vintage;
+    color: $primary-vintage;
+    background: rgba($primary-vintage, 0.05);
+
+    .done-icon { opacity: 1; }
+  }
+
+  &.active {
+    border-color: color.mix(black, $primary-vintage, 15%);
+    color: color.mix(black, $primary-vintage, 15%);
+    background: rgba($primary-vintage, 0.12);
+
+    .done-icon { opacity: 1; }
+  }
+}
+
+// ── Status badge in hero ──────────────────────────────────────────────────────
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+
+  &.in_progress {
+    background: rgba(#FF9800, 0.18);
+    color: #FF9800;
+  }
+
+  &.done {
+    background: rgba(#4CAF50, 0.18);
+    color: #4CAF50;
+  }
+}
+
+// ── Cooking action buttons ────────────────────────────────────────────────────
+
+.btn-start-cooking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: $primary-vintage;
+  border: none;
+  border-radius: 2px;
+  color: white;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover:not(:disabled) { background: $primary-vintage-dark; }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+.btn-mark-done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid #4CAF50;
+  border-radius: 2px;
+  color: #4CAF50;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  .btn-tick-icon { width: 13px; height: 13px; filter: invert(52%) sepia(50%) saturate(500%) hue-rotate(90deg) brightness(0.8); }
+
+  &:hover:not(:disabled) {
+    background: rgba(#4CAF50, 0.08);
+  }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+.btn-cancel-cooking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid $gray-300;
+  border-radius: 2px;
+  color: $gray-600;
+  font-family: $font-family-primary;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $gray-500;
+    color: $gray-800;
+  }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+// ── Improvement notes in main content ────────────────────────────────────────
+
+.improvement-notes {
+  background: rgba($primary-vintage, 0.05);
+  border-left: 3px solid $primary-vintage;
+  border-radius: 0 3px 3px 0;
+  padding: 14px 18px;
+}
+
+.improvement-notes-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $primary-vintage;
+  margin-bottom: 6px;
+}
+
+.improvement-notes-text {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 14px;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.btn-shopping-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  background: transparent;
+  border: 1px solid rgba(#2196F3, 0.3);
+  border-radius: 2px;
+  color: #2196F3;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+  .shopping-list-icon {
+    width: 14px;
+    height: 14px;
+    filter: invert(0.3) sepia(0.8) saturate(1.5) hue-rotate(200deg) brightness(0.6);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: #2196F3;
+    color: #2196F3;
+    background: rgba(#2196F3, 0.05);
+
+    .shopping-list-icon { opacity: 1; }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.success-message {
+  padding: 10px 14px;
+  background: rgba(#4CAF50, 0.15);
+  border-left: 3px solid #4CAF50;
+  color: #4CAF50;
+  font-family: $font-family-primary;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  border-radius: 2px;
+  animation: slideIn 0.3s ease;
+}
+
+.error-notification {
+  padding: 10px 14px;
+  background: rgba(#EF5350, 0.12);
+  border-left: 3px solid #EF5350;
+  color: #EF5350;
+  font-family: $font-family-primary;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  border-radius: 2px;
+  animation: slideIn 0.3s ease;
+}
+
+.feedback-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedback-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.feedback-star {
+  font-size: 20px;
+  color: rgba($primary-vintage, 0.2);
+
+  &.filled {
+    color: $primary-vintage;
+  }
+}
+
+.feedback-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.feedback-note-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: $text-secondary;
+}
+
+.feedback-note-text {
+  font-family: $font-family-serif;
+  font-style: italic;
+  font-size: 13px;
+  color: $text-primary;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .recipe-main {
   padding: 48px 60px;
   display: flex;
@@ -257,6 +544,34 @@
   font-size: 16px;
   color: $text-secondary;
   line-height: 1.75;
+  margin: 0;
+  overflow: hidden;
+  max-height: calc(16px * 1.75 * 3);
+
+  &.expanded {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.btn-toggle-description {
+  background: none;
+  border: none;
+  color: $primary-vintage;
+  font-family: $font-family-primary;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px 0 0;
+  display: block;
+  transition: opacity 0.2s ease;
+
+  &:hover { opacity: 0.7; }
+}
+
+.description-wrap {
   padding-bottom: 32px;
   border-bottom: 1px solid rgba($primary-vintage, 0.15);
 }

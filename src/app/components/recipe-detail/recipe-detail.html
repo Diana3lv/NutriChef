@@ -6,7 +6,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <button class="btn-back" (click)="goBack()">
-        <img src="assets/images/icons/arrow_back.svg" alt="Back" class="back-icon">
+        <img src="assets/images/icons/arrow-back.svg" alt="Back" class="back-icon">
         Back
       </button>
       <div class="hero-bottom">
@@ -60,6 +60,7 @@
         </div>
       </div>
 
+      <!-- Favorite -->
       <button class="btn-favorite"
         (click)="toggleFavorite()"
         [class.active]="isFavorite()">
@@ -70,13 +71,60 @@
         {{ isFavorite() ? 'Saved' : 'Save Recipe' }}
       </button>
 
+      <!-- Cooking status actions -->
+      @if (status() === null) {
+        <button class="btn-start-cooking"
+          (click)="startCooking()"
+          [disabled]="statusActionLoading()">
+          {{ statusActionLoading() ? 'Starting...' : 'Start Cooking' }}
+        </button>
+      }
+
+      @if (status() === 'IN_PROGRESS') {
+        <button class="btn-mark-done"
+          (click)="openDoneModal()"
+          [disabled]="statusActionLoading()">
+          <img src="assets/images/icons/tick.svg" class="btn-tick-icon" alt=""> Mark as Done
+        </button>
+        <button class="btn-cancel-cooking"
+          (click)="cancelCooking()"
+          [disabled]="statusActionLoading()">
+          {{ statusActionLoading() ? 'Cancelling...' : 'Cancel' }}
+        </button>
+      }
+
+      @if (status() === 'DONE') {
+        <button class="btn-start-cooking"
+          (click)="startCooking()"
+          [disabled]="statusActionLoading()">
+          {{ statusActionLoading() ? 'Starting...' : 'Make Again' }}
+        </button>
+      }
+
+      @if (statusActionError()) {
+        <div class="error-notification">{{ statusActionError() }}</div>
+      }
+
     </aside>
 
     <!-- Main content -->
     <main class="recipe-main">
 
       @if (recipe()?.description) {
-        <p class="recipe-description">{{ recipe()?.description }}</p>
+        <div class="description-wrap">
+          <p class="recipe-description" [class.expanded]="descriptionExpanded()">{{ recipe()?.description }}</p>
+          <button class="btn-toggle-description" (click)="toggleDescription()">
+            {{ descriptionExpanded() ? 'See less' : 'See more' }}
+          </button>
+        </div>
+      }
+
+      <!-- Your improvement notes from last time -->
+      @if (existingFeedback()?.improvementNotes) {
+        <div class="improvement-notes">
+          <div class="improvement-notes-label">Your notes for next time</div>
+          <p class="improvement-notes-text">{{ existingFeedback()!.improvementNotes }}</p>
+        </div>
       }
 
       <div class="section-label">Instructions</div>
@@ -104,3 +152,16 @@
     <p>{{ error() }}</p>
     <button (click)="goBack()">Go Back</button>
 </div>
+
+<!-- Feedback modal -->
+@if (showFeedbackModal()) {
+  <app-feedback-modal
+    [recipeTitle]="recipe()?.title ?? ''"
+    [existingFeedback]="existingFeedback()"
+    [errorMessage]="feedbackError()"
+    [missingIngredients]="feedbackMissingIngredients()"
+    (submitted)="onFeedbackSubmitted($event)"
+    (skipped)="onFeedbackSkipped()"
+    (dismissed)="onErrorDismissed()"
+  ></app-feedback-modal>
+}
