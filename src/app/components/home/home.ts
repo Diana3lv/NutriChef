@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, effect, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -41,13 +41,18 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   // Live search query
   searchQuery = signal('');
 
-  // Filter panel state
-  showFilterPanel = signal(false);
+  // Filter modal
+  showFilterModal = signal(false);
   filterInventoryOnly = signal(false);
   filterRequiredIngredients = signal<string[]>([]);
   filterDifficulty = signal<string[]>([]);
   filterMaxTime = signal(0);   // 0 = any
-  ingredientFilterInput = signal('');
+  // Draft state (edits inside modal before committing)
+  draftInventoryOnly = signal(false);
+  draftRequiredIngredients = signal<string[]>([]);
+  draftDifficulty = signal<string[]>([]);
+  draftMaxTime = signal(0);
+  draftIngredientInput = signal('');
   inventoryItems = signal<InventoryItem[]>([]);
 
   readonly maxTimeOptions = [
@@ -66,12 +71,21 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   });
 
   ingredientSuggestions = computed(() => {
-    const input = this.ingredientFilterInput().toLowerCase().trim();
+    const input = this.draftIngredientInput().toLowerCase().trim();
     if (!input) return [];
-    const selected = new Set(this.filterRequiredIngredients().map(n => n.toLowerCase()));
+    const selected = new Set(this.draftRequiredIngredients().map(n => n.toLowerCase()));
     return this.allIngredientNames()
       .filter(n => !selected.has(n.toLowerCase()) && n.toLowerCase().includes(input))
       .slice(0, 8);
+  });
+
+  draftActiveFilterCount = computed(() => {
+    let count = 0;
+    if (this.draftInventoryOnly()) count++;
+    if (this.draftRequiredIngredients().length) count++;
+    if (this.draftDifficulty().length) count++;
+    if (this.draftMaxTime() > 0) count++;
+    return count;
   });
 
   inventoryIngredientNames = computed(() =>
@@ -116,10 +130,50 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     return recipes;
   });
 
-  popularRecipes = computed(() => this.filteredRecipes().slice(0, 4));
-  recommendedRecipes = computed(() => this.filteredRecipes().slice(4));
+  // Admin pagination
+  readonly ADMIN_PAGE_SIZE = 12;
+  adminPage = signal(1);
+  adminTotalPages = computed(() => Math.max(1, Math.ceil(this.filteredRecipes().length / this.ADMIN_PAGE_SIZE)));
+  adminPaginatedRecipes = computed(() => {
+    const start = (this.adminPage() - 1) * this.ADMIN_PAGE_SIZE;
+    return this.filteredRecipes().slice(start, start + this.ADMIN_PAGE_SIZE);
+  });
+
+  // User row pagination
+  readonly USER_ROW_SIZE = 4;
+  popularPage = signal(1);
+  recommendedPage = signal(1);
+  popularRecipes = computed(() => {
+    if (this.isAdmin()) return this.adminPaginatedRecipes();
+    const all = this.filteredRecipes();
+    const start = (this.popularPage() - 1) * this.USER_ROW_SIZE;
+    return all.slice(start, start + this.USER_ROW_SIZE);
+  });
+  popularTotalPages = computed(() => Math.max(1, Math.ceil(this.filteredRecipes().length / this.USER_ROW_SIZE)));
+  recommendedRecipes = computed(() => {
+    const all = this.filteredRecipes();
+    const start = (this.recommendedPage() - 1) * this.USER_ROW_SIZE;
+    return all.slice(start, start + this.USER_ROW_SIZE);
+  });
+  recommendedTotalPages = computed(() => Math.max(1, Math.ceil(this.filteredRecipes().length / this.USER_ROW_SIZE)));
 
   private scrollListener?: () => void;
+
+  constructor() {
+    effect(() => {
+      this.filteredRecipes();
+      this.adminPage.set(1);
+      this.popularPage.set(1);
+      this.recommendedPage.set(1);
+    });
+  }
+
+  adminPrevPage() { if (this.adminPage() > 1) this.adminPage.update(p => p - 1); }
+  adminNextPage() { if (this.adminPage() < this.adminTotalPages()) this.adminPage.update(p => p + 1); }
+  popularPrev() { if (this.popularPage() > 1) this.popularPage.update(p => p - 1); }
+  popularNext() { if (this.popularPage() < this.popularTotalPages()) this.popularPage.update(p => p + 1); }
+  recommendedPrev() { if (this.recommendedPage() > 1) this.recommendedPage.update(p => p - 1); }
+  recommendedNext() { if (this.recommendedPage() < this.recommendedTotalPages()) this.recommendedPage.update(p => p + 1); }
 
   ngOnInit() {
     this.recipeService.getPersonalized().pipe(
@@ -159,30 +213,48 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onFilterOpen(): void {
-    this.showFilterPanel.set(!this.showFilterPanel());
+    // Copy applied filters → draft so user sees current selections
+    this.draftInventoryOnly.set(this.filterInventoryOnly());
+    this.draftDifficulty.set([...this.filterDifficulty()]);
+    this.draftMaxTime.set(this.filterMaxTime());
+    this.draftRequiredIngredients.set([...this.filterRequiredIngredients()]);
+    this.draftIngredientInput.set('');
+    this.showFilterModal.set(true);
   }
 
-  toggleDifficulty(d: string): void {
-    const cur = this.filterDifficulty();
-    this.filterDifficulty.set(cur.includes(d) ? cur.filter(x => x !== d) : [...cur, d]);
+  applyFilters(): void {
+    this.filterInventoryOnly.set(this.draftInventoryOnly());
+    this.filterDifficulty.set([...this.draftDifficulty()]);
+    this.filterMaxTime.set(this.draftMaxTime());
+    this.filterRequiredIngredients.set([...this.draftRequiredIngredients()]);
+    this.showFilterModal.set(false);
   }
 
-  addRequiredIngredient(name: string): void {
-    const cur = this.filterRequiredIngredients();
-    if (!cur.includes(name)) this.filterRequiredIngredients.set([...cur, name]);
-    this.ingredientFilterInput.set('');
+  cancelFilters(): void {
+    this.showFilterModal.set(false);
   }
 
-  removeRequiredIngredient(name: string): void {
-    this.filterRequiredIngredients.update(arr => arr.filter(n => n !== name));
+  toggleDraftDifficulty(d: string): void {
+    const cur = this.draftDifficulty();
+    this.draftDifficulty.set(cur.includes(d) ? cur.filter(x => x !== d) : [...cur, d]);
   }
 
-  clearAllFilters(): void {
-    this.filterInventoryOnly.set(false);
-    this.filterRequiredIngredients.set([]);
-    this.filterDifficulty.set([]);
-    this.filterMaxTime.set(0);
-    this.ingredientFilterInput.set('');
+  addDraftIngredient(name: string): void {
+    const cur = this.draftRequiredIngredients();
+    if (!cur.includes(name)) this.draftRequiredIngredients.set([...cur, name]);
+    this.draftIngredientInput.set('');
+  }
+
+  removeDraftIngredient(name: string): void {
+    this.draftRequiredIngredients.update(arr => arr.filter(n => n !== name));
+  }
+
+  clearDraftFilters(): void {
+    this.draftInventoryOnly.set(false);
+    this.draftDifficulty.set([]);
+    this.draftMaxTime.set(0);
+    this.draftRequiredIngredients.set([]);
+    this.draftIngredientInput.set('');
   }
 
   viewRecipe(recipeId: number): void {

@@ -105,13 +105,13 @@
 // =====================
 .recipes-section {
     flex: 1;
-    padding: 48px 80px 32px;
+    padding: 48px 0 32px;
     background: $bg-vintage;
 }
 
 .recipe-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 280px);
+    grid-template-columns: repeat(4, 280px);
     gap: 28px;
     justify-content: center;
 }
@@ -120,7 +120,7 @@
     font-family: $font-family-primary;
     font-size: 16px;
     text-align: center;
-    padding: 60px 20px;
+    padding: 60px 80px;
     color: $text-secondary;
 
     &.loading { color: $primary-vintage; }
@@ -129,69 +129,45 @@
 }
 
 // =====================
-// PAGINATION BAR
+// ROW NAVIGATION
 // =====================
-.pagination-bar {
-    background: $bg-vintage;
-    padding: 0 80px 32px;
+.row-nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0;
 }
 
-.pagination-divider {
+.row-nav-arrow {
+    flex-shrink: 0;
+    background: transparent;
     border: none;
-    border-top: 2px solid rgba($primary-vintage, 0.25);
-    margin: 0 0 20px;
-}
-
-.pagination-controls {
+    width: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 24px;
-}
-
-.page-arrow {
-    background: transparent;
-    border: 1px solid $border-vintage-light;
-    border-radius: 2px;
-    padding: 6px 14px;
-    font-size: 18px;
-    color: $primary-vintage;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    line-height: 1;
+    padding: 0;
+    transition: opacity 0.2s;
 
-    &:hover:not(:disabled) {
-        background: rgba($primary-vintage, 0.08);
-        border-color: $primary-vintage;
-    }
-
-    &:disabled {
-        color: $text-hint;
-        border-color: $border-vintage-light;
-        cursor: default;
-    }
+    &:disabled { opacity: 0.2; cursor: default; }
+    &:hover:not(:disabled) { opacity: 0.6; }
 }
 
-.page-label {
+.row-nav-icon {
+    width: 32px;
+    height: 32px;
+    display: block;
+    filter: invert(0.35) sepia(0.2) saturate(2) hue-rotate(10deg);
+
+    &--next { transform: rotate(180deg); }
+}
+
+.row-nav-page-label {
+    text-align: center;
+    margin-top: 16px;
     font-family: $font-family-primary;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
-    letter-spacing: 0.06em;
-    color: $text-secondary;
-    text-transform: uppercase;
-}
-
-.icon-arrow-left {
-    width: 16px;
-    height: 16px;
-    display: block;
-    transform: rotate(180deg);
-    filter: invert(0.5);
-}
-
-.icon-arrow-right {
-    width: 16px;
-    height: 16px;
-    display: block;
-    filter: invert(0.5);
+    letter-spacing: 0.1em;
+    color: $text-hint;
 }

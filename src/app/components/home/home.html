@@ -16,81 +16,90 @@
         </div>
     </section>
 
-    <!-- Filter Panel -->
-    @if (showFilterPanel()) {
-      <div class="filter-panel">
-        <div class="filter-panel-header">
-          <span class="filter-panel-title">Filter Recipes</span>
-          <div class="filter-panel-actions">
-            @if (activeFilterCount() > 0) {
-              <button class="filter-clear-btn" (click)="clearAllFilters()">Clear all ({{ activeFilterCount() }})</button>
-            }
-            <button class="filter-close-btn" (click)="onFilterOpen()">&#x2715;</button>
-          </div>
-        </div>
-        <div class="filter-panel-body">
-
-          @if (!isAdmin()) {
-            <div class="filter-group">
-              <div class="filter-group-title">Ingredient Availability</div>
-              <label class="filter-checkbox-label">
-                <input type="checkbox" [checked]="filterInventoryOnly()" (change)="filterInventoryOnly.set(!filterInventoryOnly())" />
-                <span>Only recipes I can make from my inventory</span>
-              </label>
+    <!-- Filter Modal -->
+    @if (showFilterModal()) {
+      <div class="filter-modal-overlay" (click)="cancelFilters()">
+        <div class="filter-modal" (click)="$event.stopPropagation()">
+          <div class="filter-modal-header">
+            <span class="filter-panel-title">Filter Recipes</span>
+            <div class="filter-panel-actions">
+              @if (draftActiveFilterCount() > 0) {
+                <button class="filter-clear-btn" (click)="clearDraftFilters()">Clear all ({{ draftActiveFilterCount() }})</button>
+              }
+              <button class="filter-close-btn" (click)="cancelFilters()">&#x2715;</button>
             </div>
-          }
+          </div>
+          <div class="filter-modal-body">
 
-          <div class="filter-group">
-            <div class="filter-group-title">Must Include Ingredients</div>
-            <div class="filter-ingredient-search">
-              <input
-                type="text"
-                class="filter-ingredient-input"
-                placeholder="Search ingredient…"
-                [value]="ingredientFilterInput()"
-                (input)="ingredientFilterInput.set($any($event.target).value)"
-              />
-              @if (ingredientSuggestions().length > 0) {
-                <div class="filter-ingredient-dropdown">
-                  @for (name of ingredientSuggestions(); track name) {
-                    <button type="button" class="filter-ingredient-option" (click)="addRequiredIngredient(name)">{{ name }}</button>
+            @if (!isAdmin()) {
+              <div class="filter-group">
+                <div class="filter-group-title">Ingredient Availability</div>
+                <label class="filter-checkbox-label">
+                  <input type="checkbox" [checked]="draftInventoryOnly()" (change)="draftInventoryOnly.set(!draftInventoryOnly())" />
+                  <span>Only recipes I can make from my inventory</span>
+                </label>
+              </div>
+            }
+
+            <div class="filter-group">
+              <div class="filter-group-title">Must Include Ingredients</div>
+              <div class="filter-ingredient-search">
+                <input
+                  type="text"
+                  class="filter-ingredient-input"
+                  placeholder="Search ingredient…"
+                  [value]="draftIngredientInput()"
+                  (input)="draftIngredientInput.set($any($event.target).value)"
+                />
+                @if (ingredientSuggestions().length > 0) {
+                  <div class="filter-ingredient-dropdown">
+                    @for (name of ingredientSuggestions(); track name) {
+                      <button type="button" class="filter-ingredient-option" (click)="addDraftIngredient(name)">{{ name }}</button>
+                    }
+                  </div>
+                }
+              </div>
+              @if (draftRequiredIngredients().length > 0) {
+                <div class="filter-chips">
+                  @for (name of draftRequiredIngredients(); track name) {
+                    <span class="filter-chip">{{ name }}<button class="filter-chip-remove" (click)="removeDraftIngredient(name)">&#x2715;</button></span>
                   }
                 </div>
               }
             </div>
-            @if (filterRequiredIngredients().length > 0) {
-              <div class="filter-chips">
-                @for (name of filterRequiredIngredients(); track name) {
-                  <span class="filter-chip">{{ name }}<button class="filter-chip-remove" (click)="removeRequiredIngredient(name)">&#x2715;</button></span>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Difficulty</div>
+              <div class="filter-checkbox-col">
+                @for (d of difficultyOptions; track d) {
+                  <label class="filter-checkbox-label">
+                    <input type="checkbox" [checked]="draftDifficulty().includes(d)" (change)="toggleDraftDifficulty(d)" />
+                    <span class="difficulty-badge" [ngClass]="d.toLowerCase()">{{ d | titlecase }}</span>
+                  </label>
                 }
               </div>
-            }
-          </div>
-
-          <div class="filter-group">
-            <div class="filter-group-title">Difficulty</div>
-            <div class="filter-checkbox-col">
-              @for (d of difficultyOptions; track d) {
-                <label class="filter-checkbox-label">
-                  <input type="checkbox" [checked]="filterDifficulty().includes(d)" (change)="toggleDifficulty(d)" />
-                  <span class="difficulty-badge" [ngClass]="d.toLowerCase()">{{ d | titlecase }}</span>
-                </label>
-              }
             </div>
-          </div>
 
-          <div class="filter-group">
-            <div class="filter-group-title">Max Total Time</div>
-            <div class="filter-checkbox-col">
-              @for (opt of maxTimeOptions; track opt.value) {
-                <label class="filter-radio-label">
-                  <input type="radio" name="maxTime" [checked]="filterMaxTime() === opt.value" (change)="filterMaxTime.set(opt.value)" />
-                  <span>{{ opt.label }}</span>
-                </label>
-              }
+            <div class="filter-group">
+              <div class="filter-group-title">Max Total Time</div>
+              <div class="filter-checkbox-col">
+                @for (opt of maxTimeOptions; track opt.value) {
+                  <label class="filter-radio-label">
+                    <input type="radio" name="maxTimeDraft" [checked]="draftMaxTime() === opt.value" (change)="draftMaxTime.set(opt.value)" />
+                    <span>{{ opt.label }}</span>
+                  </label>
+                }
+              </div>
             </div>
-          </div>
 
+          </div>
+          <div class="filter-modal-footer">
+            <button class="filter-cancel-btn" (click)="cancelFilters()">Cancel</button>
+            <button class="filter-apply-btn" (click)="applyFilters()">
+              Apply Filters
+              @if (draftActiveFilterCount() > 0) { ({{ draftActiveFilterCount() }}) }
+            </button>
+          </div>
         </div>
       </div>
     }
@@ -106,20 +115,51 @@
         } @else if (error()) {
           <div class="info-message error">{{ error() }}</div>
         } @else {
-          <h2 class="section-title">Popular Recipes</h2>
+          <h2 class="section-title">{{ isAdmin() ? 'All Recipes' : 'Popular Recipes' }}</h2>
           @if (popularRecipes().length === 0) {
             <div class="info-message">
               {{ activeFilterCount() > 0 || searchQuery() ? 'No recipes match the current search or filters.' : 'There are no popular recipes to show at the moment.' }}
             </div>
-          } @else {
+          } @else if (isAdmin()) {
             <div class="recipe-grid">
                 @for (recipe of popularRecipes(); track recipe.id) {
-                  <app-recipe-card 
+                  <app-recipe-card
                       [recipe]="recipe"
                       (cardClick)="viewRecipe($event)">
                   </app-recipe-card>
                 }
             </div>
+            @if (adminTotalPages() > 1) {
+              <div class="admin-pagination-bar">
+                <button class="admin-page-btn" [disabled]="adminPage() === 1" (click)="adminPrevPage()">
+                  <img src="assets/images/icons/arrow-back.svg" alt="Previous" class="admin-page-icon admin-page-icon--prev">
+                </button>
+                <span class="admin-page-label">Page {{ adminPage() }} of {{ adminTotalPages() }}</span>
+                <button class="admin-page-btn" [disabled]="adminPage() === adminTotalPages()" (click)="adminNextPage()">
+                  <img src="assets/images/icons/arrow-back.svg" alt="Next" class="admin-page-icon admin-page-icon--next">
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="row-nav-wrapper">
+              <button class="row-nav-arrow" [disabled]="popularPage() === 1" (click)="popularPrev()" aria-label="Previous">
+                <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon">
+              </button>
+              <div class="recipe-grid recipe-grid--row">
+                @for (recipe of popularRecipes(); track recipe.id) {
+                  <app-recipe-card
+                      [recipe]="recipe"
+                      (cardClick)="viewRecipe($event)">
+                  </app-recipe-card>
+                }
+              </div>
+              <button class="row-nav-arrow" [disabled]="popularPage() === popularTotalPages()" (click)="popularNext()" aria-label="Next">
+                <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon row-nav-icon--next">
+              </button>
+            </div>
+            @if (popularTotalPages() > 1) {
+              <div class="row-nav-page-label">{{ popularPage() }} / {{ popularTotalPages() }}</div>
+            }
           }
         }
     </section>
@@ -130,14 +170,25 @@
         @if (recommendedRecipes().length === 0) {
           <div class="info-message">There are no recommended recipes to show at the moment.</div>
         } @else {
-          <div class="recipe-grid">
+          <div class="row-nav-wrapper">
+            <button class="row-nav-arrow" [disabled]="recommendedPage() === 1" (click)="recommendedPrev()" aria-label="Previous">
+              <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon">
+            </button>
+            <div class="recipe-grid recipe-grid--row">
               @for (recipe of recommendedRecipes(); track recipe.id) {
-                <app-recipe-card 
+                <app-recipe-card
                     [recipe]="recipe"
                     (cardClick)="viewRecipe($event)">
                 </app-recipe-card>
               }
+            </div>
+            <button class="row-nav-arrow" [disabled]="recommendedPage() === recommendedTotalPages()" (click)="recommendedNext()" aria-label="Next">
+              <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon row-nav-icon--next">
+            </button>
           </div>
+          @if (recommendedTotalPages() > 1) {
+            <div class="row-nav-page-label">{{ recommendedPage() }} / {{ recommendedTotalPages() }}</div>
+          }
         }
     </section>
 </div>

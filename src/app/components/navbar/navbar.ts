@@ -99,11 +99,33 @@ export class Navbar {
     this.activeDropdown.update(current => current === label ? null : label);
   }
 
+  private closeTimerId: ReturnType<typeof setTimeout> | null = null;
+
   openDropdown(label: string) {
+    if (this.closeTimerId !== null) {
+      clearTimeout(this.closeTimerId);
+      this.closeTimerId = null;
+    }
     this.activeDropdown.set(label);
   }
 
+  startCloseTimer() {
+    if (this.closeTimerId !== null) clearTimeout(this.closeTimerId);
+    this.closeTimerId = setTimeout(() => {
+      this.activeDropdown.set(null);
+      this.closeTimerId = null;
+    }, 350);
+  }
+
+  cancelCloseTimer() {
+    if (this.closeTimerId !== null) {
+      clearTimeout(this.closeTimerId);
+      this.closeTimerId = null;
+    }
+  }
+
   closeDropdown() {
+    if (this.closeTimerId !== null) clearTimeout(this.closeTimerId);
     this.activeDropdown.set(null);
   }
 

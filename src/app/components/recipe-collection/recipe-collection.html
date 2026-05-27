@@ -24,29 +24,25 @@
                 <p>{{ emptyMessage }}</p>
             </div>
         } @else {
-            <div class="recipe-grid">
-                @for (recipe of paginatedRecipes(); track recipe.id) {
-                    <app-recipe-card
-                        [recipe]="recipe"
-                        (cardClick)="viewRecipe($event)">
-                    </app-recipe-card>
-                }
+            <div class="row-nav-wrapper">
+                <button class="row-nav-arrow" [disabled]="currentPage() === 1" (click)="prevPage()" aria-label="Previous">
+                    <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon">
+                </button>
+                <div class="recipe-grid">
+                    @for (recipe of paginatedRecipes(); track recipe.id) {
+                        <app-recipe-card
+                            [recipe]="recipe"
+                            (cardClick)="viewRecipe($event)">
+                        </app-recipe-card>
+                    }
+                </div>
+                <button class="row-nav-arrow" [disabled]="currentPage() === totalPages()" (click)="nextPage()" aria-label="Next">
+                    <img src="assets/images/icons/arrow-back.svg" alt="" class="row-nav-icon row-nav-icon--next">
+                </button>
             </div>
+            @if (totalPages() > 1) {
+                <div class="row-nav-page-label">{{ currentPage() }} / {{ totalPages() }}</div>
+            }
         }
     </section>
-
-    @if (!isLoading() && !error() && filteredRecipes().length > 0) {
-        <footer class="pagination-bar">
-            <hr class="pagination-divider" />
-            <div class="pagination-controls">
-                <button class="page-arrow" [disabled]="currentPage() === 1" (click)="prevPage()">
-                  <img src="assets/images/icons/arrow-forward.svg" alt="Previous" class="icon-arrow-left">
-                </button>
-                <span class="page-label">Page {{ currentPage() }} of {{ totalPages() }}</span>
-                <button class="page-arrow" [disabled]="currentPage() === totalPages()" (click)="nextPage()">
-                  <img src="assets/images/icons/arrow-forward.svg" alt="Next" class="icon-arrow-right">
-                </button>
-            </div>
-        </footer>
-    }
 </div>

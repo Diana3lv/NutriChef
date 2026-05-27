@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
@@ -28,6 +28,26 @@ export class RecipeDetail implements OnInit {
   recipe = signal<any | null>(null);
   isFavorite = signal(false);
   isLoading = signal(true);
+  descriptionExpanded = signal(false);
+  descriptionOverflows = signal(false);
+
+  @ViewChild('descEl') descEl?: ElementRef<HTMLParagraphElement>;
+
+  constructor() {
+    effect(() => {
+      const r = this.recipe();
+      if (r?.description) {
+        setTimeout(() => {
+          const el = this.descEl?.nativeElement;
+          if (el) {
+            this.descriptionOverflows.set(el.scrollHeight > el.clientHeight + 1);
+          }
+        }, 50);
+      } else {
+        this.descriptionOverflows.set(false);
+      }
+    });
+  }
   error = signal<string | null>(null);
 
   // Recipe cooking status
@@ -37,7 +57,6 @@ export class RecipeDetail implements OnInit {
   feedbackMissingIngredients = signal<MissingIngredient[] | null>(null);
   statusActionLoading = signal(false);
   statusActionError = signal<string | null>(null);
-  descriptionExpanded = signal(false);
 
   status = computed(() => this.recipeStatus()?.status ?? null);
   existingFeedback = computed<RecipeFeedbackDTO | null>(() => this.recipeStatus()?.feedback ?? null);

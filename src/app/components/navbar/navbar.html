@@ -8,19 +8,22 @@
         <!-- Dropdown Menu Items -->
         <div class="nav-menu">
             @for (menu of menuItems; track menu.label) {
-                <div class="menu-dropdown" (mouseleave)="closeDropdown()">
+                <div class="menu-dropdown">
                     <button
                         class="menu-btn"
                         [class.active]="activeDropdown() === menu.label || activeGroup() === menu.label"
-                        (mouseenter)="openDropdown(menu.label)">
+                        (mouseenter)="openDropdown(menu.label)"
+                        (mouseleave)="startCloseTimer()">
                         {{ menu.label }}
                     </button>
                     
                     @if (activeDropdown() === menu.label) {
-                        <div class="dropdown-content">
+                        <div class="dropdown-content"
+                             (mouseenter)="cancelCloseTimer()"
+                             (mouseleave)="startCloseTimer()">
                             @for (item of menu.items; track item.label) {
                                 <a class="dropdown-item"
-                                   [class.active]="currentUrl()?.startsWith(item.route)"
+                                   [class.active]="currentUrl().startsWith(item.route)"
                                    [routerLink]="item.route"
                                    (click)="selectMenuItem(item)">
                                     {{ item.label }}

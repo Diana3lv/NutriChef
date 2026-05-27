@@ -112,10 +112,12 @@
 
       @if (recipe()?.description) {
         <div class="description-wrap">
-          <p class="recipe-description" [class.expanded]="descriptionExpanded()">{{ recipe()?.description }}</p>
-          <button class="btn-toggle-description" (click)="toggleDescription()">
-            {{ descriptionExpanded() ? 'See less' : 'See more' }}
-          </button>
+          <p class="recipe-description" [class.expanded]="descriptionExpanded()" #descEl>{{ recipe()?.description }}</p>
+          @if (descriptionOverflows() || descriptionExpanded()) {
+            <button class="btn-toggle-description" (click)="toggleDescription()">
+              {{ descriptionExpanded() ? 'See less' : 'See more' }}
+            </button>
+          }
         </div>
       }
 

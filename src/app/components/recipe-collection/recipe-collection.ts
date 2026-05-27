@@ -9,7 +9,7 @@ import { RecipeStatusService, UserRecipeStatusDTO } from '../../services/recipe-
 import { RecipeCard } from '../shared/recipe-card/recipe-card';
 import { RecipeDTO } from '../../services/recipe.service';
 
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 4;
 
 type TabFilter = 'ALL' | 'IN_PROGRESS' | 'DONE';
 
