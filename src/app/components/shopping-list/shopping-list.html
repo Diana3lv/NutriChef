@@ -1,20 +1,5 @@
 <div class="sl-page">
 
-    <!-- Post-it category notes pinned on the wood background -->
-    <div class="sl-postits" aria-hidden="true">
-        @for (cat of presentCategories(); track cat.key) {
-            <div
-                [ngClass]="['sl-postit', 'sl-postit--' + cat.key.toLowerCase()]"
-                [class.sl-postit--hidden]="activeCategory() === cat.key"
-                [style.background]="cat.color"
-                (click)="selectCategory(cat.key)"
-                [attr.title]="cat.key">
-                <div class="sl-postit-pin" [style.background]="cat.pinColor"></div>
-                <div class="sl-postit-icon">{{ cat.icon }}</div>
-                <div class="sl-postit-label">{{ cat.key }}</div>
-            </div>
-        }
-    </div>
 
     <!-- Handwriting style picker (outside panel, top-right of page) -->
     <button class="font-fab" (click)="toggleFontPicker()" [class.open]="fontPickerOpen()" title="Change handwriting font">
@@ -108,72 +93,66 @@
                     <p class="sl-state-msg sl-state-empty">Looks like your kitchen is fully stocked! No shopping needed, or browse a recipe and mark it as in progress.</p>
                 </div>
             } @else {
-                <div class="sl-items-list" [style.font-family]="selectedFont()">
-                    @for (entry of currentPageItems(); track entry.item.id) {
-                        @if (entry.isFirstInCategory) {
-                            <div class="sl-cat-header"
-                                 [style.color]="getCategoryDef(entry.category).pinColor">
-                                {{ entry.category }}
+                <div class="sl-accordion-list" [style.font-family]="selectedFont()">
+                    @for (group of groupedCategories(); track group.def.key) {
+                        <div class="sl-accordion" [class.sl-accordion--open]="isExpanded(group.def.key)">
+                            <div class="sl-acc-header" (click)="toggleAccordion(group.def.key)">
+                                @if (group.def.icon.startsWith('assets/')) {
+                                    <img class="sl-acc-icon" [src]="group.def.icon" [alt]="group.def.key">
+                                } @else {
+                                    <span class="sl-acc-icon sl-acc-icon--emoji">{{ group.def.icon }}</span>
+                                }
+                                <span class="sl-acc-label">{{ group.def.key }}</span>
+                                <span class="sl-acc-count">{{ group.items.length }} items</span>
+                                <span class="sl-acc-chevron" [class.sl-acc-chevron--open]="isExpanded(group.def.key)">▾</span>
                             </div>
-                        }
-                        <div class="sl-item"
-                             [class.sl-item--purchased]="entry.item.isPurchased"
-                             [class.sl-item--checked]="entry.item.isChecked">
-                            <button class="sl-check-btn"
-                                    [class.sl-check-btn--checked]="entry.item.isChecked"
-                                    (click)="toggleCheck(entry.item)">
-                                <img src="assets/images/icons/arrow-back.svg" alt="" class="sl-check-arrow">
-                            </button>
-                            <span class="sl-item-name">{{ entry.item.ingredientName }}</span>
-                            @if (editingItemId() === entry.item.id) {
-                                <input class="sl-qty-input" type="number" min="0" step="0.01"
-                                       [ngModel]="editingQtyStr()" (ngModelChange)="editingQtyStr.set($event)"
-                                       (keydown.enter)="saveEditQty(entry.item)"
-                                       (keydown.escape)="cancelEditQty()"
-                                       (blur)="cancelEditQty()">
-                            } @else {
-                                <span class="sl-item-qty"
-                                      [class.sl-item-qty--editable]="(entry.item.ownQuantity ?? 0) > 0"
-                                      (click)="startEditQty(entry.item)"
-                                      [title]="(entry.item.ownQuantity ?? 0) > 0 ? 'Click to edit your added quantity' : ''">
-                                    {{ entry.item.quantity }} {{ entry.item.unit }}
-                                </span>
+                            @if (isExpanded(group.def.key)) {
+                                <div class="sl-acc-body">
+                                    @for (item of group.items; track item.id) {
+                                        <div class="sl-item"
+                                             [class.sl-item--purchased]="item.isPurchased">
+                                            <img src="assets/images/icons/arrow-back.svg" alt="" class="sl-item-bullet" aria-hidden="true">
+                                            <span class="sl-item-name">{{ item.ingredientName }}</span>
+                                            @if (editingItemId() === item.id) {
+                                                <input class="sl-qty-input" type="number" min="0" step="0.01"
+                                                       [ngModel]="editingQtyStr()" (ngModelChange)="editingQtyStr.set($event)"
+                                                       (keydown.enter)="saveEditQty(item)"
+                                                       (keydown.escape)="cancelEditQty()"
+                                                       (blur)="cancelEditQty()">
+                                            } @else {
+                                                <span class="sl-item-qty"
+                                                      [class.sl-item-qty--editable]="(item.ownQuantity ?? 0) > 0"
+                                                      (click)="startEditQty(item)"
+                                                      [title]="(item.ownQuantity ?? 0) > 0 ? 'Click to edit your added quantity' : ''">
+                                                    {{ item.quantity }} {{ item.unit }}
+                                                </span>
+                                            }
+                                            @if ((item.ownQuantity ?? 0) > 0) {
+                                                <span class="sl-own-badge" title="You added {{ item.ownQuantity }} {{ item.unit }} manually">
+                                                    +{{ item.ownQuantity }} (you)
+                                                    <button class="sl-own-minus"
+                                                            (click)="reduceOwnQty(item, 1)"
+                                                            title="Remove 1 from your addition">−</button>
+                                                </span>
+                                            }
+                                            <button class="sl-got-btn" [class.sl-got-btn--done]="item.isPurchased"
+                                                    (click)="togglePurchased(item.id!)" title="Mark as got">
+                                                <img src="assets/images/icons/tick.svg" alt="Got it" class="sl-btn-icon-sm">
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
                             }
-                            @if ((entry.item.ownQuantity ?? 0) > 0) {
-                                <span class="sl-own-badge" title="You added {{ entry.item.ownQuantity }} {{ entry.item.unit }} manually">
-                                    +{{ entry.item.ownQuantity }} (you)
-                                    <button class="sl-own-minus"
-                                            (click)="reduceOwnQty(entry.item, 1)"
-                                            title="Remove 1 from your addition">−</button>
-                                </span>
-                            }
-                            <button class="sl-got-btn" [class.sl-got-btn--done]="entry.item.isPurchased"
-                                    (click)="togglePurchased(entry.item.id!)" title="Mark as got">
-                                <img src="assets/images/icons/tick.svg" alt="Got it" class="sl-btn-icon-sm">
-                            </button>
                         </div>
                     }
                 </div>
             }
         </div>
 
-        <!-- Footer: pagination + date -->
+        <!-- Footer -->
         <div class="sl-panel-footer">
-            @if (formattedDate()) {
-                <span class="sl-footer-date">{{ formattedDate() }}</span>
-            } @else {
-                <span></span>
-            }
-            @if (totalPages() > 1) {
-                <div class="sl-pagination">
-                    <button class="sl-page-btn" (click)="prevPage()" [disabled]="currentPage() === 0" title="Previous page">
-                        <img src="assets/images/icons/arrow-back.svg" alt="Previous" class="sl-btn-icon">
-                    </button>
-                    <span class="sl-page-indicator">{{ currentPage() + 1 }} / {{ totalPages() }}</span>
-                    <button class="sl-page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages() - 1" title="Next page">
-                        <img src="assets/images/icons/arrow-back.svg" alt="Next" class="sl-btn-icon sl-btn-icon-next">
-                    </button>
-                </div>
-            }
+            <span class="sl-footer-date">{{ formattedDate() }}</span>
         </div>
+    </div>
+</div>
 

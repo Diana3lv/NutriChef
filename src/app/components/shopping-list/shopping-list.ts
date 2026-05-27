@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal, HostListener } from '@angular/core';
+import { Component, OnInit, computed, signal, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShoppingListService, ShoppingListItem } from '../../services/shopping-list.service';
@@ -19,8 +19,6 @@ const HANDWRITING_FONTS = [
   { label: 'Nanum Pen Script',    value: "'Nanum Pen Script', cursive" },
 ];
 
-const ITEMS_PER_PAGE = 10;
-
 export interface CategoryDef {
   key: string;
   icon: string;
@@ -28,31 +26,49 @@ export interface CategoryDef {
   pinColor: string;
 }
 
-export interface PagedEntry {
-  item: ShoppingListItem;
-  category: string;
-  isFirstInCategory: boolean;
-}
-
 const CATEGORY_DEFS: CategoryDef[] = [
-  { key: 'Fruits',     icon: '', color: '#FFF0F0', pinColor: '#D84040' },
-  { key: 'Vegetables', icon: '', color: '#EDFAEE', pinColor: '#3A8A3E' },
-  { key: 'Dairy',      icon: '', color: '#FEFBE8', pinColor: '#C89A10' },
-  { key: 'Grains',     icon: '', color: '#FEF3E2', pinColor: '#C86A10' },
-  { key: 'Meat',       icon: '', color: '#FFF0ED', pinColor: '#B83020' },
-  { key: 'Seafood',    icon: '', color: '#EBF5FF', pinColor: '#1A65B8' },
-  { key: 'Other',      icon: '', color: '#F0ECFF', pinColor: '#5830A8' },
+  // Produce
+  { key: 'Fruits',              icon: 'assets/images/icons/ingredient-categories/fruits.png',        color: '#FFF0F0', pinColor: '#D84040' },
+  { key: 'Vegetables',          icon: 'assets/images/icons/ingredient-categories/vegetables.png',    color: '#EDFAEE', pinColor: '#3A8A3E' },
+
+  // Proteins & Dairy
+  { key: 'Dairy & Eggs',        icon: 'assets/images/icons/ingredient-categories/eggs-and-dairy.png',color: '#FEFBE8', pinColor: '#C89A10' },
+  { key: 'Meat',                icon: 'assets/images/icons/ingredient-categories/meat.png',           color: '#FFF0ED', pinColor: '#B83020' },
+  { key: 'Seafood',             icon: 'assets/images/icons/ingredient-categories/seafood.png',        color: '#EBF5FF', pinColor: '#1A65B8' },
+
+  // Pantry & Dry Goods
+  { key: 'Grains & Pasta',      icon: 'assets/images/icons/ingredient-categories/grains-and-pasta.png', color: '#FEF3E2', pinColor: '#C86A10' },
+  { key: 'Baking & Spices',     icon: 'assets/images/icons/ingredient-categories/spices.png',         color: '#FAF0E6', pinColor: '#8B5A2B' },
+  { key: 'Canned Goods',        icon: 'assets/images/icons/ingredient-categories/can.png',             color: '#ECEFF1', pinColor: '#546E7A' },
+  { key: 'Sauces & Condiments', icon: 'assets/images/icons/ingredient-categories/sauces-and-condiments.png',                                                             color: '#FFF3E0', pinColor: '#E65100' },
+
+  // Center Aisle & Peripherals
+  { key: 'Snacks & Sweets',     icon: 'assets/images/icons/ingredient-categories/pretzel.png',        color: '#FFF8E1', pinColor: '#F57F17' },
+  { key: 'Beverages',           icon: 'assets/images/icons/ingredient-categories/beverages.png',      color: '#F3E5F5', pinColor: '#6A1B9A' },
+  { key: 'Frozen',              icon: 'assets/images/icons/ingredient-categories/ice.png',             color: '#E0F7FA', pinColor: '#00838F' },
+
+  // Catch-all
+  { key: 'Other',               icon: 'assets/images/icons/ingredient-categories/other-food.png',    color: '#F0ECFF', pinColor: '#5830A8' },
 ];
+
+const VALID_CATEGORY_KEYS = new Set(CATEGORY_DEFS.map(d => d.key));
 
 function normalizeCategory(raw?: string): string {
   if (!raw) return 'Other';
+  if (VALID_CATEGORY_KEYS.has(raw)) return raw;
   const l = raw.toLowerCase();
   if (/fruit|berry|citrus|apple|orange|banana|grape|melon|peach|pear|plum/.test(l)) return 'Fruits';
   if (/vegeta|vegg|herb|lettuce|spinach|broccoli|carrot|onion|tomato|pepper|garlic|cabbage|celery|cucumber/.test(l)) return 'Vegetables';
-  if (/dairy|milk|cheese|yogurt|cream|butter|egg/.test(l)) return 'Dairy';
-  if (/grain|bread|pasta|rice|flour|cereal|oat|wheat|barley|corn|rye|noodle/.test(l)) return 'Grains';
+  if (/dairy|milk|cheese|yogurt|cream|butter|egg/.test(l)) return 'Dairy & Eggs';
   if (/meat|chicken|beef|pork|lamb|turkey|sausage|bacon|ham|veal/.test(l)) return 'Meat';
   if (/fish|seafood|shrimp|salmon|tuna|crab|lobster|prawn|squid/.test(l)) return 'Seafood';
+  if (/grain|bread|pasta|rice|flour|cereal|oat|wheat|barley|corn|rye|noodle/.test(l)) return 'Grains & Pasta';
+  if (/spice|herb|baking|vanilla|cinnamon|cumin|paprika|salt|pepper|sugar|yeast|baking soda|baking powder/.test(l)) return 'Baking & Spices';
+  if (/can|canned|tin|beans|lentil|chickpea|tomato sauce|broth|stock/.test(l)) return 'Canned Goods';
+  if (/sauce|condiment|ketchup|mustard|mayo|vinegar|oil|dressing|soy|hot sauce/.test(l)) return 'Sauces & Condiments';
+  if (/snack|chip|cracker|pretzel|cookie|chocolate|candy|sweet|dessert|cake|biscuit/.test(l)) return 'Snacks & Sweets';
+  if (/drink|juice|water|soda|coffee|tea|beverage|wine|beer|milk drink/.test(l)) return 'Beverages';
+  if (/frozen|ice cream|gelato|freezer/.test(l)) return 'Frozen';
   return 'Other';
 }
 
@@ -64,35 +80,13 @@ function normalizeCategory(raw?: string): string {
   styleUrls: ['./shopping-list.scss']
 })
 export class ShoppingListComponent implements OnInit {
-  shoppingItems   = signal<ShoppingListItem[]>([]);
-  isLoading       = signal(false);
-  error           = signal<string | null>(null);
-  currentPage     = signal(0);
-  activeCategory  = signal<string | null>(null);
-  fontPickerOpen  = signal(false);
-  selectedFont    = signal(localStorage.getItem(STORAGE_KEYS.shoppingListFont) ?? HANDWRITING_FONTS[0].value);
-  lastModified    = signal<Date>(new Date());
-
-  toggleCheck(item: ShoppingListItem) {
-    const id = item.id!;
-    // Optimistic update
-    this.shoppingItems.update(list =>
-      list.map(i => i.id === id ? { ...i, isChecked: !i.isChecked } : i)
-    );
-    this.shoppingListService.toggleChecked(id).subscribe({
-      next: (updated) => {
-        this.shoppingItems.update(list =>
-          list.map(i => i.id === id ? updated : i)
-        );
-      },
-      error: () => {
-        // Revert on failure
-        this.shoppingItems.update(list =>
-          list.map(i => i.id === id ? { ...i, isChecked: !i.isChecked } : i)
-        );
-      }
-    });
-  }
+  shoppingItems      = signal<ShoppingListItem[]>([]);
+  isLoading          = signal(false);
+  error              = signal<string | null>(null);
+  expandedCategories = signal<Set<string>>(new Set());
+  fontPickerOpen     = signal(false);
+  selectedFont       = signal(localStorage.getItem(STORAGE_KEYS.shoppingListFont) ?? HANDWRITING_FONTS[0].value);
+  lastModified       = signal<Date>(new Date());
 
   isAddOpen     = signal(false);
   allIngredients = signal<SimpleIngredient[]>([]);
@@ -117,49 +111,17 @@ export class ShoppingListComponent implements OnInit {
   categoryDefs = CATEGORY_DEFS;
 
   purchasedCount = computed(() => this.shoppingItems().filter(i => i.isPurchased).length);
-  allFlatItems = computed((): Array<{ item: ShoppingListItem; category: string }> => {
+
+  groupedCategories = computed(() => {
     const groups = new Map<string, ShoppingListItem[]>();
     for (const item of this.shoppingItems()) {
       const cat = normalizeCategory(item.category);
       if (!groups.has(cat)) groups.set(cat, []);
       groups.get(cat)!.push(item);
     }
-    const result: Array<{ item: ShoppingListItem; category: string }> = [];
-    for (const def of CATEGORY_DEFS) {
-      for (const item of groups.get(def.key) ?? []) result.push({ item, category: def.key });
-    }
-    return result;
-  });
-
-  pages = computed((): PagedEntry[][] => {
-    const flat = this.allFlatItems();
-    if (flat.length === 0) return [[]];
-    const result: PagedEntry[][] = [];
-    for (let i = 0; i < flat.length; i += ITEMS_PER_PAGE) {
-      const seen = new Set<string>();
-      result.push(flat.slice(i, i + ITEMS_PER_PAGE).map(({ item, category }) => {
-        const isFirstInCategory = !seen.has(category);
-        seen.add(category);
-        return { item, category, isFirstInCategory };
-      }));
-    }
-    return result;
-  });
-
-  totalPages       = computed(() => this.pages().length);
-  currentPageItems = computed((): PagedEntry[] => this.pages()[this.currentPage()] ?? []);
-
-  categoryPageIndex = computed((): Map<string, number> => {
-    const result = new Map<string, number>();
-    this.allFlatItems().forEach(({ category }, idx) => {
-      if (!result.has(category)) result.set(category, Math.floor(idx / ITEMS_PER_PAGE));
-    });
-    return result;
-  });
-
-  presentCategories = computed((): CategoryDef[] => {
-    const map = this.categoryPageIndex();
-    return CATEGORY_DEFS.filter(c => map.has(c.key));
+    return CATEGORY_DEFS
+      .filter(def => groups.has(def.key))
+      .map(def => ({ def, items: groups.get(def.key)! }));
   });
 
   formattedDate = computed(() => {
@@ -171,10 +133,31 @@ export class ShoppingListComponent implements OnInit {
     return CATEGORY_DEFS.find(c => c.key === key) ?? CATEGORY_DEFS[CATEGORY_DEFS.length - 1];
   }
 
+  isExpanded(cat: string): boolean {
+    return this.expandedCategories().has(cat);
+  }
+
+  toggleAccordion(cat: string) {
+    this.expandedCategories.update(s => {
+      const next = new Set(s);
+      if (next.has(cat)) next.delete(cat); else next.add(cat);
+      return next;
+    });
+  }
+
   constructor(
     private shoppingListService: ShoppingListService,
     private ingredientService: IngredientManagementService,
-  ) {}
+  ) {
+    effect(() => {
+      const cats = this.groupedCategories();
+      if (cats.length === 1) {
+        this.expandedCategories.set(new Set([cats[0].def.key]));
+      } else {
+        this.expandedCategories.set(new Set());
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadShoppingList();
@@ -327,21 +310,6 @@ export class ShoppingListComponent implements OnInit {
       },
       error: err => console.error(err)
     });
-  }
-
-  selectCategory(catKey: string) {
-    const page = this.categoryPageIndex().get(catKey);
-    if (page === undefined) return;
-    this.activeCategory.set(catKey);
-    this.currentPage.set(page);
-  }
-
-  nextPage() {
-    if (this.currentPage() < this.totalPages() - 1) this.currentPage.update(p => p + 1);
-  }
-
-  prevPage() {
-    if (this.currentPage() > 0) this.currentPage.update(p => p - 1);
   }
 
   toggleFontPicker() { this.fontPickerOpen.update(v => !v); }

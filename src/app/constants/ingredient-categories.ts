@@ -1,0 +1,15 @@
+export const INGREDIENT_CATEGORY_KEYS: string[] = [
+  'Fruits',
+  'Vegetables',
+  'Dairy & Eggs',
+  'Meat',
+  'Seafood',
+  'Grains & Pasta',
+  'Baking & Spices',
+  'Canned Goods',
+  'Sauces & Condiments',
+  'Snacks & Sweets',
+  'Beverages',
+  'Frozen',
+  'Other',
+];

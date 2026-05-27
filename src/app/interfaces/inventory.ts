@@ -1,19 +1,17 @@
 export enum IngredientCategory {
-  Vegetables = 'Vegetables',
-  Fruits = 'Fruits',
-  Meat = 'Meat',
-  Poultry = 'Poultry',
-  Seafood = 'Seafood',
-  Dairy = 'Dairy',
-  Grains = 'Grains',
-  Legumes = 'Legumes',
-  Nuts_Seeds = 'Nuts_Seeds',
-  Herbs_Spices = 'Herbs_Spices',
-  Oils_Fats = 'Oils_Fats',
-  Condiments = 'Condiments',
-  Beverages = 'Beverages',
-  Baking = 'Baking',
-  Other = 'Other'
+  Fruits             = 'Fruits',
+  Vegetables         = 'Vegetables',
+  DairyAndEggs       = 'Dairy & Eggs',
+  Meat               = 'Meat',
+  Seafood            = 'Seafood',
+  GrainsAndPasta     = 'Grains & Pasta',
+  BakingAndSpices    = 'Baking & Spices',
+  CannedGoods        = 'Canned Goods',
+  SaucesAndCondiments = 'Sauces & Condiments',
+  SnacksAndSweets    = 'Snacks & Sweets',
+  Beverages          = 'Beverages',
+  Frozen             = 'Frozen',
+  Other              = 'Other',
 }
 
 export interface InventoryItem {
