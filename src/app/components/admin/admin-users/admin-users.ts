@@ -19,6 +19,8 @@ export class AdminUsersComponent implements OnInit {
 
   searchQuery = signal('');
   roleFilter = signal('');
+  statusFilter = signal('');
+  sortBy = signal('');
 
   // Pagination
   currentPage = signal(1);
@@ -27,14 +29,17 @@ export class AdminUsersComponent implements OnInit {
   filteredUsers = computed(() => {
     let filtered = this.users();
     
-    // Apply search filter
-    const search = this.searchQuery().toLowerCase();
+    const search = this.searchQuery().trim().toLowerCase();
     if (search) {
-      filtered = filtered.filter(u =>
-        u.email.toLowerCase().includes(search) ||
-        u.firstName.toLowerCase().includes(search) ||
-        u.lastName.toLowerCase().includes(search)
-      );
+      const parts = search.split(/\s+/).filter(p => p.length > 0);
+      filtered = filtered.filter(u => {
+        const email = u.email.toLowerCase();
+        const firstName = u.firstName.toLowerCase();
+        const lastName = u.lastName.toLowerCase();
+        return parts.every(p =>
+          email.includes(p) || firstName.includes(p) || lastName.includes(p)
+        );
+      });
     }
 
     // Apply role filter
@@ -43,8 +48,21 @@ export class AdminUsersComponent implements OnInit {
       filtered = filtered.filter(u => u.role === role);
     }
 
-    // Admins first, then by creation date descending
+    // Apply status filter
+    const status = this.statusFilter();
+    if (status === 'online') {
+      filtered = filtered.filter(u => this.isOnline(u));
+    } else if (status === 'offline') {
+      filtered = filtered.filter(u => !this.isOnline(u));
+    }
+
+    // Sort
+    const sort = this.sortBy();
     return [...filtered].sort((a, b) => {
+      if (sort === 'recipes') {
+        return b.recipesCreatedCount - a.recipesCreatedCount;
+      }
+      // Default: admins first, then by creation date descending
       if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
       if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -107,6 +125,8 @@ export class AdminUsersComponent implements OnInit {
   clearFilters() {
     this.searchQuery.set('');
     this.roleFilter.set('');
+    this.statusFilter.set('');
+    this.sortBy.set('');
     this.currentPage.set(1);
   }
 

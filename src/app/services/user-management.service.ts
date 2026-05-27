@@ -63,8 +63,8 @@ export class UserManagementService {
     );
   }
 
-  deleteUser(userId: number): Observable<string> {
-    return this.http.delete<string>(`${this.apiUrl}/${userId}`);
+  deleteUser(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${userId}`);
   }
 
   getUserDisplayName(user: UserAdmin): string {

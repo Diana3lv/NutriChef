@@ -54,7 +54,24 @@
             <option [value]="role.value">{{ role.label }}</option>
           }
         </select>
-        @if (searchQuery() || roleFilter()) {
+        <select
+          [ngModel]="statusFilter()"
+          (ngModelChange)="statusFilter.set($event); currentPage.set(1)"
+          class="role-filter-select"
+        >
+          <option value="">All Statuses</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+        <select
+          [ngModel]="sortBy()"
+          (ngModelChange)="sortBy.set($event); currentPage.set(1)"
+          class="role-filter-select"
+        >
+          <option value="">Default Order</option>
+          <option value="recipes">Most Recipes Done</option>
+        </select>
+        @if (searchQuery() || roleFilter() || statusFilter() || sortBy()) {
           <button (click)="clearFilters()" class="btn-clear-filters">Clear</button>
         }
       </div>
