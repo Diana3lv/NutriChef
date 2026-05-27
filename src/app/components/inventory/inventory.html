@@ -57,6 +57,9 @@
         <div>
           <div class="modal-title">Add Ingredient</div>
           <div class="modal-subtitle">Add a new item to your inventory</div>
+          @if (addItemSubmitAttempted() && addForm.invalid) {
+            <div class="modal-form-error">All fields are required.</div>
+          }
         </div>
         <button class="modal-close-btn" (click)="closeAddModal()">
           <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
@@ -65,7 +68,7 @@
 
       <form [formGroup]="addForm">
         <div class="modal-field">
-          <label>Ingredient Name</label>
+          <label>Ingredient Name <span class="required-mark">*</span></label>
           <div class="autocomplete-wrapper">
             <input
               type="text"
@@ -84,7 +87,7 @@
         </div>
 
         <div class="modal-field">
-          <label>Quantity</label>
+          <label>Quantity <span class="required-mark">*</span></label>
           <div class="quantity-with-unit">
             <input type="number" formControlName="quantity" placeholder="0">
             @if (selectedUnit()) {
@@ -94,14 +97,14 @@
         </div>
 
         <div class="modal-field">
-          <label>Expiry Date</label>
+          <label>Expiry Date <span class="required-mark">*</span></label>
           <input type="date" formControlName="expiryDate" style="font-style:normal;font-family:inherit;font-size:14px">
         </div>
       </form>
 
       <div class="modal-actions">
         <button class="btn-ghost" (click)="closeAddModal()">Cancel</button>
-        <button class="btn-primary" (click)="addItem()" [disabled]="addForm.invalid">Add Item</button>
+        <button class="btn-primary" (click)="addItem()">Add Item</button>
       </div>
     </div>
   </div>

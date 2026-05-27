@@ -30,6 +30,7 @@ export class Inventory implements OnInit {
   showDeleteModal = signal(false);
   editingItemId = signal<string | null>(null);
   itemToDelete = signal<InventoryItem | null>(null);
+  addItemSubmitAttempted = signal(false);
 
   addForm = this.fb.group({
     name: ['', Validators.required],
@@ -103,6 +104,7 @@ export class Inventory implements OnInit {
     this.showAddModal.set(false);
     this.showSuggestions.set(false);
     this.selectedUnit.set('');
+    this.addItemSubmitAttempted.set(false);
   }
 
   onNameInput(event: Event) {
@@ -118,36 +120,38 @@ export class Inventory implements OnInit {
   }
 
   addItem() {
-    if (this.addForm.valid) {
-      const formVal = this.addForm.value;
-      const newItem: InventoryItem = {
-        id: '',
-        name: formVal.name!,
-        quantity: formVal.quantity!,
-        unit: '',
-        category: IngredientCategory.Other,
-        expiryDate: formVal.expiryDate!
-      };
-      
-      this.inventoryService.addItem(newItem).subscribe({
-        next: (created) => {
-          // The backend merges quantities when the ingredient already exists,
-          // returning the updated existing item (same id). Use upsert to avoid
-          // duplicate entries when track-by-id sees the same id twice.
-          this.inventoryItems.update(items => {
-            const idx = items.findIndex(i => i.id === created.id);
-            if (idx >= 0) {
-              const updated = [...items];
-              updated[idx] = created;
-              return updated;
-            }
-            return [...items, created];
-          });
-          this.closeAddModal();
-        },
-        error: () => this.error.set('Failed to add item.')
-      });
+    this.addItemSubmitAttempted.set(true);
+    if (!this.addForm.valid) {
+      return;
     }
+    const formVal = this.addForm.value;
+    const newItem: InventoryItem = {
+      id: '',
+      name: formVal.name!,
+      quantity: formVal.quantity!,
+      unit: '',
+      category: IngredientCategory.Other,
+      expiryDate: formVal.expiryDate!
+    };
+
+    this.inventoryService.addItem(newItem).subscribe({
+      next: (created) => {
+        // The backend merges quantities when the ingredient already exists,
+        // returning the updated existing item (same id). Use upsert to avoid
+        // duplicate entries when track-by-id sees the same id twice.
+        this.inventoryItems.update(items => {
+          const idx = items.findIndex(i => i.id === created.id);
+          if (idx >= 0) {
+            const updated = [...items];
+            updated[idx] = created;
+            return updated;
+          }
+          return [...items, created];
+        });
+        this.closeAddModal();
+      },
+      error: () => this.error.set('Failed to add item.')
+    });
   }
 
   openDeleteModal(item: InventoryItem) {
