@@ -14,7 +14,6 @@ export interface Ingredient {
   name: string;
   unit: string;
   category?: string | null;
-  foodGroup?: string | null;
   allergens: string[];
   ratio?: number;
   description?: string | null;
@@ -44,7 +43,12 @@ export interface CreateIngredientRequest {
   unit: string;
   allergens: string[];
   category?: string | null;
-  foodGroup?: string | null;
+}
+
+export interface UpdateIngredientRequest {
+  category: string | null;
+  unit: string;
+  allergens: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -64,6 +68,10 @@ export class IngredientManagementService {
     return this.http.post<IngredientWithSubstitutions>(this.API_URL, ingredient);
   }
 
+  update(id: number, data: UpdateIngredientRequest): Observable<IngredientWithSubstitutions> {
+    return this.http.put<IngredientWithSubstitutions>(`${this.API_URL}/${id}`, data);
+  }
+
   addSubstitutionOption(ingredientId: number, alternatives: SubstitutionAlternativeInput[]): Observable<IngredientWithSubstitutions> {
     return this.http.post<IngredientWithSubstitutions>(
       `${this.API_URL}/${ingredientId}/substitutions`,
@@ -75,5 +83,9 @@ export class IngredientManagementService {
     return this.http.delete<IngredientWithSubstitutions>(
       `${this.API_URL}/${ingredientId}/substitutions/${substitutionId}`
     );
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
 }

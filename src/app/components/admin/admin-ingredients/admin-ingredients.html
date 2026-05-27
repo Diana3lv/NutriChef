@@ -48,7 +48,6 @@
       <div class="ingredient-table">
         <div class="ingredient-table-header">
           <span>Name</span>
-          <span>Food Group</span>
           <span>Category</span>
           <span>Unit</span>
           <span>Allergens</span>
@@ -58,7 +57,6 @@
         @for (ing of filteredTableIngredients(); track ing.id) {
           <div class="ingredient-row">
             <span class="ing-name">{{ ing.name }}</span>
-            <span class="ing-food-group">{{ ing.foodGroup || '-' }}</span>
             <span class="ing-category">{{ ing.category || '-' }}</span>
             <span class="ing-unit">{{ ing.unit }}</span>
             <span class="ing-allergens">
@@ -86,6 +84,19 @@
               >
                 {{ (ing.substitutions && ing.substitutions.length > 0) ? 'View Substitutions' : '+ Add Substitution' }}
               </button>
+              <button
+                class="btn btn-sm btn-outline"
+                (click)="openEditIngredient(ing)"
+              >
+                Edit
+              </button>
+              <button
+                class="btn-delete-circle"
+                (click)="deleteIngredient(ing)"
+                title="Delete ingredient"
+              >
+                <img src="assets/images/icons/exit.svg" alt="Delete" class="icon-sm">
+              </button>
             </span>
           </div>
         }
@@ -100,6 +111,9 @@
       <div class="modal-content add-ingredient-modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 class="modal-title-lg">Add New Ingredient</h3>
+          @if (addIngredientModalError() || addIngredientServerError()) {
+            <p class="modal-header-error">{{ addIngredientModalError() || addIngredientServerError() }}</p>
+          }
           <button class="close-btn" (click)="closeAddIngredientModal()">
             <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
           </button>
@@ -113,7 +127,8 @@
               <label>Name <span class="required-mark">*</span></label>
               <input
                 type="text"
-                [(ngModel)]="newIngredient.name"
+                [ngModel]="addIngredientName()"
+                (ngModelChange)="addIngredientName.set($event); addFormTouched.set(true)"
                 name="ingName"
                 placeholder="e.g. Butter"
                 required
@@ -123,51 +138,22 @@
             <!-- Unit -->
             <div class="ing-form-field">
               <label>Unit <span class="required-mark">*</span></label>
-              <input
-                type="text"
-                [(ngModel)]="newIngredient.unit"
-                name="ingUnit"
-                placeholder="e.g. g, ml, pcs"
-                required
-              />
-            </div>
-
-            <!-- Food Group -->
-            <div class="ing-form-field full-width">
-              <label>Food Group</label>
-              <div class="food-group-search">
-                <input
-                  type="text"
-                  [value]="foodGroupQuery()"
-                  (input)="onFoodGroupInput($any($event.target).value)"
-                  (focus)="showFoodGroupDropdown.set(true)"
-                  (blur)="onFoodGroupBlur()"
-                  name="ingFoodGroup"
-                  placeholder="Search existing or type a new group…"
-                  autocomplete="off"
-                />
-                @if (showFoodGroupDropdown() && filteredFoodGroups().length > 0) {
-                  <ul class="food-group-dropdown">
-                    @for (g of filteredFoodGroups(); track g) {
-                      <li (mousedown)="selectFoodGroup(g)">{{ g }}</li>
-                    }
-                  </ul>
+              <select [ngModel]="addIngredientUnit()" (ngModelChange)="addIngredientUnit.set($event); addFormTouched.set(true)" name="ingUnit" class="ing-select" required>
+                <option value="">- select -</option>
+                @for (u of unitOptions; track u.value) {
+                  <option [value]="u.value">{{ u.label }}</option>
                 }
-              </div>
+              </select>
             </div>
 
             <!-- Category -->
             <div class="ing-form-field">
               <label>Category</label>
-              <select [(ngModel)]="newIngredient.category" name="ingCategory" class="ing-select">
+              <select [ngModel]="addIngredientCategory()" (ngModelChange)="addIngredientCategory.set($event ?? null)" name="ingCategory" class="ing-select">
                 <option [ngValue]="null">- select -</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Vegetables">Vegetables</option>
-                <option value="Dairy">Dairy</option>
-                <option value="Grains">Grains</option>
-                <option value="Meat">Meat</option>
-                <option value="Seafood">Seafood</option>
-                <option value="Other">Other</option>
+                @for (cat of categoryOptions; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
               </select>
             </div>
 
@@ -197,8 +183,6 @@
         </form>
       </div>
     </div>
-
-    <!-- Add Food Group sub-modal removed: user can type directly into the food group field -->
   }
 
   <!-- VIEW SUBSTITUTIONS MODAL -->
@@ -244,6 +228,11 @@
                     </div>
                     <div class="ingr-sub">
                       <span class="ratio-pill">{{ alt.ratio ?? 1 }}:1 ratio</span>
+                      @if (alt.category) {
+                        <div class="alt-meta">
+                          <span class="alt-meta-item">{{ alt.category }}</span>
+                        </div>
+                      }
                       @if (alt.allergens && alt.allergens.length > 0) {
                         @for (a of alt.allergens; track a) {
                           <span class="allergen-pill">{{ a }}</span>
@@ -506,6 +495,73 @@
             @if (isLoading()) { Saving... } @else { Save Substitution }
           </button>
         </div>
+      </div>
+    </div>
+  }
+  <!-- EDIT INGREDIENT MODAL -->
+  @if (showEditIngredientModal()) {
+    <div class="modal-overlay" (click)="closeEditIngredient()">
+      <div class="modal-content add-ingredient-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title-lg">Edit Ingredient</h3>
+          @if (editIngredientModalError() || editIngredientServerError()) {
+            <p class="modal-header-error">{{ editIngredientModalError() || editIngredientServerError() }}</p>
+          }
+          <button class="close-btn" (click)="closeEditIngredient()">
+            <img src="assets/images/icons/exit.svg" alt="Close" class="icon-sm">
+          </button>
+        </div>
+
+        <form (ngSubmit)="submitEditIngredient()" class="modal-form">
+          <div class="modal-body ingredient-form-body">
+
+            <!-- Name (read-only) -->
+            <div class="ing-form-field">
+              <label>Name</label>
+              <input type="text" [value]="editIngredientTarget()?.name ?? ''" disabled class="input-disabled" />
+            </div>
+
+            <!-- Unit (read-only) -->
+            <div class="ing-form-field">
+              <label>Unit</label>
+              <input type="text" [value]="editUnit()" disabled class="input-disabled" />
+            </div>
+
+            <!-- Category -->
+            <div class="ing-form-field">
+              <label>Category</label>
+              <select [ngModel]="editCategory()" (ngModelChange)="editCategory.set($event)" name="editCategory" class="ing-select">
+                <option [ngValue]="null">- select -</option>
+                @for (cat of categoryOptions; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Allergens -->
+            <div class="ing-form-field full-width">
+              <label>Allergens</label>
+              <div class="allergen-grid">
+                @for (a of availableAllergens(); track a.value) {
+                  <button
+                    type="button"
+                    class="allergen-toggle"
+                    [class.selected]="isEditAllergenSelected(a.value)"
+                    (click)="toggleEditAllergen(a.value)"
+                  >{{ a.label }}</button>
+                }
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEditIngredient()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading()">
+              @if (isLoading()) { Saving… } @else { Save Changes }
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   }

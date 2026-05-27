@@ -9,9 +9,12 @@ import {
   IngredientManagementService,
   IngredientWithSubstitutions,
   CreateIngredientRequest,
+  UpdateIngredientRequest,
   SubstitutionAlternativeInput,
 } from '../../../services/ingredient-management.service';
 import { API_BASE } from '../../../constants/api';
+import { INGREDIENT_UNITS } from '../../../constants/ingredient-units';
+import { INGREDIENT_CATEGORY_KEYS } from '../../../constants/ingredient-categories';
 
 @Component({
   selector: 'app-admin-ingredients',
@@ -29,6 +32,9 @@ export class AdminIngredients implements OnInit {
 
   isAdmin = computed(() => this.authService.currentUser()?.role === 'ADMIN');
 
+  readonly unitOptions     = INGREDIENT_UNITS;
+  readonly categoryOptions = INGREDIENT_CATEGORY_KEYS;
+
   ingredients = signal<IngredientWithSubstitutions[]>([]);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -40,27 +46,41 @@ export class AdminIngredients implements OnInit {
 
   // Add ingredient modal
   showAddIngredientModal = signal(false);
+  addIngredientSubmitAttempted = signal(false);
+  addIngredientServerError = signal<string | null>(null);
+  addFormTouched = signal(false); // true once user interacts with any form field
 
-  // Add ingredient form
-  newIngredient: Omit<CreateIngredientRequest, 'allergens'> & { category: string | null; foodGroup: string | null } = { name: '', unit: '', category: null, foodGroup: null };
+  // Add ingredient form fields as signals for reactive computed
+  addIngredientName = signal('');
+  addIngredientUnit = signal('');
+  addIngredientCategory = signal<string | null>(null);
   selectedAllergensList = signal<string[]>([]);
 
-  // Food group search
-  foodGroupQuery = signal('');
-  showFoodGroupDropdown = signal(false);
-
-  existingFoodGroups = computed(() => {
-    const groups = new Set<string>();
-    for (const ing of this.ingredients()) {
-      if (ing.foodGroup) groups.add(ing.foodGroup);
-    }
-    return Array.from(groups).sort();
+  addIngredientModalError = computed(() => {
+    if (!this.addFormTouched() && !this.addIngredientSubmitAttempted()) return null;
+    const name = this.addIngredientName().trim();
+    const unit = this.addIngredientUnit().trim();
+    if (!name && !unit) return 'Name and unit are required.';
+    if (!name) return 'Name is required.';
+    if (!unit) return 'Unit is required.';
+    const duplicate = this.ingredients().some(i => i.name.toLowerCase() === name.toLowerCase());
+    if (duplicate) return 'An ingredient with this name already exists.';
+    return null;
   });
 
-  filteredFoodGroups = computed(() => {
-    const q = this.foodGroupQuery().toLowerCase().trim();
-    if (!q) return this.existingFoodGroups();
-    return this.existingFoodGroups().filter(g => g.toLowerCase().includes(q));
+  // Edit ingredient modal
+  showEditIngredientModal = signal(false);
+  editIngredientSubmitAttempted = signal(false);
+  editIngredientServerError = signal<string | null>(null);
+  editIngredientTarget = signal<IngredientWithSubstitutions | null>(null);
+  editUnit = signal('');
+  editCategory = signal<string | null>(null);
+  editAllergensList = signal<string[]>([]);
+
+  editIngredientModalError = computed(() => {
+    // No validation needed - unit is read-only, only allergens/category are editable
+    if (!this.editIngredientSubmitAttempted()) return null;
+    return null;
   });
 
   // View substitutions modal
@@ -111,10 +131,13 @@ export class AdminIngredients implements OnInit {
 
   closeAddIngredientModal(): void {
     this.showAddIngredientModal.set(false);
-    this.newIngredient = { name: '', unit: '', category: null, foodGroup: null };
+    this.addIngredientSubmitAttempted.set(false);
+    this.addIngredientServerError.set(null);
+    this.addFormTouched.set(false);
+    this.addIngredientName.set('');
+    this.addIngredientUnit.set('');
+    this.addIngredientCategory.set(null);
     this.selectedAllergensList.set([]);
-    this.foodGroupQuery.set('');
-    this.showFoodGroupDropdown.set(false);
   }
 
   ngOnInit(): void {
@@ -123,9 +146,9 @@ export class AdminIngredients implements OnInit {
   }
 
   loadAllergens(): void {
-    this.http.get<{ value: string; label: string }[]>(`${API_BASE}/api/nutrition/preferences/allergens`)
+    this.http.get<{ apiValue: string; label: string }[]>(`${API_BASE}/api/nutrition/preferences/allergens`)
       .subscribe({
-        next: (list) => this.availableAllergens.set(list),
+        next: (list) => this.availableAllergens.set(list.map(a => ({ value: a.apiValue, label: a.label }))),
         error: () => { /* non-critical; fallback to empty */ }
       });
   }
@@ -157,30 +180,21 @@ export class AdminIngredients implements OnInit {
     }
   }
 
-  onFoodGroupInput(value: string): void {
-    this.foodGroupQuery.set(value);
-    this.newIngredient.foodGroup = value.trim() || null;
-    this.showFoodGroupDropdown.set(true);
-  }
-
-  onFoodGroupBlur(): void {
-    setTimeout(() => this.showFoodGroupDropdown.set(false), 150);
-  }
-
-  selectFoodGroup(group: string): void {
-    this.newIngredient.foodGroup = group;
-    this.foodGroupQuery.set(group);
-    this.showFoodGroupDropdown.set(false);
-  }
 
   submitNewIngredient(): void {
-    if (!this.newIngredient.name.trim() || !this.newIngredient.unit.trim()) {
-      this.errorMessage.set('Name and unit are required.');
+    this.addIngredientSubmitAttempted.set(true);
+    const name = this.addIngredientName().trim();
+    const unit = this.addIngredientUnit().trim();
+    if (!name || !unit) {
+      return;
+    }
+    const duplicate = this.ingredients().some(i => i.name.toLowerCase() === name.toLowerCase());
+    if (duplicate) {
       return;
     }
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    this.service.create({ ...this.newIngredient, allergens: this.selectedAllergensList() }).subscribe({
+    this.service.create({ name, unit, category: this.addIngredientCategory(), allergens: this.selectedAllergensList() }).subscribe({
       next: (created) => {
         this.loadIngredients();
         this.closeAddIngredientModal();
@@ -188,7 +202,58 @@ export class AdminIngredients implements OnInit {
         this.clearMessageAfterDelay();
       },
       error: () => {
-        this.errorMessage.set('Failed to create ingredient.');
+        this.addIngredientServerError.set('Failed to create ingredient.');
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  openEditIngredient(ing: IngredientWithSubstitutions): void {
+    this.editIngredientTarget.set(ing);
+    this.editUnit.set(ing.unit);
+    this.editCategory.set(ing.category ?? null);
+    this.editAllergensList.set([...(ing.allergens ?? [])]);
+    this.showEditIngredientModal.set(true);
+  }
+
+  closeEditIngredient(): void {
+    this.showEditIngredientModal.set(false);
+    this.editIngredientSubmitAttempted.set(false);
+    this.editIngredientServerError.set(null);
+    this.editIngredientTarget.set(null);
+  }
+
+  isEditAllergenSelected(value: string): boolean {
+    return this.editAllergensList().includes(value);
+  }
+
+  toggleEditAllergen(value: string): void {
+    const cur = this.editAllergensList();
+    this.editAllergensList.set(cur.includes(value) ? cur.filter(a => a !== value) : [...cur, value]);
+  }
+
+  submitEditIngredient(): void {
+    this.editIngredientSubmitAttempted.set(true);
+    const ing = this.editIngredientTarget();
+    if (!ing) return;
+    const unit = this.editUnit().trim();
+    const payload: UpdateIngredientRequest = {
+      category: this.editCategory(),
+      unit,
+      allergens: this.editAllergensList(),
+    };
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.service.update(ing.id, payload).subscribe({
+      next: (updated) => {
+        this.ingredients.update(list => list.map(i => i.id === updated.id ? updated : i));
+        this.closeEditIngredient();
+        this.successMessage.set(`Ingredient "${updated.name}" updated successfully.`);
+        this.isLoading.set(false);
+        this.clearMessageAfterDelay();
+      },
+      error: () => {
+        this.editIngredientServerError.set('Failed to update ingredient.');
         this.isLoading.set(false);
       },
     });
@@ -334,6 +399,26 @@ export class AdminIngredients implements OnInit {
       },
       error: () => {
         this.errorMessage.set('Failed to delete substitution option.');
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  deleteIngredient(ingredient: IngredientWithSubstitutions): void {
+    if (!confirm(`Are you sure you want to delete "${ingredient.name}"? This action cannot be undone.`)) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.service.delete(ingredient.id).subscribe({
+      next: () => {
+        this.ingredients.update(list => list.filter(i => i.id !== ingredient.id));
+        this.successMessage.set(`Ingredient "${ingredient.name}" deleted successfully.`);
+        this.isLoading.set(false);
+        this.clearMessageAfterDelay();
+      },
+      error: () => {
+        this.errorMessage.set('Failed to delete ingredient.');
         this.isLoading.set(false);
       },
     });
